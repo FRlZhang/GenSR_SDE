@@ -5,6 +5,17 @@ import random
 import argparse
 import numpy as np
 import torch
+# ============================================================
+# 🍏 【Mac Apple Silicon 专属 CUDA 降级兼容补丁】
+# ============================================================
+if not torch.cuda.is_available():
+    print("🍏 检测到当前运行环境为 Mac (无 CUDA)，自动启用 CPU/MPS 兼容模式...")
+    torch.cuda.set_device = lambda *args, **kwargs: None
+    torch.cuda.current_device = lambda: 0
+    torch.cuda.get_device_properties = lambda *args: None
+    if not hasattr(torch._C, '_cuda_setDevice'):
+        torch._C._cuda_setDevice = lambda *args, **kwargs: None
+# ============================================================
 import os
 import pickle
 from pathlib import Path
@@ -216,6 +227,31 @@ def main(params):
         if not os.path.isdir(params.eval_dump_path):
             os.makedirs(params.eval_dump_path)
     env = build_env(params)
+    # ============================================================
+    # 💉 【SDE 预训练语料核心注入闸门】
+    # ============================================================
+
+    sde_dataset_path = os.environ.get("GENSR_SDE_DATASET", "data/sde_train_dataset.pkl")
+    if os.path.exists(sde_dataset_path):
+        print("\n" + "="*60)
+        print(f"🔥 发现 SDE 预训练语料库！正在强行挂载进 CVAE 训练循环...")
+        
+        with open(sde_dataset_path, "rb") as f:
+            sde_data_pool = pickle.load(f)
+        print(f"🎉 成功加载 {len(sde_data_pool)} 条精品 SDE 动力学样本！")
+        print("="*60 + "\n")
+
+        # 定义全新的 SDE 样本分发机
+        def sde_generate_sample(self):
+            # 从 100 条精品池里随机抓一条，完美模拟 Online 实时无限训练
+            sample = random.choice(sde_data_pool)
+            return copy.deepcopy(sample)
+        import types
+        # 猴子补丁：强行解绑原厂的代数生成器，绑定上我们的 SDE 生成器
+        env.generate_sample = types.MethodType(sde_generate_sample, env)
+    else:
+        print(f"⚠️ 未发现 {sde_dataset_path}，将维持原厂代数方程动态生成机制。")
+    # ============================================================
 
     modules = build_modules(env, params)
     from symbolicregression.trainer_vae import Trainer
@@ -263,7 +299,11 @@ def main(params):
 
         trainer.epoch += 1
 
-        if should_save or (params.save_periodic > 0 and trainer.epoch % params.save_periodic == 0) or trainer.epoch <= begin_epoch + 5:
+        periodic_save = params.save_periodic > 0 and (
+            trainer.epoch % params.save_periodic == 0
+            or trainer.epoch <= begin_epoch + 5
+        )
+        if should_save or periodic_save:
             trainer.save_periodic(should_save)
 
         logger.info("============ End of epoch %i ============" % trainer.epoch)
@@ -279,4 +319,3 @@ if __name__ == "__main__":
     check_model_params(params)
 
     main(params)
-

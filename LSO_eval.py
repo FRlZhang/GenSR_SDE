@@ -126,7 +126,13 @@ def evaluate_pmlb_lso(
 
         if params.reload_model != "" and params.reload_model_dir != "":
             path = os.path.join(params.reload_model_dir, params.reload_model)
-            trainer.modules = reload_model(trainer.modules, path)
+            #trainer.modules = reload_model(trainer.modules, path)
+            # ─────────────────── 【 针对 Mac 增加的无权重空转修复 】 ───────────────────
+            if os.path.isfile(path):
+                trainer.modules = reload_model(trainer.modules, path)
+            else:
+                print(f"\n[Warning] 权重文件未找到: {path}。目前开启随机初始化空转模式！\n")
+            # ──────────────────────────────────────────────────────────────────────────
 
         model = VAESymbolicRegressor(params = params, env=env, modules=trainer.modules)
 
@@ -449,6 +455,13 @@ if __name__ == '__main__':
     np.random.seed(params.seed)
     torch.manual_seed(params.seed)
     torch.cuda.manual_seed(params.seed)
+
+    # ─────────────────── 【 针对 Mac 增加的强制 CPU 修复代码 】 ───────────────────
+    params.cpu = True 
+    params.device = torch.device("cpu")
+    params.multi_gpu = False
+    params.wandb_disabled = True
+    # ──────────────────────────────────────────────────────────────────────────
 
     if not params.cpu:
         assert torch.cuda.is_available()
