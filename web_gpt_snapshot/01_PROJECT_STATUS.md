@@ -28,16 +28,17 @@ greedy_sequence_exact=0.015625
 - Added rerank debug output and oracle metrics. A 16-sample eval-only checkpoint probe produced 64 valid candidates and `rerank_oracle_sequence_exact=0.000000`, `rerank_oracle_sequence_relaxed_no_constants=0.000000`.
 - Added grammar-constrained stochastic sampling with temperature, top-k, top-p, and multi-temperature support. A 16-sample eval-only checkpoint probe with beam+sampling produced 90 valid candidates and increased diversity to `rerank_unique_candidate_avg=5.625000`, `rerank_unique_drift_avg=2.000000`, `rerank_unique_diffusion_avg=4.875000`, but oracle exact/relaxed remained zero.
 - Added drift/diffusion span pairing from existing candidates. A 16-sample eval-only checkpoint probe attempted 167 valid candidates, including 56 valid paired candidates, and reached `rerank_pair_oracle_sequence_exact=0.062500`, `rerank_pair_oracle_sequence_relaxed_no_constants=0.062500`; selected reranked exact/relaxed metrics remained zero.
+- Added fingerprint segment distance diagnostics and `componentwise` reranking. On the same 16-sample checkpoint probe, both full and componentwise selected reranked exact/relaxed remained zero while oracle stayed 1/16. The inspected oracle candidate ranked 11 under full scoring and 8 under componentwise scoring, with the largest disadvantage in `multi_u0_moments`.
 
 ## In Progress
 
 - Transitioning from token recognition to full symbolic sequence recovery.
-- Diagnosing why fingerprint-distance reranking does not select oracle candidates now exposed by drift/diffusion pairing.
+- Diagnosing why fingerprint-distance segment scores prefer non-oracle templates over paired oracle candidates.
 
 ## Next Steps
 
-1. Inspect oracle candidates versus top-ranked candidates, including distances by fingerprint segment.
-2. Compare full-fingerprint, short-moment, and componentwise scores now that paired candidates can contain exact/relaxed alternatives.
+1. Add richer diagnostics around constants/template equivalence, because `CONSTANT=1.0` can make the oracle template score worse.
+2. Compare score variants that reduce constant-sensitivity before considering fingerprint redesign.
 3. Keep drift/diffusion pairing enabled and tune candidate pool size carefully because fingerprint recomputation is CPU-expensive.
 4. Keep comparing greedy, constrained beam, reranked, and oracle metrics on the same held-out setup.
 5. Only revisit fingerprint design after candidate diversity and scoring have been tested more thoroughly.
@@ -57,6 +58,7 @@ greedy_sequence_exact=0.015625
 - Rerank oracle metrics were zero in a 16-sample checkpoint eval, so the immediate blocker is candidate diversity, not only rerank score selection.
 - Stochastic grammar-constrained sampling increased unique candidates but still produced zero oracle hits in a 16-sample checkpoint eval.
 - Drift/diffusion pairing produced nonzero oracle hits, but the current fingerprint-distance score still did not choose them in the 16-sample eval.
+- Full and componentwise reranking both missed the inspected oracle candidate; componentwise improved its rank from 11 to 8, but `multi_u0_moments` still contributed the largest disadvantage.
 - The best checkpoint is outside the repo and may disappear.
 - `environment.yml` is upstream/Linux-oriented; recent work used the local macOS `gensr` conda env.
 

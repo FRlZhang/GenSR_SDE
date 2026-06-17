@@ -82,6 +82,8 @@ Current best result so far:
   did not improve exact / relaxed recovery yet.
 - drift/diffusion pairing produced nonzero oracle hits (`1/16`) in a
   16-sample checkpoint eval, but the current rerank score did not select them.
+- componentwise reranking has been added for diagnostics; it also missed the
+  oracle candidate in the first 16-sample probe.
 
 See [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md)
 and [PROJECT_STATUS.md](/Users/lzhang/Documents/GenSR_SDE/PROJECT_STATUS.md) for

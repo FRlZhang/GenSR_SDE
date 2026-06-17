@@ -73,7 +73,8 @@ PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/
   --constrained-beam-size 8 \
   --rerank-candidates 8 \
   --rerank-topk-from-beam 8 \
-  --rerank-score full_fingerprint \
+  --rerank-score componentwise \
+  --rerank-component-weights 1.0,2.0,1.0 \
   --rerank-debug-topk 2 \
   --sample-candidates 8 \
   --sample-temperatures 0.8,1.0,1.2 \

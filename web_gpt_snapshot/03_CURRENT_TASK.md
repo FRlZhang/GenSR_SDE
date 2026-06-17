@@ -2,7 +2,7 @@
 
 ## Next Engineering Task
 
-Diagnose rerank scoring over paired candidates.
+Diagnose constant sensitivity and score behavior over paired oracle candidates.
 
 At the end of that workflow, update `web_gpt_snapshot/02_RECENT_CHANGES.md` and
 `web_gpt_snapshot/03_CURRENT_TASK.md`. Also update `01_PROJECT_STATUS.md` if the
@@ -12,6 +12,10 @@ The reranking path, debug/oracle diagnostics, grammar-constrained stochastic
 sampling, and drift/diffusion pairing are implemented and verified. A 16-sample
 eval-only checkpoint probe with pairing produced nonzero oracle exact/relaxed
 hits (`1/16`), but selected reranked exact/relaxed metrics remained zero.
+Componentwise scoring improved the inspected oracle candidate from rank 11 to
+rank 8 but still missed it; in that case, all componentwise segments scored the
+oracle worse than the top candidate, with `multi_u0_moments` contributing the
+largest gap.
 
 ## Primary File To Modify
 
@@ -21,9 +25,10 @@ sde_validation_probe.py
 
 Likely next additions:
 
-- inspect oracle candidates versus selected top candidates;
-- add debug output for oracle candidate distances by fingerprint segment;
-- compare full-fingerprint, short-moment, and componentwise reranking scores;
+- inspect how fixed `CONSTANT=1.0` affects oracle template fingerprints;
+- test lightweight constant handling for reranking candidates without changing
+  training or target format;
+- compare score variants that reduce constant sensitivity;
 - keep pairing enabled while controlling candidate counts for CPU cost;
 - keep reporting reranked metrics beside greedy and constrained beam.
 

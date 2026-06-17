@@ -64,9 +64,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--rerank-topk-from-beam", type=int, default=0)
     parser.add_argument(
         "--rerank-score",
-        choices=("full_fingerprint", "short_moment"),
+        choices=("full_fingerprint", "short_moment", "componentwise"),
         default="full_fingerprint",
     )
+    parser.add_argument("--rerank-component-weights", type=str, default="1.0,2.0,1.0")
     parser.add_argument("--rerank-debug-topk", type=int, default=0)
     parser.add_argument("--sample-candidates", type=int, default=0)
     parser.add_argument("--sample-temperature", type=float, default=1.0)
@@ -1090,27 +1091,62 @@ def split_sde_tokens(tokens: list[str]) -> tuple[list[str], list[str]] | None:
     return drift_tokens, diffusion_tokens
 
 
-def rerank_distance(
-    target_y: np.ndarray,
-    candidate_y: np.ndarray,
-    score_kind: str,
-    config: FingerprintConfig,
-) -> float:
-    target = np.asarray(target_y, dtype=np.float64).reshape(-1)
-    candidate = np.asarray(candidate_y, dtype=np.float64).reshape(-1)
-    if target.shape != candidate.shape:
-        return float("inf")
-    if score_kind == "short_moment":
-        multi_len = len(config.multi_u0s) * config.moment_time_samples * 2
-        active_len = len(config.active_probe_times) * len(config.active_probe_x0s) * 2
-        score_slice = slice(multi_len, multi_len + active_len)
-        target = target[score_slice]
-        candidate = candidate[score_slice]
+def parse_component_weights(raw: str) -> tuple[float, float, float]:
+    parts = [part.strip() for part in raw.split(",") if part.strip()]
+    if len(parts) != 3:
+        raise ValueError("--rerank-component-weights must have three comma-separated values")
+    return tuple(float(part) for part in parts)
+
+
+def _normalized_l2(target: np.ndarray, candidate: np.ndarray) -> float:
     diff = target - candidate
     if not np.all(np.isfinite(diff)):
         return float("inf")
     denom = np.linalg.norm(target) + 1e-8
     return float(np.linalg.norm(diff) / denom)
+
+
+def fingerprint_distance_details(
+    target_y: np.ndarray,
+    candidate_y: np.ndarray,
+    score_kind: str,
+    component_weights: tuple[float, float, float],
+) -> dict:
+    target = np.asarray(target_y, dtype=np.float64).reshape(-1)
+    candidate = np.asarray(candidate_y, dtype=np.float64).reshape(-1)
+    if target.shape != candidate.shape:
+        inf = float("inf")
+        return {
+            "distance": inf,
+            "full_distance": inf,
+            "multi_u0_moments_distance": inf,
+            "active_kramers_moyal_distance": inf,
+            "gaussian_weak_kernel_distance": inf,
+        }
+
+    segment_slices = {
+        "multi_u0_moments_distance": slice(0, 72),
+        "active_kramers_moyal_distance": slice(72, 90),
+        "gaussian_weak_kernel_distance": slice(90, 186),
+    }
+    details = {
+        "full_distance": _normalized_l2(target, candidate),
+    }
+    for name, segment_slice in segment_slices.items():
+        details[name] = _normalized_l2(target[segment_slice], candidate[segment_slice])
+
+    if score_kind == "short_moment":
+        details["distance"] = details["active_kramers_moyal_distance"]
+    elif score_kind == "componentwise":
+        w_multi, w_active, w_weak = component_weights
+        details["distance"] = (
+            w_multi * details["multi_u0_moments_distance"]
+            + w_active * details["active_kramers_moyal_distance"]
+            + w_weak * details["gaussian_weak_kernel_distance"]
+        )
+    else:
+        details["distance"] = details["full_distance"]
+    return details
 
 
 def rerank_candidate_rows(
@@ -1122,6 +1158,7 @@ def rerank_candidate_rows(
     candidate_rows: list[list[dict]] | None,
     config: FingerprintConfig,
     score_kind: str,
+    component_weights: tuple[float, float, float],
     base_seed: int,
     max_len: int,
     debug_topk: int,
@@ -1178,6 +1215,13 @@ def rerank_candidate_rows(
             relaxed_hit = template_tokens(words) == template_tokens(truth)
             failure_reason = None
             distance = None
+            distance_details = {
+                "distance": None,
+                "full_distance": None,
+                "multi_u0_moments_distance": None,
+                "active_kramers_moyal_distance": None,
+                "gaussian_weak_kernel_distance": None,
+            }
             system = candidate_tokens_to_system(words)
             if system is None:
                 failure_reason = "parse_failed"
@@ -1186,7 +1230,7 @@ def rerank_candidate_rows(
                         "words": words,
                         "drift_tokens": drift_tokens,
                         "diffusion_tokens": diffusion_tokens,
-                        "distance": distance,
+                        **distance_details,
                         "model_score": candidate["model_score"],
                         "normalized_model_score": candidate["normalized_model_score"],
                         "source": source,
@@ -1206,7 +1250,7 @@ def rerank_candidate_rows(
                         "words": words,
                         "drift_tokens": drift_tokens,
                         "diffusion_tokens": diffusion_tokens,
-                        "distance": distance,
+                        **distance_details,
                         "model_score": candidate["model_score"],
                         "normalized_model_score": candidate["normalized_model_score"],
                         "source": source,
@@ -1219,12 +1263,13 @@ def rerank_candidate_rows(
             valid += 1
             if is_pair:
                 pair_valid += 1
-            distance = rerank_distance(
+            distance_details = fingerprint_distance_details(
                 sample["y_to_fit"],
                 y_data,
                 score_kind,
-                config,
+                component_weights,
             )
+            distance = distance_details["distance"]
             if not np.isfinite(distance):
                 fingerprint_failures += 1
                 failure_reason = "nonfinite_distance"
@@ -1233,7 +1278,7 @@ def rerank_candidate_rows(
                         "words": words,
                         "drift_tokens": drift_tokens,
                         "diffusion_tokens": diffusion_tokens,
-                        "distance": distance,
+                        **distance_details,
                         "model_score": candidate["model_score"],
                         "normalized_model_score": candidate["normalized_model_score"],
                         "source": source,
@@ -1247,7 +1292,7 @@ def rerank_candidate_rows(
                 "words": words,
                 "drift_tokens": drift_tokens,
                 "diffusion_tokens": diffusion_tokens,
-                "distance": distance,
+                **distance_details,
                 "model_score": candidate["model_score"],
                 "normalized_model_score": candidate["normalized_model_score"],
                 "source": source,
@@ -1275,7 +1320,7 @@ def rerank_candidate_rows(
             rows.append(torch.full((max_len,), pad_id, dtype=torch.long))
         else:
             rows.append(best[3]["tensor"].detach().cpu())
-        if debug_topk > 0 and len(debug_rows) < debug_topk:
+        if debug_topk > 0:
             ranked_records = sorted(
                 records,
                 key=lambda item: (
@@ -1284,15 +1329,42 @@ def rerank_candidate_rows(
                     -item["normalized_model_score"],
                 ),
             )
-            debug_rows.append(
-                {
-                    "sample_index": sample_idx,
-                    "truth": truth,
-                    "greedy": greedy_words,
-                    "constrained_beam": beam_words,
-                    "candidates": ranked_records[:debug_topk],
-                }
+            oracle_rank = None
+            oracle_record = None
+            for rank, record in enumerate(ranked_records, start=1):
+                if record["exact"] or record["relaxed"]:
+                    oracle_rank = rank
+                    oracle_record = record
+                    break
+            top_distance = (
+                ranked_records[0]["distance"]
+                if ranked_records and ranked_records[0]["distance"] is not None
+                else None
             )
+            oracle_distance = oracle_record["distance"] if oracle_record is not None else None
+            distance_delta = (
+                oracle_distance - top_distance
+                if oracle_distance is not None
+                and top_distance is not None
+                and np.isfinite(oracle_distance)
+                and np.isfinite(top_distance)
+                else None
+            )
+            if len(debug_rows) < debug_topk or oracle_record is not None:
+                debug_rows.append(
+                    {
+                        "sample_index": sample_idx,
+                        "truth": truth,
+                        "greedy": greedy_words,
+                        "constrained_beam": beam_words,
+                        "candidates": ranked_records[:debug_topk],
+                        "oracle_rank": oracle_rank,
+                        "oracle_candidate": oracle_record,
+                        "top_distance": top_distance,
+                        "oracle_distance": oracle_distance,
+                        "oracle_top_distance_delta": distance_delta,
+                    }
+                )
 
     return torch.stack(rows, dim=0), {
         "rerank_candidates_attempted": attempted,
@@ -1391,6 +1463,7 @@ def evaluate(
     rerank_candidates: int,
     rerank_topk_from_beam: int,
     rerank_score: str,
+    rerank_component_weights: tuple[float, float, float],
     fingerprint_config: FingerprintConfig,
     rerank_debug_topk: int,
     sample_candidates: int,
@@ -1483,6 +1556,7 @@ def evaluate(
                     rerank_beam_candidates,
                     fingerprint_config,
                     rerank_score,
+                    rerank_component_weights,
                     seed + i * 100003,
                     trainer.params.max_generated_output_len,
                     rerank_debug_topk,
@@ -1639,7 +1713,7 @@ def evaluate(
         debug_rows = []
         for row in rerank_stat_rows:
             debug_rows.extend(row["rerank_debug"])
-        result["rerank_debug"] = debug_rows[:rerank_debug_topk]
+        result["rerank_debug"] = debug_rows
     result["examples"] = examples[:5]
     return result
 
@@ -1694,6 +1768,7 @@ def main() -> None:
         args.sample_temperatures,
         args.sample_temperature,
     )
+    rerank_component_weights = parse_component_weights(args.rerank_component_weights)
     metrics = evaluate(
         trainer,
         eval_samples,
@@ -1704,6 +1779,7 @@ def main() -> None:
         args.rerank_candidates,
         args.rerank_topk_from_beam,
         args.rerank_score,
+        rerank_component_weights,
         fingerprint_config,
         args.rerank_debug_topk,
         args.sample_candidates,
@@ -1724,18 +1800,50 @@ def main() -> None:
         print(f"pred : {ex['pred']}")
     if args.rerank_debug_topk > 0 and metrics.get("rerank_debug"):
         print("rerank_debug:")
+
+        def _fmt_distance(value):
+            return "nan" if value is None or not np.isfinite(value) else f"{value:.6f}"
+
         for debug in metrics["rerank_debug"]:
             print(f"sample_index={debug['sample_index']}")
             print(f"truth: {' '.join(debug['truth'])}")
             print(f"greedy: {' '.join(debug['greedy'])}")
             print(f"constrained_beam: {' '.join(debug['constrained_beam'])}")
+            print(f"oracle_rank={debug['oracle_rank']}")
+            print(f"top_ranked_distance={_fmt_distance(debug['top_distance'])}")
+            print(f"oracle_distance={_fmt_distance(debug['oracle_distance'])}")
+            print(
+                "oracle_top_distance_delta="
+                f"{_fmt_distance(debug['oracle_top_distance_delta'])}"
+            )
+            if debug["oracle_candidate"] is not None:
+                oracle = debug["oracle_candidate"]
+                print(
+                    "oracle_candidate "
+                    f"source={oracle['source']} "
+                    f"distance={_fmt_distance(oracle['distance'])} "
+                    f"full_distance={_fmt_distance(oracle['full_distance'])} "
+                    f"multi_u0_moments_distance="
+                    f"{_fmt_distance(oracle['multi_u0_moments_distance'])} "
+                    f"active_kramers_moyal_distance="
+                    f"{_fmt_distance(oracle['active_kramers_moyal_distance'])} "
+                    f"gaussian_weak_kernel_distance="
+                    f"{_fmt_distance(oracle['gaussian_weak_kernel_distance'])}"
+                )
+                print(f"oracle_drift_tokens: {' '.join(oracle['drift_tokens'])}")
+                print(f"oracle_diffusion_tokens: {' '.join(oracle['diffusion_tokens'])}")
             for rank, candidate in enumerate(debug["candidates"], start=1):
-                distance = candidate["distance"]
-                distance_str = "nan" if distance is None else f"{distance:.6f}"
                 print(
                     f"candidate_rank={rank} "
                     f"source={candidate['source']} "
-                    f"distance={distance_str} "
+                    f"distance={_fmt_distance(candidate['distance'])} "
+                    f"full_distance={_fmt_distance(candidate['full_distance'])} "
+                    f"multi_u0_moments_distance="
+                    f"{_fmt_distance(candidate['multi_u0_moments_distance'])} "
+                    f"active_kramers_moyal_distance="
+                    f"{_fmt_distance(candidate['active_kramers_moyal_distance'])} "
+                    f"gaussian_weak_kernel_distance="
+                    f"{_fmt_distance(candidate['gaussian_weak_kernel_distance'])} "
                     f"model_score={candidate['model_score']:.6f} "
                     f"normalized_model_score={candidate['normalized_model_score']:.6f} "
                     f"exact={int(candidate['exact'])} "

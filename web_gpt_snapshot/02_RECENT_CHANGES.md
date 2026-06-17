@@ -2,32 +2,26 @@
 
 ## Last Codex Workflow
 
-Codex added drift/diffusion span pairing to improve structure-level candidate
-diversity in `sde_validation_probe.py`.
+Codex added rerank score diagnostics and componentwise scoring for paired
+candidates in `sde_validation_probe.py`.
 
 Key changes:
 
-- added `--pair-drift-diffusion-candidates`, `--pair-drift-topk`, and
-  `--pair-diffusion-topk`;
-- extracts unique drift spans and unique diffusion spans from existing
-  beam/sampling candidates;
-- recombines them as `<DRIFT> drift <DIFFUSION> diffusion` candidates;
-- merges paired candidates into the same legality filtering, fingerprint
-  recomputation, reranking, and oracle metric path;
-- added pair diagnostics:
-  `rerank_pair_candidates_attempted`, `rerank_pair_candidates_valid`,
-  `rerank_unique_paired_candidate_avg`,
-  `rerank_pair_oracle_sequence_exact`, and
-  `rerank_pair_oracle_sequence_relaxed_no_constants`.
+- added `--rerank-score componentwise`;
+- added `--rerank-component-weights`, defaulting to `1.0,2.0,1.0`;
+- debug output now includes full fingerprint distance and segment distances for
+  `multi_u0_moments`, `active_kramers_moyal`, and `gaussian_weak_kernel`;
+- debug output now reports oracle candidate rank, oracle distance, top-ranked
+  distance, and oracle-minus-top distance delta when an oracle candidate exists.
 
 Validation:
 
 - `py_compile sde_validation_probe.py`: passed.
 - `git diff --check`: passed.
-- Small 2-step smoke with beam+sampling+pairing reranking: passed.
+- Small 2-step smoke with componentwise reranking diagnostics: passed.
 - Eval-only checkpoint probe with
   `/private/tmp/gensr_sde_role_token_2000/role_token_2000.pth`: passed on 16
-  held-out samples.
+  held-out samples for both `full_fingerprint` and `componentwise`.
 
 16-sample checkpoint probe result:
 
@@ -49,10 +43,45 @@ rerank_unique_diffusion_avg=5.000000
 rerank_unique_paired_candidate_avg=3.500000
 ```
 
-Interpretation: pairing changed the diagnosis. The candidate pool now contains
-an exact/relaxed target in 1/16 samples, but the current fingerprint-distance
-score still does not select it. The next priority is score diagnostics over
-paired candidates, not fingerprint redesign or training changes.
+Full and componentwise had the same selected exact/relaxed outcome: selected
+reranked exact/relaxed stayed 0 while oracle stayed 1/16.
+
+Observed full-fingerprint oracle diagnostic:
+
+```text
+oracle_rank=11
+top_ranked_distance=1.122157
+oracle_distance=1.392796
+oracle_top_distance_delta=0.270639
+oracle multi_u0_moments=2.564722
+top multi_u0_moments=1.704655
+oracle active_kramers_moyal=1.001000
+top active_kramers_moyal=1.278720
+oracle gaussian_weak_kernel=1.353263
+top gaussian_weak_kernel=0.931437
+```
+
+Observed componentwise oracle diagnostic:
+
+```text
+oracle_rank=8
+top_ranked_distance=5.126071
+oracle_distance=5.919984
+oracle_top_distance_delta=0.793913
+oracle multi_u0_moments=2.564722
+top multi_u0_moments=2.131954
+oracle active_kramers_moyal=1.001000
+top active_kramers_moyal=0.926156
+oracle gaussian_weak_kernel=1.353263
+top gaussian_weak_kernel=1.141805
+```
+
+Interpretation: componentwise improved the inspected oracle candidate from rank
+11 to rank 8, but still did not select it. Under componentwise scoring, every
+segment was worse for the oracle than for the top-ranked candidate, with the
+largest gap in `multi_u0_moments`. This suggests the next issue may be constant
+sensitivity from evaluating all `CONSTANT` tokens as `1.0`, rather than
+fingerprint redesign.
 
 ## Previous Codex Workflow
 
@@ -139,6 +168,8 @@ Not rerun during this documentation-only update:
 - First-pass reranking is implemented but has not improved exact/relaxed recovery yet.
 - Pairing produced nonzero oracle hits, but selected reranked exact/relaxed
   metrics remained zero in a 16-sample checkpoint eval.
+- Componentwise scoring did not select the oracle candidate either; score
+  diagnostics point to segment distances penalizing the oracle template.
 - Future project-state changes must update `02_RECENT_CHANGES.md` and
   `03_CURRENT_TASK.md`; update other fixed snapshot files only when their
   contents actually change.
