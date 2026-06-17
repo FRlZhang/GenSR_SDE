@@ -835,6 +835,15 @@ class Trainer(object):
 
     def enc_dec_vae_step(self, task):
         params = self.params
+        samples, errors = self.get_batch(task)
+        if (
+            getattr(self.params, "split_sde_loss", False)
+            and
+            "drift_tree_encoded" in samples
+            and "diffusion_tree_encoded" in samples
+        ):
+            return self.enc_dec_sde_split_step(task, samples, errors)
+
         vae_model, decoder, embedder_f, embedder_e, feature_fusion = (
             self.modules["cvae"],
             self.modules["seq_decoder"],
@@ -850,8 +859,6 @@ class Trainer(object):
         embedder_e.train()
 
         env = self.env
-
-        samples, errors = self.get_batch(task)
 
         if self.params.debug_train_statistics:
             for info_type, info in samples["infos"].items():
@@ -881,7 +888,7 @@ class Trainer(object):
                 self.env.word_to_idx(samples["tree_encoded"], float_input=False)
             )
 
-        x2, len2 = to_cuda(x2, len2)
+        x2, len2 = to_cuda(x2, len2, use_cpu=params.cpu)
 
         x2_e = embedder_e(x2.transpose(0, 1)).transpose(0, 1)
 
@@ -949,6 +956,134 @@ class Trainer(object):
         self.n_equations += len2.size(0)
         self.stats["processed_e"] += len2.size(0)
         self.stats["processed_w"] += (len2 + len2 - 2).sum().item()
+
+        return mapped_src_enc_prior, mapped_src_enc_post, samples, loss
+
+    def enc_dec_sde_split_step(self, task, samples, errors):
+        params = self.params
+        vae_model = self.modules["cvae"]
+        decoder = self.modules["seq_decoder"]
+        embedder_f = self.modules["data_encoder"]
+        embedder_e = self.modules["token_embed"]
+        feature_fusion = self.modules["feature_fusion"]
+
+        for module in [
+            vae_model,
+            decoder,
+            feature_fusion,
+            embedder_f,
+            embedder_e,
+        ]:
+            module.train()
+
+        x_to_fit = samples["x_to_fit"]
+        y_to_fit = samples["y_to_fit"]
+        x1 = []
+        for seq_id in range(len(x_to_fit)):
+            x1.append([])
+            for seq_l in range(len(x_to_fit[seq_id])):
+                x1[seq_id].append([x_to_fit[seq_id][seq_l], y_to_fit[seq_id][seq_l]])
+        x1, len1 = embedder_f(x1)
+
+        if self.params.use_skeleton:
+            drift_words = samples["drift_skeleton_tree_encoded"]
+            diffusion_words = samples["diffusion_skeleton_tree_encoded"]
+        else:
+            drift_words = samples["drift_tree_encoded"]
+            diffusion_words = samples["diffusion_tree_encoded"]
+
+        drift_x, drift_len = self.env.batch_equations(
+            self.env.word_to_idx(drift_words, float_input=False)
+        )
+        diffusion_x, diffusion_len = self.env.batch_equations(
+            self.env.word_to_idx(diffusion_words, float_input=False)
+        )
+        drift_x, drift_len, diffusion_x, diffusion_len = to_cuda(
+            drift_x,
+            drift_len,
+            diffusion_x,
+            diffusion_len,
+            use_cpu=params.cpu,
+        )
+
+        x2_e = embedder_e(drift_x.transpose(0, 1)).transpose(0, 1)
+        prior_mu, prior_logvar, post_mu, post_logvar, kl_loss, kl_weights, kld = vae_model(
+            x1,
+            x2_e,
+            len1,
+            drift_len,
+            mode="train",
+        )
+
+        mapped_src_enc_prior = feature_fusion(prior_mu, prior_logvar)
+        mapped_src_enc_post = feature_fusion(post_mu, post_logvar)
+
+        def decoder_loss(decoder, x, lengths, src_enc):
+            alen = torch.arange(params.max_src_len, dtype=torch.long, device=lengths.device)
+            pred_mask = alen[:, None] < lengths[None] - 1
+            y = x[1:].masked_select(pred_mask[:-1])
+            decoded = decoder(
+                "fwd",
+                x=x,
+                lengths=lengths,
+                causal=True,
+                src_enc=src_enc,
+                src_len=len1,
+            )
+            _, loss_pred = decoder(
+                "predict",
+                tensor=decoded,
+                pred_mask=pred_mask,
+                y=y,
+                get_scores=False,
+            )
+            return loss_pred
+
+        drift_loss_prior = decoder_loss(decoder, drift_x, drift_len, mapped_src_enc_prior)
+        drift_loss_post = decoder_loss(decoder, drift_x, drift_len, mapped_src_enc_post)
+        diffusion_loss_prior = decoder_loss(
+            decoder,
+            diffusion_x,
+            diffusion_len,
+            mapped_src_enc_prior,
+        )
+        diffusion_loss_post = decoder_loss(
+            decoder,
+            diffusion_x,
+            diffusion_len,
+            mapped_src_enc_post,
+        )
+
+        loss_pred_prior = drift_loss_prior + diffusion_loss_prior
+        loss_pred_post = drift_loss_post + diffusion_loss_post
+        loss = loss_pred_prior + loss_pred_post + kl_loss
+
+        self.current_vae_losses = {
+            "total_loss": loss.item(),
+            "pred_loss_prior": loss_pred_prior.item(),
+            "pred_loss_post": loss_pred_post.item(),
+            "drift_loss_prior": drift_loss_prior.item(),
+            "drift_loss_post": drift_loss_post.item(),
+            "diffusion_loss_prior": diffusion_loss_prior.item(),
+            "diffusion_loss_post": diffusion_loss_post.item(),
+            "kl_loss": kl_loss.item(),
+            "kl_term": torch.mean(kld).item(),
+            "kl_weight": kl_weights.item() if torch.is_tensor(kl_weights) else kl_weights,
+            "post_mu_mean": post_mu.mean().item(),
+            "post_logvar_mean": post_logvar.mean().item(),
+            "prior_mu_mean": prior_mu.mean().item(),
+            "prior_logvar_mean": prior_logvar.mean().item(),
+        }
+
+        self.stats[task].append(loss.item())
+        self.optimize(loss)
+
+        self.inner_epoch += 1
+        self.n_equations += drift_len.size(0)
+        self.stats["processed_e"] += drift_len.size(0)
+        self.stats["processed_w"] += (
+            drift_len + diffusion_len + drift_len + diffusion_len - 4
+        ).sum().item()
 
         return mapped_src_enc_prior, mapped_src_enc_post, samples, loss
 

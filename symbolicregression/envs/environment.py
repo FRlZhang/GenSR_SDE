@@ -44,6 +44,8 @@ SPECIAL_WORDS = [
     "(",
     ")",
     "SPECIAL",
+    "<DRIFT>",
+    "<DIFFUSION>",
     "OOD_unary_op",
     "OOD_binary_op",
     "OOD_constant",

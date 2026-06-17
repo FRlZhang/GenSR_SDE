@@ -2,6 +2,373 @@
 
 Date: 2026-06-11
 
+Update, 2026-06-12: the original SDE data injection patched
+`env.generate_sample`, but the GenSR train dataloader actually calls
+`EnvDataset.generate_sample`. The 100-step and 500-step loss probes below are
+therefore useful as training-loop smoke tests, but they should not be treated as
+valid SDE training evidence. The injection path has been corrected to patch
+`EnvDataset.generate_sample`, and old pickle files with token-id tensors are
+converted back to token words at load time.
+
+First corrected SDE smoke test:
+
+```text
+step 1
+VAE-TOTAL      18.1638
+VAE-PRED-PRIOR 9.0763
+VAE-PRED-POST  9.0876
+```
+
+This confirms that real `multi_active_weak_v1` SDE samples now enter the CVAE
+training loop.
+
+Corrected 100-step held-out validation probe:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/tmp/cache \
+/opt/miniconda3/envs/gensr/bin/python3 sde_validation_probe.py \
+  --train-steps 100 --eval-samples 32 --batch-size 8 \
+  --print-freq 25 --n-paths 600 --active-paths 600 \
+  --n-steps 60 --max-generated-len 40
+```
+
+Training loss:
+
+| Step | Prior pred | Post pred | KL | KL weight |
+| ---: | ---: | ---: | ---: | ---: |
+| 25 | 9.0098 | 8.9975 | 3.3874 | 0.0960 |
+| 50 | 8.1580 | 8.1466 | 6.0940 | 0.1960 |
+| 75 | 7.7758 | 7.7675 | 5.3590 | 0.2000 |
+| 100 | 7.4673 | 7.4612 | 4.5623 | 0.2000 |
+
+Held-out SDE metrics on 32 newly generated samples:
+
+```text
+loss=7.674738
+token_top1=0.098266
+token_top3=0.190858
+token_top5=0.190858
+sequence_exact=0.000000
+sequence_relaxed_no_constants=0.000000
+```
+
+Interpretation: real SDE training now shows a clear teacher-forced signal, with
+training prior loss dropping from about 9.01 to 7.47 and held-out loss reaching
+7.67 after only 100 steps. Full sequence generation is still not working in this
+short run because greedy decoding often terminates immediately. The next
+validation step should combine longer true-SDE training with beam or
+minimum-length-constrained decoding.
+
+Corrected 500-step held-out validation probe:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/tmp/cache \
+/opt/miniconda3/envs/gensr/bin/python3 sde_validation_probe.py \
+  --train-steps 500 --eval-samples 64 --batch-size 8 \
+  --print-freq 100 --n-paths 800 --active-paths 800 \
+  --n-steps 60 --max-generated-len 40 --min-generated-len 8
+```
+
+Training loss:
+
+| Step | Prior pred | Post pred | KL |
+| ---: | ---: | ---: | ---: |
+| 100 | 7.3236 | 7.3181 | 1.7207 |
+| 200 | 4.8055 | 4.8067 | 1.3003 |
+| 300 | 3.3877 | 3.3882 | 0.4917 |
+| 400 | 2.0467 | 2.0468 | 0.1700 |
+| 500 | 1.2253 | 1.2253 | 0.0904 |
+
+Held-out SDE metrics on 64 newly generated samples:
+
+```text
+loss=1.377840
+token_top1=0.652865
+token_top3=0.871775
+token_top5=0.917750
+greedy_sequence_exact=0.000000
+greedy_sequence_relaxed_no_constants=0.000000
+greedy_sequence_nonempty=1.000000
+greedy_sequence_avg_len=7.000000
+greedy_sequence_structural_token_frac=1.000000
+minlen_greedy_sequence_exact=0.000000
+minlen_greedy_sequence_relaxed_no_constants=0.000000
+minlen_greedy_sequence_nonempty=1.000000
+minlen_greedy_sequence_avg_len=7.000000
+minlen_greedy_sequence_structural_token_frac=1.000000
+```
+
+Typical generated sequence:
+
+```text
+truth: mul CONSTANT x_0 SPECIAL mul CONSTANT sqrt abs x_0
+pred : mul CONSTANT CONSTANT CONSTANT CONSTANT CONSTANT x_0
+```
+
+Interpretation: the unified SDE fingerprint is strong enough for held-out
+teacher-forced token prediction. A 500-step true-SDE run reaches 65.3% top-1
+token accuracy and 91.8% top-5 token accuracy on unseen SDE samples. The current
+failure is sequence-level autoregressive decoding: greedy decoding collapses to
+short structural patterns dominated by `CONSTANT`, so exact expression recovery
+is still zero. This supports continuing the SDE-fingerprint route, but the next
+work item should be beam/reranking or template-constrained decoding rather than
+changing the fingerprint immediately.
+
+## Split Drift/Diffusion Decoder Probe
+
+Following the sequence-collapse result above, an explicit SDE-role version was
+implemented:
+
+- add `<DRIFT>` and `<DIFFUSION>` role tokens to the equation vocabulary
+- store `drift_tree_encoded` and `diffusion_tree_encoded` in generated SDE data
+- keep the numerical fingerprint encoder and CVAE shared
+- compare split-loss decoding against a single role-token sequence
+- optionally train with `CE_drift + CE_diffusion + KL`
+
+The old pickle format is still supported by reconstructing token sequences from
+the stored `drift | diffusion` expression string.
+
+Because two full 16-layer decoders are slow on CPU, the first diagnostic run used
+a smaller model:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/tmp/cache \
+/opt/miniconda3/envs/gensr/bin/python3 sde_validation_probe.py \
+  --train-steps 500 --eval-samples 64 --batch-size 8 \
+  --print-freq 100 --n-paths 600 --active-paths 600 \
+  --n-steps 60 --max-generated-len 32 --min-generated-len 6 \
+  --n-enc-layers 4 --n-dec-layers 4 --n-heads 8 --model-dim 256
+```
+
+Training loss:
+
+| Step | Prior pred | Post pred | KL |
+| ---: | ---: | ---: | ---: |
+| 100 | 18.0082 | 18.0127 | 0.7913 |
+| 200 | 16.8219 | 16.8268 | 1.0814 |
+| 300 | 16.9757 | 16.9798 | 0.8175 |
+| 400 | 15.8931 | 15.8964 | 0.4914 |
+| 500 | 14.3644 | 14.3661 | 0.2988 |
+
+Held-out SDE metrics on 64 newly generated samples:
+
+```text
+drift_loss=7.069069
+drift_token_top1=0.163330
+drift_token_top3=0.225208
+drift_token_top5=0.225208
+diffusion_loss=7.580018
+diffusion_token_top1=0.027432
+diffusion_token_top3=0.100124
+diffusion_token_top5=0.285800
+```
+
+Interpretation: explicit drift/diffusion role tokens are a good idea, but two
+fully independent decoders are not sample-efficient in this first implementation.
+Each decoder only sees half of the symbolic supervision while the number of
+decoder parameters roughly doubles, so short training underperforms the earlier
+single-decoder role-agnostic probe. The next better variant is not "two full
+decoders", but a shared decoder trunk with role prompts or small role-specific
+heads, followed by beam/reranking.
+
+## Role-Token Single-Sequence Probe
+
+The next diagnostic kept one full GenSR decoder but changed the symbolic target
+from
+
+```text
+drift SPECIAL diffusion
+```
+
+to
+
+```text
+<DRIFT> drift <DIFFUSION> diffusion
+```
+
+This preserves all token supervision in one autoregressive sequence while giving
+the decoder explicit SDE role markers.
+
+Small-model smoke test:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/tmp/cache \
+/opt/miniconda3/envs/gensr/bin/python3 sde_validation_probe.py \
+  --train-steps 500 --eval-samples 64 --batch-size 8 \
+  --print-freq 100 --n-paths 600 --active-paths 600 \
+  --n-steps 60 --max-generated-len 40 --min-generated-len 8 \
+  --n-enc-layers 4 --n-dec-layers 4 --n-heads 8 --model-dim 256
+```
+
+Held-out metrics were weak with the reduced model:
+
+```text
+loss=7.951664
+token_top1=0.106068
+token_top3=0.117006
+token_top5=0.132820
+greedy_sequence_exact=0.000000
+```
+
+The same role-token target was then tested with the full GenSR decoder:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/tmp/cache \
+/opt/miniconda3/envs/gensr/bin/python3 sde_validation_probe.py \
+  --train-steps 500 --eval-samples 64 --batch-size 8 \
+  --print-freq 100 --n-paths 800 --active-paths 800 \
+  --n-steps 60 --max-generated-len 40 --min-generated-len 8
+```
+
+Training loss:
+
+| Step | Prior pred | Post pred | KL |
+| ---: | ---: | ---: | ---: |
+| 100 | 6.9348 | 6.9467 | 1.3534 |
+| 200 | 4.4803 | 4.4844 | 0.9812 |
+| 300 | 3.1044 | 3.1049 | 0.3420 |
+| 400 | 1.8576 | 1.8577 | 0.1284 |
+| 500 | 1.1279 | 1.1281 | 0.0723 |
+
+Held-out SDE metrics on 64 newly generated samples:
+
+```text
+loss=1.266209
+token_top1=0.686656
+token_top3=0.881275
+token_top5=0.927509
+greedy_sequence_exact=0.000000
+greedy_sequence_relaxed_no_constants=0.046875
+greedy_sequence_nonempty=1.000000
+greedy_sequence_avg_len=11.000000
+greedy_sequence_structural_token_frac=0.818182
+```
+
+Typical generated sequence:
+
+```text
+truth: <DRIFT> mul CONSTANT x_0 <DIFFUSION> mul CONSTANT sqrt abs x_0
+pred : <DRIFT> mul CONSTANT CONSTANT CONSTANT x_0 <DIFFUSION> mul CONSTANT CONSTANT x_0
+```
+
+Interpretation: explicit role tokens do not hurt the main teacher-forced signal.
+With the full decoder, the role-token target slightly improves the corrected
+500-step held-out token metrics over the old `SPECIAL` separator baseline:
+top-1 rises from 65.3% to 68.7%, and top-5 rises from 91.8% to 92.8%.
+The remaining failure is still autoregressive sequence recovery, not numerical
+fingerprint separability. The recommended near-term path is therefore:
+
+1. keep `<DRIFT>` / `<DIFFUSION>` as the default symbolic target format;
+2. keep split drift/diffusion loss as an optional diagnostic, not the default;
+3. add grammar or template-constrained decoding plus fingerprint-based reranking;
+4. run a longer checkpointed role-token training job after the decoding path is
+   measurable.
+
+### 2000-Step Checkpointed Role-Token Probe
+
+The validation probe now supports checkpoint reuse:
+
+```text
+--save-checkpoint PATH
+--load-checkpoint PATH
+--eval-only
+--constrained-beam-size N
+```
+
+Checkpoint save/load was smoke-tested with a tiny 2-step model. A longer
+role-token run was then launched with:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/tmp/cache \
+/opt/miniconda3/envs/gensr/bin/python3 sde_validation_probe.py \
+  --train-steps 2000 --eval-samples 64 --batch-size 8 \
+  --print-freq 250 --n-paths 800 --active-paths 800 \
+  --n-steps 60 --max-generated-len 40 --min-generated-len 8 \
+  --save-checkpoint /private/tmp/gensr_sde_role_token_2000/role_token_2000.pth
+```
+
+Saved checkpoint:
+
+```text
+/private/tmp/gensr_sde_role_token_2000/role_token_2000.pth
+```
+
+Training loss:
+
+| Step | Prior pred | Post pred | KL |
+| ---: | ---: | ---: | ---: |
+| 250 | 3.9715 | 3.9739 | 0.1653 |
+| 500 | 1.1305 | 1.1307 | 0.0319 |
+| 750 | 0.6654 | 0.6654 | 0.0228 |
+| 1000 | 0.4722 | 0.4721 | 0.0132 |
+| 1250 | 0.5423 | 0.5421 | 0.0086 |
+| 1500 | 0.5529 | 0.5529 | 0.0066 |
+| 1750 | 0.4077 | 0.4079 | 0.0051 |
+| 2000 | 0.3772 | 0.3771 | 0.0039 |
+
+Held-out SDE metrics on 64 newly generated samples:
+
+```text
+loss=0.354153
+token_top1=0.820002
+token_top3=0.960833
+token_top5=1.000000
+greedy_sequence_exact=0.015625
+greedy_sequence_relaxed_no_constants=0.015625
+greedy_sequence_nonempty=1.000000
+greedy_sequence_avg_len=10.000000
+greedy_sequence_structural_token_frac=0.800000
+```
+
+The same checkpoint was then evaluated without retraining using an SDE
+grammar-constrained beam:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/tmp/cache \
+/opt/miniconda3/envs/gensr/bin/python3 sde_validation_probe.py \
+  --eval-only \
+  --load-checkpoint /private/tmp/gensr_sde_role_token_2000/role_token_2000.pth \
+  --eval-samples 32 --batch-size 8 \
+  --n-paths 800 --active-paths 800 --n-steps 60 \
+  --max-generated-len 40 --min-generated-len 8 \
+  --constrained-beam-size 8
+```
+
+Constrained-beam held-out metrics on 32 newly generated samples:
+
+```text
+loss=0.360775
+token_top1=0.802700
+token_top3=0.959856
+token_top5=1.000000
+greedy_sequence_exact=0.000000
+greedy_sequence_relaxed_no_constants=0.000000
+constrained_beam_sequence_exact=0.031250
+constrained_beam_sequence_relaxed_no_constants=0.031250
+constrained_beam_sequence_nonempty=1.000000
+constrained_beam_sequence_avg_len=13.000000
+constrained_beam_sequence_structural_token_frac=0.846154
+```
+
+Typical constrained-beam sequence:
+
+```text
+truth: <DRIFT> mul CONSTANT sin x_0 <DIFFUSION> mul CONSTANT sqrt abs x_0
+pred : <DRIFT> mul mul CONSTANT CONSTANT sin x_0 <DIFFUSION> mul CONSTANT sqrt abs x_0
+```
+
+Interpretation: longer role-token training strongly improves teacher-forced
+recognition. Top-1 token accuracy rises from 68.7% at 500 steps to 82.0% at
+2000 steps, and top-5 reaches 100.0%. This is enough evidence that the current
+SDE fingerprint is usable inside the GenSR numerical encoder.
+
+However, autoregressive recovery remains the bottleneck. Greedy exact recovery is
+still only 1/64, and grammar-constrained beam improves a 32-sample eval from 0
+to only 1 exact/relaxed hit. The decoder's probability mass is concentrated on a
+small number of plausible but wrong templates. The next experiment should
+therefore generate diverse candidate templates and rerank them by SDE fingerprint
+distance, instead of relying on greedy or a single constrained beam objective.
+
 ## Context
 
 The current GenSR-SDE prototype extends GenSR's numerical branch from algebraic

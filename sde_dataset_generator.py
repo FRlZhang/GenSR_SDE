@@ -20,6 +20,8 @@ from symbolicregression.envs.generators import string_to_node
 
 
 SEPARATOR_TOKEN = "SPECIAL"
+DRIFT_TOKEN = "<DRIFT>"
+DIFFUSION_TOKEN = "<DIFFUSION>"
 
 
 def clean_tokens(token_list: list[str]) -> list[str]:
@@ -61,11 +63,28 @@ def encode_sde(system: SDESystem, env: FunctionEnvironment, params):
     diffusion_tokens = constants_to_token(
         clean_tokens(string_to_node(diffusion_expr, params).prefix().split(","))
     )
-    words = drift_tokens + [SEPARATOR_TOKEN] + diffusion_tokens
+    words = [DRIFT_TOKEN] + drift_tokens + [DIFFUSION_TOKEN] + diffusion_tokens
+    drift_words = [DRIFT_TOKEN] + drift_tokens
+    diffusion_words = [DIFFUSION_TOKEN] + diffusion_tokens
     skeleton_words = skeletonize(words)
-    tree_encoded = env.word_to_idx([words], float_input=False)[0]
-    skeleton_tree_encoded = env.word_to_idx([skeleton_words], float_input=False)[0]
-    return words, skeleton_words, tree_encoded, skeleton_tree_encoded
+    drift_skeleton_words = skeletonize(drift_words)
+    diffusion_skeleton_words = skeletonize(diffusion_words)
+    env.word_to_idx([words], float_input=False)
+    env.word_to_idx([skeleton_words], float_input=False)
+    env.word_to_idx([drift_words], float_input=False)
+    env.word_to_idx([diffusion_words], float_input=False)
+    env.word_to_idx([drift_skeleton_words], float_input=False)
+    env.word_to_idx([diffusion_skeleton_words], float_input=False)
+    return {
+        "words": words,
+        "skeleton_words": skeleton_words,
+        "tree_encoded": words,
+        "skeleton_tree_encoded": skeleton_words,
+        "drift_tree_encoded": drift_words,
+        "diffusion_tree_encoded": diffusion_words,
+        "drift_skeleton_tree_encoded": drift_skeleton_words,
+        "diffusion_skeleton_tree_encoded": diffusion_skeleton_words,
+    }
 
 
 def build_sample(
@@ -82,9 +101,7 @@ def build_sample(
         return None
 
     try:
-        words, skeleton_words, tree_encoded, skeleton_tree_encoded = encode_sde(
-            system, env, params
-        )
+        encoded = encode_sde(system, env, params)
     except Exception:
         return None
 
@@ -92,10 +109,16 @@ def build_sample(
     sample = {
         "x_to_fit": x_data.astype(np.float32),
         "y_to_fit": y_data.astype(np.float32),
-        "tree_encoded": tree_encoded,
-        "skeleton_tree_encoded": skeleton_tree_encoded,
+        "tree_encoded": encoded["tree_encoded"],
+        "skeleton_tree_encoded": encoded["skeleton_tree_encoded"],
+        "drift_tree_encoded": encoded["drift_tree_encoded"],
+        "diffusion_tree_encoded": encoded["diffusion_tree_encoded"],
+        "drift_skeleton_tree_encoded": encoded["drift_skeleton_tree_encoded"],
+        "diffusion_skeleton_tree_encoded": encoded["diffusion_skeleton_tree_encoded"],
         "tree": f"{system.drift_str} | {system.diffusion_str}",
-        "skeleton_tree": " ".join(skeleton_words),
+        "skeleton_tree": " ".join(encoded["skeleton_words"]),
+        "drift_tree": system.drift_str,
+        "diffusion_tree": system.diffusion_str,
         "infos": {
             "problem_type": "sde",
             "fingerprint_type": fingerprint_config["kind"],

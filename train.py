@@ -27,6 +27,7 @@ import copy
 import wandb
 
 import symbolicregression
+from symbolicregression.envs.environment import EnvDataset
 from symbolicregression.slurm import init_signal_handler, init_distributed_mode
 from symbolicregression.utils import bool_flag, initialize_exp
 from symbolicregression.model import check_model_params, build_modules
@@ -37,8 +38,25 @@ from model import VAESymbolicRegressor
 from LSO_fit import lso_fit_es_covfromvae_fit
 from symbolicregression.model.model_wrapper import ModelWrapper
 import symbolicregression.model.utils_wrapper as utils_wrapper
+from sde_dataset_generator import encode_sde
+from simulator_sde import SDESystem
 
 np.seterr(all="raise")
+
+
+def _is_number_token(token):
+    try:
+        float(token)
+        return True
+    except (TypeError, ValueError):
+        return False
+
+
+def _reencode_sde_tokens_from_tree(sample, env, params):
+    if "tree" not in sample or " | " not in sample["tree"]:
+        return None
+    drift, diffusion = sample["tree"].split(" | ", 1)
+    return encode_sde(SDESystem(drift, diffusion), env, params)
 
 
 def read_file(filename, label="target", sep=None):
@@ -241,14 +259,83 @@ def main(params):
         print(f"🎉 成功加载 {len(sde_data_pool)} 条精品 SDE 动力学样本！")
         print("="*60 + "\n")
 
-        # 定义全新的 SDE 样本分发机
         def sde_generate_sample(self):
-            # 从 100 条精品池里随机抓一条，完美模拟 Online 实时无限训练
             sample = random.choice(sde_data_pool)
-            return copy.deepcopy(sample)
-        import types
-        # 猴子补丁：强行解绑原厂的代数生成器，绑定上我们的 SDE 生成器
-        env.generate_sample = types.MethodType(sde_generate_sample, env)
+            sample = copy.deepcopy(sample)
+            reencoded = _reencode_sde_tokens_from_tree(sample, self.env, params)
+
+            def ids_to_words_if_needed(encoded):
+                if isinstance(encoded, torch.Tensor):
+                    encoded = encoded.detach().cpu().tolist()
+                elif isinstance(encoded, np.ndarray):
+                    encoded = encoded.tolist()
+                if len(encoded) == 0:
+                    return encoded
+                first = encoded[0]
+                if isinstance(first, torch.Tensor):
+                    first = int(first.item())
+                if isinstance(first, (int, np.integer)):
+                    return [self.env.equation_id2word[int(token_id)] for token_id in encoded]
+                return encoded
+
+            if reencoded is not None:
+                sample.update(reencoded)
+            else:
+                sample["tree_encoded"] = ids_to_words_if_needed(sample["tree_encoded"])
+                sample["skeleton_tree_encoded"] = ids_to_words_if_needed(
+                    sample["skeleton_tree_encoded"]
+                )
+            if "drift_tree_encoded" in sample and "diffusion_tree_encoded" in sample:
+                sample["drift_tree_encoded"] = ids_to_words_if_needed(
+                    sample["drift_tree_encoded"]
+                )
+                sample["diffusion_tree_encoded"] = ids_to_words_if_needed(
+                    sample["diffusion_tree_encoded"]
+                )
+                sample["drift_skeleton_tree_encoded"] = ids_to_words_if_needed(
+                    sample.get("drift_skeleton_tree_encoded", sample["drift_tree_encoded"])
+                )
+                sample["diffusion_skeleton_tree_encoded"] = ids_to_words_if_needed(
+                    sample.get(
+                        "diffusion_skeleton_tree_encoded",
+                        sample["diffusion_tree_encoded"],
+                    )
+                )
+            elif "SPECIAL" in sample["tree_encoded"]:
+                sep = sample["tree_encoded"].index("SPECIAL")
+                drift_tokens = sample["tree_encoded"][:sep]
+                diffusion_tokens = sample["tree_encoded"][sep + 1 :]
+                sample["tree_encoded"] = ["<DRIFT>"] + drift_tokens + [
+                    "<DIFFUSION>"
+                ] + diffusion_tokens
+                sample["skeleton_tree_encoded"] = sample["tree_encoded"]
+                sample["drift_tree_encoded"] = ["<DRIFT>"] + drift_tokens
+                sample["diffusion_tree_encoded"] = ["<DIFFUSION>"] + diffusion_tokens
+                sample["drift_skeleton_tree_encoded"] = ["<DRIFT>"] + [
+                    "CONSTANT" if _is_number_token(token) else token
+                    for token in drift_tokens
+                ]
+                sample["diffusion_skeleton_tree_encoded"] = ["<DIFFUSION>"] + [
+                    "CONSTANT" if _is_number_token(token) else token
+                    for token in diffusion_tokens
+                ]
+
+            infos = sample.get("infos", {})
+            sample["infos"] = {
+                "n_input_points": int(infos.get("n_input_points", sample["x_to_fit"].shape[0])),
+                "input_sequence_length": int(
+                    infos.get("input_sequence_length", sample["x_to_fit"].shape[0])
+                ),
+                "d_in": int(infos.get("d_in", 1)),
+                "d_out": int(infos.get("d_out", 1)),
+                "fingerprint_length": int(
+                    infos.get("fingerprint_length", sample["x_to_fit"].shape[0])
+                ),
+            }
+            return sample
+
+        EnvDataset.generate_sample = sde_generate_sample
+        env.sde_data_pool = sde_data_pool
     else:
         print(f"⚠️ 未发现 {sde_dataset_path}，将维持原厂代数方程动态生成机制。")
     # ============================================================
