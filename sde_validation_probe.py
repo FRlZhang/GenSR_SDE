@@ -68,6 +68,11 @@ def parse_args() -> argparse.Namespace:
         default="full_fingerprint",
     )
     parser.add_argument("--rerank-debug-topk", type=int, default=0)
+    parser.add_argument("--sample-candidates", type=int, default=0)
+    parser.add_argument("--sample-temperature", type=float, default=1.0)
+    parser.add_argument("--sample-temperatures", type=str, default="")
+    parser.add_argument("--sample-top-k", type=int, default=0)
+    parser.add_argument("--sample-top-p", type=float, default=1.0)
     parser.add_argument("--save-checkpoint", type=Path, default=None)
     parser.add_argument("--load-checkpoint", type=Path, default=None)
     parser.add_argument("--eval-only", action="store_true")
@@ -491,6 +496,173 @@ def generate_sde_constrained_beam_candidates(
     return all_rows
 
 
+def parse_temperature_list(sample_temperatures: str, default_temperature: float) -> list[float]:
+    if not sample_temperatures.strip():
+        return [default_temperature]
+    temperatures = []
+    for raw in sample_temperatures.split(","):
+        raw = raw.strip()
+        if not raw:
+            continue
+        temperatures.append(float(raw))
+    return temperatures or [default_temperature]
+
+
+def _candidate_row_from_tokens(
+    tokens: list[int],
+    score: float,
+    max_len: int,
+    pad_id: int,
+    eos_id: int,
+    device,
+    source: str,
+) -> dict:
+    if not tokens or tokens[-1] != eos_id:
+        tokens = tokens + [eos_id]
+    if len(tokens) > max_len:
+        tokens = tokens[:max_len]
+        tokens[-1] = eos_id
+    row = torch.full((max_len,), pad_id, dtype=torch.long, device=device)
+    row[: len(tokens)] = torch.tensor(tokens, dtype=torch.long, device=device)
+    return {
+        "tensor": row,
+        "tokens": tokens,
+        "model_score": score,
+        "normalized_model_score": score / (len(tokens) ** 0.7),
+        "source": source,
+    }
+
+
+def _sample_allowed_token(
+    log_probs: torch.Tensor,
+    allowed: set[int],
+    temperature: float,
+    top_k: int,
+    top_p: float,
+) -> tuple[int, float]:
+    candidate_ids = torch.tensor(sorted(allowed), dtype=torch.long, device=log_probs.device)
+    candidate_log_probs = log_probs.index_select(0, candidate_ids)
+    temp = max(1e-6, float(temperature))
+    sampling_logits = candidate_log_probs / temp
+
+    if top_k > 0 and top_k < sampling_logits.numel():
+        values, indices = torch.topk(sampling_logits, top_k)
+        candidate_ids = candidate_ids.index_select(0, indices)
+        candidate_log_probs = candidate_log_probs.index_select(0, indices)
+        sampling_logits = values
+
+    if 0.0 < top_p < 1.0 and sampling_logits.numel() > 1:
+        sorted_logits, sorted_indices = torch.sort(sampling_logits, descending=True)
+        sorted_probs = torch.nn.functional.softmax(sorted_logits, dim=0)
+        keep = torch.cumsum(sorted_probs, dim=0) <= top_p
+        keep[0] = True
+        kept_indices = sorted_indices[keep]
+        candidate_ids = candidate_ids.index_select(0, kept_indices)
+        candidate_log_probs = candidate_log_probs.index_select(0, kept_indices)
+        sampling_logits = sampling_logits.index_select(0, kept_indices)
+
+    probs = torch.nn.functional.softmax(sampling_logits, dim=0)
+    rel_idx = int(torch.multinomial(probs, 1).item())
+    token_id = int(candidate_ids[rel_idx].item())
+    return token_id, float(candidate_log_probs[rel_idx].item())
+
+
+def generate_sde_constrained_sample_candidates(
+    decoder,
+    src_enc,
+    env,
+    max_len: int,
+    n_candidates: int,
+    temperatures: list[float],
+    top_k: int,
+    top_p: float,
+) -> list[list[dict]]:
+    token_sets = _sde_token_sets(env)
+    eos_id = decoder.eos_index
+    pad_id = decoder.pad_index
+    device = src_enc.device
+    all_rows = []
+
+    for sample_idx in range(src_enc.size(0)):
+        one_src = src_enc[sample_idx : sample_idx + 1]
+        rows = []
+        for candidate_idx in range(n_candidates):
+            temperature = temperatures[candidate_idx % len(temperatures)]
+            tokens = [eos_id]
+            score = 0.0
+            phase = "need_drift_role"
+            holes = 0
+            ended = False
+
+            for _ in range(1, max_len):
+                prefix = torch.tensor(tokens, dtype=torch.long, device=device).view(-1, 1)
+                lengths = torch.tensor([len(tokens)], dtype=torch.long, device=device)
+                tensor = decoder(
+                    "fwd",
+                    x=prefix,
+                    lengths=lengths,
+                    causal=True,
+                    src_enc=one_src,
+                    src_len=None,
+                )
+                logits = decoder.lm_head(tensor.data[-1, :, :].to(decoder.dtype))
+                log_probs = torch.nn.functional.log_softmax(logits.float(), dim=-1)[0]
+                allowed = _prefix_next_allowed(phase, holes, token_sets, eos_id)
+                if not allowed:
+                    break
+                token_id, token_score = _sample_allowed_token(
+                    log_probs,
+                    allowed,
+                    temperature,
+                    top_k,
+                    top_p,
+                )
+                next_state = _advance_sde_state(token_id, phase, holes, token_sets, eos_id)
+                if next_state is None:
+                    break
+                phase, holes = next_state
+                tokens.append(token_id)
+                score += token_score
+                if phase == "ended":
+                    ended = True
+                    break
+
+            rows.append(
+                _candidate_row_from_tokens(
+                    tokens,
+                    score,
+                    max_len,
+                    pad_id,
+                    eos_id,
+                    device,
+                    f"sample_t={temperature:g}",
+                )
+            )
+        all_rows.append(rows)
+
+    return all_rows
+
+
+def merge_candidate_rows(candidate_groups: list[list[list[dict]] | None]) -> list[list[dict]] | None:
+    present_groups = [group for group in candidate_groups if group is not None]
+    if not present_groups:
+        return None
+    merged = []
+    batch_size = len(present_groups[0])
+    for sample_idx in range(batch_size):
+        seen = set()
+        rows = []
+        for group in present_groups:
+            for candidate in group[sample_idx]:
+                key = tuple(candidate["tokens"])
+                if key in seen:
+                    continue
+                seen.add(key)
+                rows.append(candidate)
+        merged.append(rows)
+    return merged
+
+
 def prior_scores_for_batch(trainer: Trainer, samples: dict, min_generated_len: int):
     env = trainer.env
     params = trainer.params
@@ -572,6 +744,10 @@ def prior_scores_for_joint_batch(
     constrained_beam_size: int = 0,
     rerank_candidates: int = 0,
     rerank_topk_from_beam: int = 0,
+    sample_candidates: int = 0,
+    sample_temperatures: list[float] | None = None,
+    sample_top_k: int = 0,
+    sample_top_p: float = 1.0,
 ):
     env = trainer.env
     params = trainer.params
@@ -633,6 +809,7 @@ def prior_scores_for_joint_batch(
                 constrained_beam_size,
             )
         rerank_beam_candidates = None
+        rerank_sample_candidates = None
         if rerank_candidates > 0:
             rerank_beam_size = max(
                 1,
@@ -648,6 +825,20 @@ def prior_scores_for_joint_batch(
                 rerank_beam_size,
                 rerank_candidates,
             )
+        if sample_candidates > 0:
+            rerank_sample_candidates = generate_sde_constrained_sample_candidates(
+                decoder,
+                mapped_src_enc_prior,
+                env,
+                trainer.params.max_generated_output_len,
+                sample_candidates,
+                sample_temperatures or [1.0],
+                sample_top_k,
+                sample_top_p,
+            )
+        rerank_candidates_all = merge_candidate_rows(
+            [rerank_beam_candidates, rerank_sample_candidates]
+        )
     return (
         scores,
         y,
@@ -657,7 +848,7 @@ def prior_scores_for_joint_batch(
         constrained_generations.transpose(0, 1),
         constrained_len,
         constrained_beam,
-        rerank_beam_candidates,
+        rerank_candidates_all,
     )
 
 
@@ -839,12 +1030,18 @@ def rerank_candidate_rows(
     fingerprint_failures = 0
     oracle_exact = 0
     oracle_relaxed = 0
+    unique_candidate_total = 0
+    unique_drift_total = 0
+    unique_diffusion_total = 0
     debug_rows = []
 
     for sample_idx, sample in enumerate(samples):
         best = None
         records = []
         candidates = candidate_rows[sample_idx] if candidate_rows is not None else []
+        unique_candidates = set()
+        unique_drifts = set()
+        unique_diffusions = set()
         truth = truth_sequences[sample_idx]
         greedy_words = decode_generation(env, greedy_generations[sample_idx])
         beam_words = (
@@ -855,9 +1052,14 @@ def rerank_candidate_rows(
         for candidate_idx, candidate in enumerate(candidates):
             attempted += 1
             words = decode_generation(env, candidate["tensor"])
+            unique_candidates.add(tuple(words))
             split = split_sde_tokens(words)
             drift_tokens = split[0] if split is not None else []
             diffusion_tokens = split[1] if split is not None else []
+            if drift_tokens:
+                unique_drifts.add(tuple(drift_tokens))
+            if diffusion_tokens:
+                unique_diffusions.add(tuple(diffusion_tokens))
             exact_hit = words == truth
             relaxed_hit = template_tokens(words) == template_tokens(truth)
             failure_reason = None
@@ -873,6 +1075,7 @@ def rerank_candidate_rows(
                         "distance": distance,
                         "model_score": candidate["model_score"],
                         "normalized_model_score": candidate["normalized_model_score"],
+                        "source": candidate.get("source", "beam"),
                         "exact": exact_hit,
                         "relaxed": relaxed_hit,
                         "failure_reason": failure_reason,
@@ -892,6 +1095,7 @@ def rerank_candidate_rows(
                         "distance": distance,
                         "model_score": candidate["model_score"],
                         "normalized_model_score": candidate["normalized_model_score"],
+                        "source": candidate.get("source", "beam"),
                         "exact": exact_hit,
                         "relaxed": relaxed_hit,
                         "failure_reason": failure_reason,
@@ -916,6 +1120,7 @@ def rerank_candidate_rows(
                         "distance": distance,
                         "model_score": candidate["model_score"],
                         "normalized_model_score": candidate["normalized_model_score"],
+                        "source": candidate.get("source", "beam"),
                         "exact": exact_hit,
                         "relaxed": relaxed_hit,
                         "failure_reason": failure_reason,
@@ -929,6 +1134,7 @@ def rerank_candidate_rows(
                 "distance": distance,
                 "model_score": candidate["model_score"],
                 "normalized_model_score": candidate["normalized_model_score"],
+                "source": candidate.get("source", "beam"),
                 "exact": exact_hit,
                 "relaxed": relaxed_hit,
                 "failure_reason": failure_reason,
@@ -939,6 +1145,9 @@ def rerank_candidate_rows(
                 best = ranked
         oracle_exact += int(any(record["exact"] for record in records))
         oracle_relaxed += int(any(record["relaxed"] for record in records))
+        unique_candidate_total += len(unique_candidates)
+        unique_drift_total += len(unique_drifts)
+        unique_diffusion_total += len(unique_diffusions)
         if best is None:
             rows.append(torch.full((max_len,), pad_id, dtype=torch.long))
         else:
@@ -969,6 +1178,9 @@ def rerank_candidate_rows(
         "rerank_oracle_sequence_exact_count": oracle_exact,
         "rerank_oracle_sequence_relaxed_no_constants_count": oracle_relaxed,
         "rerank_oracle_total": len(samples),
+        "rerank_unique_candidate_total": unique_candidate_total,
+        "rerank_unique_drift_total": unique_drift_total,
+        "rerank_unique_diffusion_total": unique_diffusion_total,
         "rerank_debug": debug_rows,
     }
 
@@ -1053,6 +1265,10 @@ def evaluate(
     rerank_score: str,
     fingerprint_config: FingerprintConfig,
     rerank_debug_topk: int,
+    sample_candidates: int,
+    sample_temperatures: list[float],
+    sample_top_k: int,
+    sample_top_p: float,
 ) -> dict:
     rows = []
     seq_rows = []
@@ -1089,6 +1305,10 @@ def evaluate(
                     constrained_beam_size,
                     rerank_candidates,
                     rerank_topk_from_beam,
+                    sample_candidates,
+                    sample_temperatures,
+                    sample_top_k,
+                    sample_top_p,
                 )
             )
             metrics = topk_metrics(scores, y)
@@ -1115,7 +1335,7 @@ def evaluate(
                 )
                 seq.update({k: v for k, v in beam_seq.items() if k != "examples"})
                 examples.extend(beam_seq["examples"])
-            if rerank_candidates > 0:
+            if rerank_candidates > 0 or sample_candidates > 0:
                 reranked_generations, rerank_stats = rerank_candidate_rows(
                     trainer.env,
                     normalized,
@@ -1245,6 +1465,18 @@ def evaluate(
             )
             / oracle_total
         )
+        result["rerank_unique_candidate_avg"] = float(
+            np.sum([row["rerank_unique_candidate_total"] for row in rerank_stat_rows])
+            / oracle_total
+        )
+        result["rerank_unique_drift_avg"] = float(
+            np.sum([row["rerank_unique_drift_total"] for row in rerank_stat_rows])
+            / oracle_total
+        )
+        result["rerank_unique_diffusion_avg"] = float(
+            np.sum([row["rerank_unique_diffusion_total"] for row in rerank_stat_rows])
+            / oracle_total
+        )
         debug_rows = []
         for row in rerank_stat_rows:
             debug_rows.extend(row["rerank_debug"])
@@ -1299,6 +1531,10 @@ def main() -> None:
         n_steps=args.n_steps,
         active_paths=args.active_paths,
     )
+    sample_temperatures = parse_temperature_list(
+        args.sample_temperatures,
+        args.sample_temperature,
+    )
     metrics = evaluate(
         trainer,
         eval_samples,
@@ -1311,6 +1547,10 @@ def main() -> None:
         args.rerank_score,
         fingerprint_config,
         args.rerank_debug_topk,
+        args.sample_candidates,
+        sample_temperatures,
+        args.sample_top_k,
+        args.sample_top_p,
     )
     for key, value in metrics.items():
         if key in {"examples", "rerank_debug"}:
@@ -1332,6 +1572,7 @@ def main() -> None:
                 distance_str = "nan" if distance is None else f"{distance:.6f}"
                 print(
                     f"candidate_rank={rank} "
+                    f"source={candidate['source']} "
                     f"distance={distance_str} "
                     f"model_score={candidate['model_score']:.6f} "
                     f"normalized_model_score={candidate['normalized_model_score']:.6f} "

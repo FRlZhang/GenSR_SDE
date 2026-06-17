@@ -39,6 +39,12 @@ first small eval did not improve exact/relaxed recovery.
   `rerank_oracle_sequence_exact=0.000000` and
   `rerank_oracle_sequence_relaxed_no_constants=0.000000`, indicating the
   current constrained-beam candidate pool did not contain the target templates.
+- Added grammar-constrained stochastic sampling candidates with temperature,
+  top-k, top-p, and multi-temperature support. A 16-sample eval-only checkpoint
+  probe with beam+sampling attempted 90 valid candidates and increased diversity
+  to `rerank_unique_candidate_avg=5.625000`,
+  `rerank_unique_drift_avg=2.000000`, and
+  `rerank_unique_diffusion_avg=4.875000`, but oracle exact/relaxed remained 0.
 - Logged validated experiments in
   [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md).
 
@@ -46,18 +52,17 @@ first small eval did not improve exact/relaxed recovery.
 
 - Transitioning from "can the model learn the fingerprint?" to "can we decode
   the right symbolic sequence?".
-- Diagnosing candidate-pool diversity after oracle metrics showed the current
-  constrained-beam n-best pool did not contain exact/relaxed targets in a
-  16-sample eval.
+- Diagnosing why beam+stochastic sampling still misses exact/relaxed target
+  templates even after increasing drift/diffusion diversity.
 
 ## Next Steps
 
-1. Improve candidate diversity beyond the current constrained-beam n-best list;
-   oracle metrics show reranking cannot recover targets that are absent.
+1. Add stronger structure-level diversity, such as drift/diffusion separate
+   generation and pairing, because beam+sampling still has zero oracle hits.
 2. Add candidate-pool diagnostics across larger held-out samples and inspect top
    candidates / distances.
 3. Compare full-fingerprint, short-moment, and componentwise reranking scores
-   after the candidate pool can contain plausible alternatives.
+   after the candidate pool contains exact/relaxed alternatives.
 4. Reuse the saved 2000-step checkpoint for decoding experiments instead of
    retraining.
 5. Compare greedy, constrained beam, reranked, and oracle candidate metrics on the same
@@ -101,6 +106,8 @@ first small eval did not improve exact/relaxed recovery.
   improve exact/relaxed recovery in a small 4-sample checkpoint eval.
 - Rerank oracle metrics were also zero in a 16-sample checkpoint eval, so the
   immediate blocker is candidate diversity rather than only rerank scoring.
+- Stochastic grammar-constrained sampling increased unique candidates but still
+  did not produce oracle hits in a 16-sample checkpoint eval.
 - The main checkpoint currently lives outside the repo in `/private/tmp`, so it
   may disappear.
 - `environment.yml` is upstream and Linux-oriented; the recent local experiments

@@ -2,16 +2,18 @@
 
 ## Next Engineering Task
 
-Improve candidate diversity for the first-pass reranking pipeline.
+Improve structure-level candidate diversity for the first-pass reranking
+pipeline.
 
 At the end of that workflow, update `web_gpt_snapshot/02_RECENT_CHANGES.md` and
 `web_gpt_snapshot/03_CURRENT_TASK.md`. Also update `01_PROJECT_STATUS.md` if the
 goal, best checkpoint, key metrics, blocker, or next-step priority changes.
 
-The reranking path and debug/oracle diagnostics are implemented and verified.
-A 16-sample eval-only checkpoint probe produced 64 valid candidates, but oracle
-exact and oracle relaxed metrics were both zero. This means the current n-best
-constrained-beam candidate pool did not contain the target templates.
+The reranking path, debug/oracle diagnostics, and grammar-constrained stochastic
+sampling are implemented and verified. A 16-sample eval-only checkpoint probe
+with beam+sampling produced 90 valid candidates and improved diversity, but
+oracle exact and oracle relaxed metrics were both zero. This means the candidate
+pool still did not contain the target templates.
 
 ## Primary File To Modify
 
@@ -21,11 +23,10 @@ sde_validation_probe.py
 
 Likely next additions:
 
-- improve candidate diversity beyond current constrained-beam n-best;
+- add stronger structure-level diversity beyond beam+sampling;
+- try separate drift/diffusion candidate generation and pairing;
 - inspect rerank debug output across larger held-out samples;
-- add more diverse generation modes before focusing on score tweaks;
-- add or compare componentwise reranking scores after candidate diversity improves;
-- consider pairing drift and diffusion candidates separately;
+- add or compare componentwise reranking scores after oracle metrics become nonzero;
 - keep reporting reranked metrics beside greedy and constrained beam.
 
 ## Supporting Files If Needed

@@ -26,17 +26,18 @@ greedy_sequence_exact=0.015625
 - Added constrained-beam n-best candidate generation and SDE fingerprint-distance reranking to `sde_validation_probe.py`.
 - Verified reranking on a 4-sample eval-only checkpoint probe: 16 candidates attempted, 16 valid, 0 fingerprint failures, but `reranked_sequence_exact=0.000000` and `reranked_sequence_relaxed_no_constants=0.000000`.
 - Added rerank debug output and oracle metrics. A 16-sample eval-only checkpoint probe produced 64 valid candidates and `rerank_oracle_sequence_exact=0.000000`, `rerank_oracle_sequence_relaxed_no_constants=0.000000`.
+- Added grammar-constrained stochastic sampling with temperature, top-k, top-p, and multi-temperature support. A 16-sample eval-only checkpoint probe with beam+sampling produced 90 valid candidates and increased diversity to `rerank_unique_candidate_avg=5.625000`, `rerank_unique_drift_avg=2.000000`, `rerank_unique_diffusion_avg=4.875000`, but oracle exact/relaxed remained zero.
 
 ## In Progress
 
 - Transitioning from token recognition to full symbolic sequence recovery.
-- Diagnosing candidate-pool diversity after oracle metrics showed the current constrained-beam n-best pool did not contain target templates.
+- Diagnosing why beam+stochastic sampling still misses target templates even after increasing drift/diffusion diversity.
 
 ## Next Steps
 
-1. Improve candidate diversity beyond the current constrained-beam n-best list; oracle metrics show reranking cannot recover targets that are absent.
+1. Add stronger structure-level diversity, such as drift/diffusion separate generation and pairing.
 2. Inspect rerank debug output across larger held-out samples.
-3. Compare full-fingerprint, short-moment, and componentwise scores after candidate diversity improves.
+3. Compare full-fingerprint, short-moment, and componentwise scores after the candidate pool contains exact/relaxed alternatives.
 4. Keep comparing greedy, constrained beam, reranked, and oracle metrics on the same held-out setup.
 5. Only revisit fingerprint design after candidate diversity and scoring have been tested more thoroughly.
 
@@ -53,6 +54,7 @@ greedy_sequence_exact=0.015625
 - Grammar-constrained beam enforces validity better than correctness.
 - First-pass reranking produces valid candidates but did not improve exact/relaxed recovery in a small checkpoint eval.
 - Rerank oracle metrics were zero in a 16-sample checkpoint eval, so the immediate blocker is candidate diversity, not only rerank score selection.
+- Stochastic grammar-constrained sampling increased unique candidates but still produced zero oracle hits in a 16-sample checkpoint eval.
 - The best checkpoint is outside the repo and may disappear.
 - `environment.yml` is upstream/Linux-oriented; recent work used the local macOS `gensr` conda env.
 

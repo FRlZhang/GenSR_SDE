@@ -181,7 +181,11 @@ PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/
   --rerank-candidates 8 \
   --rerank-topk-from-beam 8 \
   --rerank-score full_fingerprint \
-  --rerank-debug-topk 2
+  --rerank-debug-topk 2 \
+  --sample-candidates 8 \
+  --sample-temperatures 0.8,1.0,1.2 \
+  --sample-top-k 8 \
+  --sample-top-p 0.95
 ```
 
 ### Full training entry

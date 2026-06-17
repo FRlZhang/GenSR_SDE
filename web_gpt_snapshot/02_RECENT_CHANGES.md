@@ -2,27 +2,26 @@
 
 ## Last Codex Workflow
 
-Codex added reranking diagnostics on top of the first-pass diverse candidate
-generation plus SDE fingerprint-distance reranking in `sde_validation_probe.py`.
+Codex added grammar-constrained stochastic sampling candidates to improve
+rerank candidate diversity in `sde_validation_probe.py`.
 
 Key changes:
 
-- added `--rerank-debug-topk`;
-- debug output now prints truth, greedy, constrained beam, and top reranked
-  candidate details for the first selected held-out samples;
-- each debug candidate includes rank, normalized fingerprint distance, model
-  score, normalized model score, exact / relaxed hit flags, drift tokens,
-  diffusion tokens, and failure reason;
-- added oracle candidate metrics:
-  `rerank_oracle_sequence_exact` and
-  `rerank_oracle_sequence_relaxed_no_constants`.
+- added `--sample-candidates`, `--sample-temperature`,
+  `--sample-temperatures`, `--sample-top-k`, and `--sample-top-p`;
+- sampling uses the same SDE grammar state machine as constrained beam, so
+  generated candidates still follow `<DRIFT> ... <DIFFUSION> ...` structure;
+- beam candidates and sampling candidates are merged and deduplicated before
+  reranking;
+- added diversity diagnostics:
+  `rerank_unique_candidate_avg`, `rerank_unique_drift_avg`, and
+  `rerank_unique_diffusion_avg`.
 
 Validation:
 
 - `py_compile sde_validation_probe.py`: passed.
 - `git diff --check`: passed.
-- Small 2-step smoke with reranking debug: passed; no crash when no candidates
-  were valid.
+- Small 2-step smoke with beam+sampling reranking: passed.
 - Eval-only checkpoint probe with
   `/private/tmp/gensr_sde_role_token_2000/role_token_2000.pth`: passed on 16
   held-out samples.
@@ -30,19 +29,23 @@ Validation:
 16-sample checkpoint probe result:
 
 ```text
-rerank_candidates_attempted=64
-rerank_candidates_valid=64
+rerank_candidates_attempted=90
+rerank_candidates_valid=90
 rerank_fingerprint_failures=0
 reranked_sequence_exact=0.000000
 reranked_sequence_relaxed_no_constants=0.000000
 rerank_oracle_sequence_exact=0.000000
 rerank_oracle_sequence_relaxed_no_constants=0.000000
+rerank_unique_candidate_avg=5.625000
+rerank_unique_drift_avg=2.000000
+rerank_unique_diffusion_avg=4.875000
 ```
 
 Interpretation: the reranking path is functional, and candidate fingerprints are
-being recomputed successfully. However, oracle metrics are also zero, so the
-current constrained-beam candidate pool lacks the target templates; improving
-candidate diversity is now higher priority than changing the fingerprint.
+being recomputed successfully. Sampling increased candidate diversity, especially
+diffusion diversity, but oracle metrics are still zero. The next priority is
+stronger structure-level diversity, such as separate drift/diffusion generation
+and pairing, not changing the fingerprint.
 
 ## Previous Codex Workflow
 
@@ -127,8 +130,8 @@ Not rerun during this documentation-only update:
 
 - The best checkpoint lives in `/private/tmp` and may be deleted.
 - First-pass reranking is implemented but has not improved exact/relaxed recovery yet.
-- Oracle metrics show the current candidate pool did not contain exact/relaxed
-  targets in a 16-sample checkpoint eval.
+- Beam+sampling oracle metrics show the current candidate pool still did not
+  contain exact/relaxed targets in a 16-sample checkpoint eval.
 - Future project-state changes must update `02_RECENT_CHANGES.md` and
   `03_CURRENT_TASK.md`; update other fixed snapshot files only when their
   contents actually change.
