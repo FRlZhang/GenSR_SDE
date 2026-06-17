@@ -80,6 +80,8 @@ Current best result so far:
   bottleneck.
 - first-pass fingerprint reranking is implemented, but a small checkpoint eval
   did not improve exact / relaxed recovery yet.
+- drift/diffusion pairing produced nonzero oracle hits (`1/16`) in a
+  16-sample checkpoint eval, but the current rerank score did not select them.
 
 See [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md)
 and [PROJECT_STATUS.md](/Users/lzhang/Documents/GenSR_SDE/PROJECT_STATUS.md) for
@@ -185,7 +187,10 @@ PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/
   --sample-candidates 8 \
   --sample-temperatures 0.8,1.0,1.2 \
   --sample-top-k 8 \
-  --sample-top-p 0.95
+  --sample-top-p 0.95 \
+  --pair-drift-diffusion-candidates 8 \
+  --pair-drift-topk 4 \
+  --pair-diffusion-topk 6
 ```
 
 ### Full training entry

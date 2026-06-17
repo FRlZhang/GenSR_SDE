@@ -5,8 +5,8 @@
 Improve sequence-level SDE recovery after establishing that the current unified
 fingerprint and role-token target are learnable by GenSR. Candidate generation
 plus fingerprint-distance reranking is now implemented in the validation probe;
-the next step is improving candidate diversity and rerank scoring because the
-first small eval did not improve exact/relaxed recovery.
+drift/diffusion pairing now produces nonzero oracle hits, so the next step is
+diagnosing why the rerank score does not select those oracle candidates.
 
 ## Last Updated
 
@@ -45,6 +45,12 @@ first small eval did not improve exact/relaxed recovery.
   to `rerank_unique_candidate_avg=5.625000`,
   `rerank_unique_drift_avg=2.000000`, and
   `rerank_unique_diffusion_avg=4.875000`, but oracle exact/relaxed remained 0.
+- Added drift/diffusion span pairing from existing beam+sampling candidates. A
+  16-sample eval-only checkpoint probe attempted 167 valid candidates, including
+  56 valid paired candidates, and reached
+  `rerank_pair_oracle_sequence_exact=0.062500` and
+  `rerank_pair_oracle_sequence_relaxed_no_constants=0.062500`; selected
+  reranked exact/relaxed metrics remained 0.
 - Logged validated experiments in
   [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md).
 
@@ -52,17 +58,17 @@ first small eval did not improve exact/relaxed recovery.
 
 - Transitioning from "can the model learn the fingerprint?" to "can we decode
   the right symbolic sequence?".
-- Diagnosing why beam+stochastic sampling still misses exact/relaxed target
-  templates even after increasing drift/diffusion diversity.
+- Diagnosing why fingerprint-distance reranking does not select the oracle
+  candidates now exposed by drift/diffusion pairing.
 
 ## Next Steps
 
-1. Add stronger structure-level diversity, such as drift/diffusion separate
-   generation and pairing, because beam+sampling still has zero oracle hits.
-2. Add candidate-pool diagnostics across larger held-out samples and inspect top
-   candidates / distances.
-3. Compare full-fingerprint, short-moment, and componentwise reranking scores
-   after the candidate pool contains exact/relaxed alternatives.
+1. Inspect oracle candidates versus top-ranked candidates, including distances
+   by fingerprint segment.
+2. Compare full-fingerprint, short-moment, and componentwise reranking scores now
+   that paired candidates can contain exact/relaxed alternatives.
+3. Keep drift/diffusion pairing enabled and tune candidate pool size carefully
+   because fingerprint recomputation is CPU-expensive.
 4. Reuse the saved 2000-step checkpoint for decoding experiments instead of
    retraining.
 5. Compare greedy, constrained beam, reranked, and oracle candidate metrics on the same
@@ -108,6 +114,8 @@ first small eval did not improve exact/relaxed recovery.
   immediate blocker is candidate diversity rather than only rerank scoring.
 - Stochastic grammar-constrained sampling increased unique candidates but still
   did not produce oracle hits in a 16-sample checkpoint eval.
+- Drift/diffusion pairing produced nonzero oracle hits, but the current
+  fingerprint-distance score still did not choose them in the 16-sample eval.
 - The main checkpoint currently lives outside the repo in `/private/tmp`, so it
   may disappear.
 - `environment.yml` is upstream and Linux-oriented; the recent local experiments

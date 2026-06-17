@@ -24,7 +24,7 @@ token_top3=0.960833
 token_top5=1.000000
 ```
 
-But sequence-level recovery is still weak: greedy exact recovery is about `1/64`, and constrained beam only slightly improves exact hits. First-pass fingerprint reranking and grammar-constrained stochastic sampling are implemented and verified, but a 16-sample checkpoint eval still had zero oracle exact / relaxed hits. The main bottleneck remains candidate-pool structure diversity, not fingerprint separability.
+But sequence-level recovery is still weak: greedy exact recovery is about `1/64`, and constrained beam only slightly improves exact hits. First-pass fingerprint reranking, grammar-constrained stochastic sampling, and drift/diffusion pairing are implemented. Pairing produced nonzero oracle hits in a 16-sample checkpoint eval, but the current fingerprint-distance score did not select them. The bottleneck is now rerank score diagnostics over paired candidates, not fingerprint redesign.
 
 Current best checkpoint:
 

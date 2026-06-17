@@ -73,6 +73,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--sample-temperatures", type=str, default="")
     parser.add_argument("--sample-top-k", type=int, default=0)
     parser.add_argument("--sample-top-p", type=float, default=1.0)
+    parser.add_argument("--pair-drift-diffusion-candidates", type=int, default=0)
+    parser.add_argument("--pair-drift-topk", type=int, default=0)
+    parser.add_argument("--pair-diffusion-topk", type=int, default=0)
     parser.add_argument("--save-checkpoint", type=Path, default=None)
     parser.add_argument("--load-checkpoint", type=Path, default=None)
     parser.add_argument("--eval-only", action="store_true")
@@ -663,6 +666,90 @@ def merge_candidate_rows(candidate_groups: list[list[list[dict]] | None]) -> lis
     return merged
 
 
+def generate_paired_candidate_rows(
+    env,
+    candidate_rows: list[list[dict]] | None,
+    max_len: int,
+    n_pairs: int,
+    drift_topk: int,
+    diffusion_topk: int,
+) -> list[list[dict]] | None:
+    if candidate_rows is None or n_pairs <= 0:
+        return None
+
+    eos_id = env.equation_word2id["<EOS>"]
+    pad_id = env.equation_word2id["<PAD>"]
+    drift_id = env.equation_word2id["<DRIFT>"]
+    diffusion_id = env.equation_word2id["<DIFFUSION>"]
+    all_rows = []
+
+    for rows in candidate_rows:
+        if rows:
+            device = rows[0]["tensor"].device
+        else:
+            device = torch.device("cpu")
+        drift_spans = {}
+        diffusion_spans = {}
+        for candidate in rows:
+            words = decode_generation(env, candidate["tensor"])
+            split = split_sde_tokens(words)
+            if split is None:
+                continue
+            drift_tokens, diffusion_tokens = split
+            drift_key = tuple(drift_tokens)
+            diffusion_key = tuple(diffusion_tokens)
+            score = float(candidate["normalized_model_score"])
+            if drift_key not in drift_spans or score > drift_spans[drift_key]:
+                drift_spans[drift_key] = score
+            if diffusion_key not in diffusion_spans or score > diffusion_spans[diffusion_key]:
+                diffusion_spans[diffusion_key] = score
+
+        ranked_drifts = sorted(
+            drift_spans.items(),
+            key=lambda item: item[1],
+            reverse=True,
+        )
+        ranked_diffusions = sorted(
+            diffusion_spans.items(),
+            key=lambda item: item[1],
+            reverse=True,
+        )
+        if drift_topk > 0:
+            ranked_drifts = ranked_drifts[:drift_topk]
+        if diffusion_topk > 0:
+            ranked_diffusions = ranked_diffusions[:diffusion_topk]
+
+        pair_rows = []
+        pair_ranked = []
+        for drift_tokens, drift_score in ranked_drifts:
+            for diffusion_tokens, diffusion_score in ranked_diffusions:
+                pair_ranked.append((drift_score + diffusion_score, drift_tokens, diffusion_tokens))
+        pair_ranked.sort(key=lambda item: item[0], reverse=True)
+        for score, drift_tokens, diffusion_tokens in pair_ranked[:n_pairs]:
+            try:
+                drift_token_ids = [env.equation_word2id[token] for token in drift_tokens]
+                diffusion_token_ids = [
+                    env.equation_word2id[token] for token in diffusion_tokens
+                ]
+            except KeyError:
+                continue
+            tokens = [eos_id, drift_id] + drift_token_ids + [diffusion_id] + diffusion_token_ids
+            pair_rows.append(
+                _candidate_row_from_tokens(
+                    tokens,
+                    score,
+                    max_len,
+                    pad_id,
+                    eos_id,
+                    device,
+                    "pair",
+                )
+            )
+        all_rows.append(pair_rows)
+
+    return all_rows
+
+
 def prior_scores_for_batch(trainer: Trainer, samples: dict, min_generated_len: int):
     env = trainer.env
     params = trainer.params
@@ -748,6 +835,9 @@ def prior_scores_for_joint_batch(
     sample_temperatures: list[float] | None = None,
     sample_top_k: int = 0,
     sample_top_p: float = 1.0,
+    pair_drift_diffusion_candidates: int = 0,
+    pair_drift_topk: int = 0,
+    pair_diffusion_topk: int = 0,
 ):
     env = trainer.env
     params = trainer.params
@@ -810,12 +900,14 @@ def prior_scores_for_joint_batch(
             )
         rerank_beam_candidates = None
         rerank_sample_candidates = None
-        if rerank_candidates > 0:
+        if rerank_candidates > 0 or pair_drift_diffusion_candidates > 0:
             rerank_beam_size = max(
                 1,
                 rerank_topk_from_beam,
                 constrained_beam_size,
                 rerank_candidates,
+                pair_drift_topk,
+                pair_diffusion_topk,
             )
             rerank_beam_candidates = generate_sde_constrained_beam_candidates(
                 decoder,
@@ -823,7 +915,7 @@ def prior_scores_for_joint_batch(
                 env,
                 trainer.params.max_generated_output_len,
                 rerank_beam_size,
-                rerank_candidates,
+                max(1, rerank_candidates, pair_drift_topk, pair_diffusion_topk),
             )
         if sample_candidates > 0:
             rerank_sample_candidates = generate_sde_constrained_sample_candidates(
@@ -838,6 +930,17 @@ def prior_scores_for_joint_batch(
             )
         rerank_candidates_all = merge_candidate_rows(
             [rerank_beam_candidates, rerank_sample_candidates]
+        )
+        pair_candidates = generate_paired_candidate_rows(
+            env,
+            rerank_candidates_all,
+            trainer.params.max_generated_output_len,
+            pair_drift_diffusion_candidates,
+            pair_drift_topk,
+            pair_diffusion_topk,
+        )
+        rerank_candidates_all = merge_candidate_rows(
+            [rerank_candidates_all, pair_candidates]
         )
     return (
         scores,
@@ -1030,9 +1133,14 @@ def rerank_candidate_rows(
     fingerprint_failures = 0
     oracle_exact = 0
     oracle_relaxed = 0
+    pair_attempted = 0
+    pair_valid = 0
+    pair_oracle_exact = 0
+    pair_oracle_relaxed = 0
     unique_candidate_total = 0
     unique_drift_total = 0
     unique_diffusion_total = 0
+    unique_pair_candidate_total = 0
     debug_rows = []
 
     for sample_idx, sample in enumerate(samples):
@@ -1042,6 +1150,7 @@ def rerank_candidate_rows(
         unique_candidates = set()
         unique_drifts = set()
         unique_diffusions = set()
+        unique_pair_candidates = set()
         truth = truth_sequences[sample_idx]
         greedy_words = decode_generation(env, greedy_generations[sample_idx])
         beam_words = (
@@ -1053,6 +1162,11 @@ def rerank_candidate_rows(
             attempted += 1
             words = decode_generation(env, candidate["tensor"])
             unique_candidates.add(tuple(words))
+            source = candidate.get("source", "beam")
+            is_pair = source == "pair"
+            if is_pair:
+                pair_attempted += 1
+                unique_pair_candidates.add(tuple(words))
             split = split_sde_tokens(words)
             drift_tokens = split[0] if split is not None else []
             diffusion_tokens = split[1] if split is not None else []
@@ -1075,7 +1189,7 @@ def rerank_candidate_rows(
                         "distance": distance,
                         "model_score": candidate["model_score"],
                         "normalized_model_score": candidate["normalized_model_score"],
-                        "source": candidate.get("source", "beam"),
+                        "source": source,
                         "exact": exact_hit,
                         "relaxed": relaxed_hit,
                         "failure_reason": failure_reason,
@@ -1095,7 +1209,7 @@ def rerank_candidate_rows(
                         "distance": distance,
                         "model_score": candidate["model_score"],
                         "normalized_model_score": candidate["normalized_model_score"],
-                        "source": candidate.get("source", "beam"),
+                        "source": source,
                         "exact": exact_hit,
                         "relaxed": relaxed_hit,
                         "failure_reason": failure_reason,
@@ -1103,6 +1217,8 @@ def rerank_candidate_rows(
                 )
                 continue
             valid += 1
+            if is_pair:
+                pair_valid += 1
             distance = rerank_distance(
                 sample["y_to_fit"],
                 y_data,
@@ -1120,7 +1236,7 @@ def rerank_candidate_rows(
                         "distance": distance,
                         "model_score": candidate["model_score"],
                         "normalized_model_score": candidate["normalized_model_score"],
-                        "source": candidate.get("source", "beam"),
+                        "source": source,
                         "exact": exact_hit,
                         "relaxed": relaxed_hit,
                         "failure_reason": failure_reason,
@@ -1134,7 +1250,7 @@ def rerank_candidate_rows(
                 "distance": distance,
                 "model_score": candidate["model_score"],
                 "normalized_model_score": candidate["normalized_model_score"],
-                "source": candidate.get("source", "beam"),
+                "source": source,
                 "exact": exact_hit,
                 "relaxed": relaxed_hit,
                 "failure_reason": failure_reason,
@@ -1145,9 +1261,16 @@ def rerank_candidate_rows(
                 best = ranked
         oracle_exact += int(any(record["exact"] for record in records))
         oracle_relaxed += int(any(record["relaxed"] for record in records))
+        pair_oracle_exact += int(
+            any(record["exact"] and record["source"] == "pair" for record in records)
+        )
+        pair_oracle_relaxed += int(
+            any(record["relaxed"] and record["source"] == "pair" for record in records)
+        )
         unique_candidate_total += len(unique_candidates)
         unique_drift_total += len(unique_drifts)
         unique_diffusion_total += len(unique_diffusions)
+        unique_pair_candidate_total += len(unique_pair_candidates)
         if best is None:
             rows.append(torch.full((max_len,), pad_id, dtype=torch.long))
         else:
@@ -1175,12 +1298,17 @@ def rerank_candidate_rows(
         "rerank_candidates_attempted": attempted,
         "rerank_candidates_valid": valid,
         "rerank_fingerprint_failures": fingerprint_failures,
+        "rerank_pair_candidates_attempted": pair_attempted,
+        "rerank_pair_candidates_valid": pair_valid,
         "rerank_oracle_sequence_exact_count": oracle_exact,
         "rerank_oracle_sequence_relaxed_no_constants_count": oracle_relaxed,
+        "rerank_pair_oracle_sequence_exact_count": pair_oracle_exact,
+        "rerank_pair_oracle_sequence_relaxed_no_constants_count": pair_oracle_relaxed,
         "rerank_oracle_total": len(samples),
         "rerank_unique_candidate_total": unique_candidate_total,
         "rerank_unique_drift_total": unique_drift_total,
         "rerank_unique_diffusion_total": unique_diffusion_total,
+        "rerank_unique_paired_candidate_total": unique_pair_candidate_total,
         "rerank_debug": debug_rows,
     }
 
@@ -1269,6 +1397,9 @@ def evaluate(
     sample_temperatures: list[float],
     sample_top_k: int,
     sample_top_p: float,
+    pair_drift_diffusion_candidates: int,
+    pair_drift_topk: int,
+    pair_diffusion_topk: int,
 ) -> dict:
     rows = []
     seq_rows = []
@@ -1309,6 +1440,9 @@ def evaluate(
                     sample_temperatures,
                     sample_top_k,
                     sample_top_p,
+                    pair_drift_diffusion_candidates,
+                    pair_drift_topk,
+                    pair_diffusion_topk,
                 )
             )
             metrics = topk_metrics(scores, y)
@@ -1335,7 +1469,11 @@ def evaluate(
                 )
                 seq.update({k: v for k, v in beam_seq.items() if k != "examples"})
                 examples.extend(beam_seq["examples"])
-            if rerank_candidates > 0 or sample_candidates > 0:
+            if (
+                rerank_candidates > 0
+                or sample_candidates > 0
+                or pair_drift_diffusion_candidates > 0
+            ):
                 reranked_generations, rerank_stats = rerank_candidate_rows(
                     trainer.env,
                     normalized,
@@ -1446,6 +1584,8 @@ def evaluate(
             "rerank_candidates_attempted",
             "rerank_candidates_valid",
             "rerank_fingerprint_failures",
+            "rerank_pair_candidates_attempted",
+            "rerank_pair_candidates_valid",
         ]:
             result[key] = float(np.sum([row[key] for row in rerank_stat_rows]))
         oracle_total = max(
@@ -1465,6 +1605,19 @@ def evaluate(
             )
             / oracle_total
         )
+        result["rerank_pair_oracle_sequence_exact"] = float(
+            np.sum([row["rerank_pair_oracle_sequence_exact_count"] for row in rerank_stat_rows])
+            / oracle_total
+        )
+        result["rerank_pair_oracle_sequence_relaxed_no_constants"] = float(
+            np.sum(
+                [
+                    row["rerank_pair_oracle_sequence_relaxed_no_constants_count"]
+                    for row in rerank_stat_rows
+                ]
+            )
+            / oracle_total
+        )
         result["rerank_unique_candidate_avg"] = float(
             np.sum([row["rerank_unique_candidate_total"] for row in rerank_stat_rows])
             / oracle_total
@@ -1475,6 +1628,12 @@ def evaluate(
         )
         result["rerank_unique_diffusion_avg"] = float(
             np.sum([row["rerank_unique_diffusion_total"] for row in rerank_stat_rows])
+            / oracle_total
+        )
+        result["rerank_unique_paired_candidate_avg"] = float(
+            np.sum(
+                [row["rerank_unique_paired_candidate_total"] for row in rerank_stat_rows]
+            )
             / oracle_total
         )
         debug_rows = []
@@ -1551,6 +1710,9 @@ def main() -> None:
         sample_temperatures,
         args.sample_top_k,
         args.sample_top_p,
+        args.pair_drift_diffusion_candidates,
+        args.pair_drift_topk,
+        args.pair_diffusion_topk,
     )
     for key, value in metrics.items():
         if key in {"examples", "rerank_debug"}:

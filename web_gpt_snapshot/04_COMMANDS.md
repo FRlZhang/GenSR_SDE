@@ -78,7 +78,10 @@ PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/
   --sample-candidates 8 \
   --sample-temperatures 0.8,1.0,1.2 \
   --sample-top-k 8 \
-  --sample-top-p 0.95
+  --sample-top-p 0.95 \
+  --pair-drift-diffusion-candidates 8 \
+  --pair-drift-topk 4 \
+  --pair-diffusion-topk 6
 ```
 
 ## Regenerate 2000-Step Checkpoint

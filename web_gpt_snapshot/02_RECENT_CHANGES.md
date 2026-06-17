@@ -2,26 +2,29 @@
 
 ## Last Codex Workflow
 
-Codex added grammar-constrained stochastic sampling candidates to improve
-rerank candidate diversity in `sde_validation_probe.py`.
+Codex added drift/diffusion span pairing to improve structure-level candidate
+diversity in `sde_validation_probe.py`.
 
 Key changes:
 
-- added `--sample-candidates`, `--sample-temperature`,
-  `--sample-temperatures`, `--sample-top-k`, and `--sample-top-p`;
-- sampling uses the same SDE grammar state machine as constrained beam, so
-  generated candidates still follow `<DRIFT> ... <DIFFUSION> ...` structure;
-- beam candidates and sampling candidates are merged and deduplicated before
-  reranking;
-- added diversity diagnostics:
-  `rerank_unique_candidate_avg`, `rerank_unique_drift_avg`, and
-  `rerank_unique_diffusion_avg`.
+- added `--pair-drift-diffusion-candidates`, `--pair-drift-topk`, and
+  `--pair-diffusion-topk`;
+- extracts unique drift spans and unique diffusion spans from existing
+  beam/sampling candidates;
+- recombines them as `<DRIFT> drift <DIFFUSION> diffusion` candidates;
+- merges paired candidates into the same legality filtering, fingerprint
+  recomputation, reranking, and oracle metric path;
+- added pair diagnostics:
+  `rerank_pair_candidates_attempted`, `rerank_pair_candidates_valid`,
+  `rerank_unique_paired_candidate_avg`,
+  `rerank_pair_oracle_sequence_exact`, and
+  `rerank_pair_oracle_sequence_relaxed_no_constants`.
 
 Validation:
 
 - `py_compile sde_validation_probe.py`: passed.
 - `git diff --check`: passed.
-- Small 2-step smoke with beam+sampling reranking: passed.
+- Small 2-step smoke with beam+sampling+pairing reranking: passed.
 - Eval-only checkpoint probe with
   `/private/tmp/gensr_sde_role_token_2000/role_token_2000.pth`: passed on 16
   held-out samples.
@@ -29,23 +32,27 @@ Validation:
 16-sample checkpoint probe result:
 
 ```text
-rerank_candidates_attempted=90
-rerank_candidates_valid=90
+rerank_candidates_attempted=167
+rerank_candidates_valid=167
 rerank_fingerprint_failures=0
+rerank_pair_candidates_attempted=56
+rerank_pair_candidates_valid=56
 reranked_sequence_exact=0.000000
 reranked_sequence_relaxed_no_constants=0.000000
-rerank_oracle_sequence_exact=0.000000
-rerank_oracle_sequence_relaxed_no_constants=0.000000
-rerank_unique_candidate_avg=5.625000
-rerank_unique_drift_avg=2.000000
-rerank_unique_diffusion_avg=4.875000
+rerank_oracle_sequence_exact=0.062500
+rerank_oracle_sequence_relaxed_no_constants=0.062500
+rerank_pair_oracle_sequence_exact=0.062500
+rerank_pair_oracle_sequence_relaxed_no_constants=0.062500
+rerank_unique_candidate_avg=10.437500
+rerank_unique_drift_avg=3.000000
+rerank_unique_diffusion_avg=5.000000
+rerank_unique_paired_candidate_avg=3.500000
 ```
 
-Interpretation: the reranking path is functional, and candidate fingerprints are
-being recomputed successfully. Sampling increased candidate diversity, especially
-diffusion diversity, but oracle metrics are still zero. The next priority is
-stronger structure-level diversity, such as separate drift/diffusion generation
-and pairing, not changing the fingerprint.
+Interpretation: pairing changed the diagnosis. The candidate pool now contains
+an exact/relaxed target in 1/16 samples, but the current fingerprint-distance
+score still does not select it. The next priority is score diagnostics over
+paired candidates, not fingerprint redesign or training changes.
 
 ## Previous Codex Workflow
 
@@ -130,8 +137,8 @@ Not rerun during this documentation-only update:
 
 - The best checkpoint lives in `/private/tmp` and may be deleted.
 - First-pass reranking is implemented but has not improved exact/relaxed recovery yet.
-- Beam+sampling oracle metrics show the current candidate pool still did not
-  contain exact/relaxed targets in a 16-sample checkpoint eval.
+- Pairing produced nonzero oracle hits, but selected reranked exact/relaxed
+  metrics remained zero in a 16-sample checkpoint eval.
 - Future project-state changes must update `02_RECENT_CHANGES.md` and
   `03_CURRENT_TASK.md`; update other fixed snapshot files only when their
   contents actually change.
