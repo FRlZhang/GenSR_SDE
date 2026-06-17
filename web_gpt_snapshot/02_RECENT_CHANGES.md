@@ -2,32 +2,31 @@
 
 ## Last Codex Workflow
 
-Codex added top non-oracle template diagnostics and extra constant-grid score
-variants in `sde_validation_probe.py`.
+Codex added epsilon tie-breaking for near-equal rerank distances in
+`sde_validation_probe.py`.
 
 Key changes:
 
-- added `--rerank-score constant_grid_componentwise_no_multi_u0`;
-- added `--rerank-score constant_grid_active_only`;
-- added `--rerank-score constant_grid_moments_downweighted`;
-- when an oracle candidate exists, debug output now prints candidates ranked
-  before it, their best constants, paired/non-paired status, model scores,
-  segment distances, raw segment deltas, weighted segment deltas, and the
-  dominant score-gap segment.
+- added `--rerank-tie-epsilon`;
+- added `--rerank-tie-break none|model_score|active_distance|state_dependent_drift`;
+- added `--rerank-score constant_grid_active_weak`, which uses
+  `--rerank-component-weights` for active/weak score variants such as
+  `0.0,2.5,1.0`;
+- debug output now prints tie group candidates, the tie-break mode, the selected
+  tie candidate, active/weak distances, and `state_dependent_drift`.
 
 Validation:
 
 - `py_compile sde_validation_probe.py`: passed.
 - `git diff --check`: passed.
-- Small 2-step smoke with top non-oracle diagnostics: passed.
+- Small 2-step smoke with tie-break diagnostics: passed.
 - Eval-only checkpoint probe with
   `/private/tmp/gensr_sde_role_token_2000/role_token_2000.pth`: passed on 16
-  held-out samples for four score variants:
-  `constant_grid_componentwise`,
-  `constant_grid_componentwise_no_multi_u0`, `constant_grid_active_only`, and
-  `constant_grid_moments_downweighted`.
+  held-out samples for four settings: no tie-break baseline,
+  `active_distance` tie-break, `state_dependent_drift` tie-break, and
+  active-heavy weights.
 
-16-sample checkpoint probe result:
+16-sample checkpoint probe result for successful tie-break settings:
 
 ```text
 rerank_candidates_attempted=167
@@ -35,8 +34,8 @@ rerank_candidates_valid=167
 rerank_fingerprint_failures=0
 rerank_pair_candidates_attempted=56
 rerank_pair_candidates_valid=56
-reranked_sequence_exact=0.000000
-reranked_sequence_relaxed_no_constants=0.000000
+reranked_sequence_exact=0.062500
+reranked_sequence_relaxed_no_constants=0.062500
 rerank_oracle_sequence_exact=0.062500
 rerank_oracle_sequence_relaxed_no_constants=0.062500
 rerank_pair_oracle_sequence_exact=0.062500
@@ -47,49 +46,40 @@ rerank_unique_diffusion_avg=5.000000
 rerank_unique_paired_candidate_avg=3.500000
 ```
 
-Full and componentwise had the same selected exact/relaxed outcome: selected
-reranked exact/relaxed stayed 0 while oracle stayed 1/16.
-
-Score variant comparison on the inspected oracle case:
+Tie-break comparison:
 
 ```text
-constant_grid_componentwise:
-  oracle_rank=5, oracle_distance=5.125097, top_distance=3.722727
-constant_grid_componentwise_no_multi_u0:
-  oracle_rank=2, oracle_distance=1.507198, top_distance=1.505882
-constant_grid_active_only:
-  oracle_rank=4, oracle_distance=0.875270, top_distance=0.754370
-constant_grid_moments_downweighted:
-  oracle_rank=11, oracle_distance=3.996443, top_distance=2.803234
+baseline no tie:
+  selected exact/relaxed=0/0
+  inspected oracle_rank=2
+active_distance tie-break:
+  selected exact/relaxed=1/16
+  inspected oracle_rank=1
+state_dependent_drift tie-break:
+  selected exact/relaxed=1/16
+  inspected oracle_rank=1
+active-heavy weights 0.0,2.5,1.0:
+  selected exact/relaxed=0/0
+  inspected oracle_rank=2
 ```
 
-All variants kept selected reranked exact/relaxed at 0 while oracle exact/relaxed
-stayed 1/16.
-
-Closest non-oracle gap under `constant_grid_componentwise_no_multi_u0`:
+Inspected tie group:
 
 ```text
-oracle:
-  source=pair
-  best_constant=4
-  drift=mul mul CONSTANT CONSTANT sin x_0
-  diffusion=add CONSTANT mul CONSTANT abs x_0
-top non-oracle:
-  source=beam
-  best_constant=1
-  drift=mul mul CONSTANT CONSTANT CONSTANT
-  diffusion=add CONSTANT mul CONSTANT abs x_0
-distance_delta=0.001317
-weighted active delta=-0.086207
-weighted weak delta=0.087524
-dominant score-gap segment=gaussian_weak_kernel
+oracle distance=1.507198
+top non-oracle distance=1.505882
+epsilon=0.005
+oracle active=0.875270
+top non-oracle active=0.961477
+oracle state_dependent_drift=1
+top non-oracle state_dependent_drift=0
 ```
 
-Interpretation: dropping `multi_u0_moments` nearly selects the oracle. The
-remaining miss is a tiny active+weak tradeoff: the oracle is better on active
-moments, but the non-oracle wins slightly more on weak-kernel distance. The next
-step is lightweight tie-breaking or structure-aware penalties, not fingerprint
-redesign or retraining.
+Interpretation: the near-tie diagnosis was actionable. Both `active_distance`
+and `state_dependent_drift` tie-breaks select the paired oracle in the inspected
+case and produce the first selected reranked exact/relaxed hit. The next step is
+checking whether this survives 32/64-sample probes and does not introduce new
+false positives.
 
 ## Previous Codex Workflow
 

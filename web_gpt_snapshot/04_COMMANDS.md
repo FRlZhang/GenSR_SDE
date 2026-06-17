@@ -98,8 +98,24 @@ Other lightweight score modes now available:
 
 ```bash
 --rerank-score constant_grid_componentwise_no_multi_u0
+--rerank-score constant_grid_active_weak
 --rerank-score constant_grid_active_only
 --rerank-score constant_grid_moments_downweighted
+```
+
+Current strongest 16-sample diagnostic setting:
+
+```bash
+--rerank-score constant_grid_componentwise_no_multi_u0 \
+--rerank-constant-values 0.25,0.5,1.0,2.0,4.0 \
+--rerank-tie-epsilon 0.005 \
+--rerank-tie-break active_distance
+```
+
+Alternative successful tie-break:
+
+```bash
+--rerank-tie-break state_dependent_drift
 ```
 
 ## Regenerate 2000-Step Checkpoint

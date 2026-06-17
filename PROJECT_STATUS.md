@@ -67,6 +67,13 @@ diagnosing why the rerank score does not select those oracle candidates.
   closest variant: selected exact/relaxed still stayed 0 and oracle stayed 1/16,
   but the inspected oracle moved to rank 2 with distance 1.507198, behind a
   non-oracle at 1.505882 by only 0.001317.
+- Added epsilon tie-breaking for near-equal rerank distances. With
+  `constant_grid_componentwise_no_multi_u0`, `--rerank-tie-epsilon 0.005`, and
+  either `--rerank-tie-break active_distance` or
+  `--rerank-tie-break state_dependent_drift`, a 16-sample checkpoint probe
+  achieved the first selected reranked hit:
+  `reranked_sequence_exact=0.062500` and
+  `reranked_sequence_relaxed_no_constants=0.062500`.
 - Logged validated experiments in
   [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md).
 
@@ -74,16 +81,16 @@ diagnosing why the rerank score does not select those oracle candidates.
 
 - Transitioning from "can the model learn the fingerprint?" to "can we decode
   the right symbolic sequence?".
-- Diagnosing the near-tie where active+weak constant-grid scoring ranks a
-  non-oracle drift template just above the paired oracle candidate.
+- Validating whether active-distance or state-dependent-drift tie-breaking is
+  stable beyond the 16-sample diagnostic where it first selected the oracle.
 
 ## Next Steps
 
-1. Investigate lightweight tie-breaking or structural penalties for the
-   near-oracle case: the top non-oracle keeps the oracle diffusion but replaces
-   `sin x_0` drift structure with a constant-only drift template.
-2. Compare active+weak scoring with small model-score tie-break changes or
-   simple structure-aware penalties before considering fingerprint redesign.
+1. Re-run the strongest setting on 32/64 held-out samples:
+   `constant_grid_componentwise_no_multi_u0` plus `--rerank-tie-epsilon 0.005`
+   and `--rerank-tie-break active_distance` or `state_dependent_drift`.
+2. Compare the two successful tie-break modes for false positives before making
+   either the default rerank recipe.
 3. Keep drift/diffusion pairing enabled and tune candidate pool size carefully
    because fingerprint recomputation is CPU-expensive.
 4. Reuse the saved 2000-step checkpoint for decoding experiments instead of
@@ -139,6 +146,8 @@ diagnosing why the rerank score does not select those oracle candidates.
 - Removing `multi_u0_moments` from the constant-grid score nearly selects the
   oracle, but a non-oracle template still wins by 0.001317 due to a slightly
   better weak-kernel distance.
+- Tie-breaking can select the paired oracle in the inspected near-tie case, but
+  this is only verified on 16 samples so far.
 - The main checkpoint currently lives outside the repo in `/private/tmp`, so it
   may disappear.
 - `environment.yml` is upstream and Linux-oriented; the recent local experiments

@@ -2,8 +2,7 @@
 
 ## Next Engineering Task
 
-Diagnose the near-tie where active+weak constant-grid scoring ranks a non-oracle
-template just above the paired oracle candidate.
+Validate the successful near-tie rerank tie-breaks on larger held-out probes.
 
 At the end of that workflow, update `web_gpt_snapshot/02_RECENT_CHANGES.md` and
 `web_gpt_snapshot/03_CURRENT_TASK.md`. Also update `01_PROJECT_STATUS.md` if the
@@ -20,6 +19,9 @@ reranked exact/relaxed metrics remained zero.
 `constant_grid_componentwise_no_multi_u0` moved the oracle to rank 2 with
 distance 1.507198, just behind a top non-oracle at 1.505882. The top non-oracle
 keeps the oracle diffusion but uses a constant-only drift template.
+Adding `--rerank-tie-epsilon 0.005` plus either `--rerank-tie-break
+active_distance` or `--rerank-tie-break state_dependent_drift` selected that
+oracle and produced the first selected reranked exact/relaxed hit (`1/16`).
 
 ## Primary File To Modify
 
@@ -29,10 +31,11 @@ sde_validation_probe.py
 
 Likely next additions:
 
-- inspect tie-breaking around the rank-1 non-oracle versus rank-2 oracle;
-- compare model-score tie-breaks, tiny weak-kernel reweighting, or simple
-  structure-aware penalties;
-- keep constant-grid active+weak scoring as the strongest current diagnostic;
+- re-run `constant_grid_componentwise_no_multi_u0` with `active_distance` and
+  `state_dependent_drift` tie-breaks on 32/64 samples;
+- compare false positives and whether selected exact/relaxed remains above 0;
+- keep constant-grid active+weak scoring plus epsilon tie-breaks as the strongest
+  current diagnostic;
 - keep pairing enabled while controlling candidate counts for CPU cost;
 - keep reporting reranked metrics beside greedy and constrained beam.
 

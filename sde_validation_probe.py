@@ -71,6 +71,7 @@ def parse_args() -> argparse.Namespace:
             "constant_grid_full",
             "constant_grid_componentwise",
             "constant_grid_componentwise_no_multi_u0",
+            "constant_grid_active_weak",
             "constant_grid_active_only",
             "constant_grid_moments_downweighted",
         ),
@@ -78,6 +79,12 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--rerank-component-weights", type=str, default="1.0,2.0,1.0")
     parser.add_argument("--rerank-constant-values", type=str, default="0.25,0.5,1.0,2.0,4.0")
+    parser.add_argument("--rerank-tie-epsilon", type=float, default=0.0)
+    parser.add_argument(
+        "--rerank-tie-break",
+        choices=("none", "model_score", "active_distance", "state_dependent_drift"),
+        default="none",
+    )
     parser.add_argument("--rerank-debug-topk", type=int, default=0)
     parser.add_argument("--sample-candidates", type=int, default=0)
     parser.add_argument("--sample-temperature", type=float, default=1.0)
@@ -1130,6 +1137,8 @@ def rerank_base_score_kind(score_kind: str) -> str:
         return "componentwise"
     if score_kind == "constant_grid_componentwise_no_multi_u0":
         return "componentwise_no_multi_u0"
+    if score_kind == "constant_grid_active_weak":
+        return "componentwise"
     if score_kind == "constant_grid_active_only":
         return "active_only"
     if score_kind == "constant_grid_moments_downweighted":
@@ -1362,6 +1371,93 @@ def score_segment_weights(
     }
 
 
+def has_state_dependent_drift(drift_tokens: list[str]) -> bool:
+    state_tokens = {"x_0", "sin", "cos", "abs", "sqrt"}
+    return any(token in state_tokens for token in drift_tokens)
+
+
+def _finite_distance(value) -> bool:
+    return value is not None and np.isfinite(value)
+
+
+def _record_base_sort_key(record: dict, distance_key: str = "distance") -> tuple:
+    value = record[distance_key]
+    return (
+        not _finite_distance(value),
+        value if value is not None else float("inf"),
+        -record["normalized_model_score"],
+    )
+
+
+def _tie_break_sort_key(record: dict, tie_break: str) -> tuple:
+    if tie_break == "model_score":
+        return (-record["normalized_model_score"], record["distance"])
+    if tie_break == "active_distance":
+        active = record["active_kramers_moyal_distance"]
+        return (
+            active if active is not None else float("inf"),
+            record["distance"],
+            -record["normalized_model_score"],
+        )
+    if tie_break == "state_dependent_drift":
+        return (
+            not record["state_dependent_drift"],
+            record["active_kramers_moyal_distance"]
+            if record["active_kramers_moyal_distance"] is not None
+            else float("inf"),
+            record["distance"],
+            -record["normalized_model_score"],
+        )
+    return (record["distance"], -record["normalized_model_score"])
+
+
+def tie_aware_rank_records(
+    records: list[dict],
+    tie_epsilon: float,
+    tie_break: str,
+    distance_key: str = "distance",
+) -> list[dict]:
+    sorted_records = sorted(records, key=lambda item: _record_base_sort_key(item, distance_key))
+    if tie_epsilon <= 0.0 or tie_break == "none" or distance_key != "distance":
+        return sorted_records
+
+    ranked = []
+    i = 0
+    while i < len(sorted_records):
+        anchor = sorted_records[i][distance_key]
+        if not _finite_distance(anchor):
+            ranked.extend(sorted_records[i:])
+            break
+        group = []
+        while i < len(sorted_records):
+            value = sorted_records[i][distance_key]
+            if not _finite_distance(value) or value > anchor + tie_epsilon:
+                break
+            group.append(sorted_records[i])
+            i += 1
+        ranked.extend(sorted(group, key=lambda item: _tie_break_sort_key(item, tie_break)))
+    return ranked
+
+
+def top_tie_group(
+    ranked_records: list[dict],
+    tie_epsilon: float,
+    debug_topk: int,
+) -> list[dict]:
+    if not ranked_records:
+        return []
+    top_distance = ranked_records[0]["distance"]
+    if not _finite_distance(top_distance):
+        return ranked_records[:debug_topk]
+    limit = top_distance + max(0.0, tie_epsilon)
+    group = [
+        record
+        for record in ranked_records
+        if _finite_distance(record["distance"]) and record["distance"] <= limit
+    ]
+    return group[:debug_topk]
+
+
 def oracle_gap_diagnostics(
     oracle: dict,
     candidate: dict,
@@ -1407,6 +1503,8 @@ def rerank_candidate_rows(
     score_kind: str,
     component_weights: tuple[float, float, float],
     constant_values: list[float],
+    tie_epsilon: float,
+    tie_break: str,
     base_seed: int,
     max_len: int,
     debug_topk: int,
@@ -1429,7 +1527,6 @@ def rerank_candidate_rows(
     debug_rows = []
 
     for sample_idx, sample in enumerate(samples):
-        best = None
         records = []
         candidates = candidate_rows[sample_idx] if candidate_rows is not None else []
         unique_candidates = set()
@@ -1443,6 +1540,7 @@ def rerank_candidate_rows(
             if constrained_beam is not None
             else []
         )
+        selection_ranked_records = []
         for candidate_idx, candidate in enumerate(candidates):
             attempted += 1
             words = decode_generation(env, candidate["tensor"])
@@ -1476,6 +1574,9 @@ def rerank_candidate_rows(
                         "model_score": candidate["model_score"],
                         "normalized_model_score": candidate["normalized_model_score"],
                         "source": source,
+                        "tensor": candidate["tensor"],
+                        "candidate_idx": candidate_idx,
+                        "state_dependent_drift": has_state_dependent_drift(drift_tokens),
                         "exact": exact_hit,
                         "relaxed": relaxed_hit,
                         "failure_reason": failure_reason,
@@ -1504,6 +1605,9 @@ def rerank_candidate_rows(
                         "model_score": candidate["model_score"],
                         "normalized_model_score": candidate["normalized_model_score"],
                         "source": source,
+                        "tensor": candidate["tensor"],
+                        "candidate_idx": candidate_idx,
+                        "state_dependent_drift": has_state_dependent_drift(drift_tokens),
                         "exact": exact_hit,
                         "relaxed": relaxed_hit,
                         "failure_reason": failure_reason,
@@ -1526,6 +1630,9 @@ def rerank_candidate_rows(
                         "model_score": candidate["model_score"],
                         "normalized_model_score": candidate["normalized_model_score"],
                         "source": source,
+                        "tensor": candidate["tensor"],
+                        "candidate_idx": candidate_idx,
+                        "state_dependent_drift": has_state_dependent_drift(drift_tokens),
                         "exact": exact_hit,
                         "relaxed": relaxed_hit,
                         "failure_reason": failure_reason,
@@ -1540,14 +1647,14 @@ def rerank_candidate_rows(
                 "model_score": candidate["model_score"],
                 "normalized_model_score": candidate["normalized_model_score"],
                 "source": source,
+                "tensor": candidate["tensor"],
+                "candidate_idx": candidate_idx,
+                "state_dependent_drift": has_state_dependent_drift(drift_tokens),
                 "exact": exact_hit,
                 "relaxed": relaxed_hit,
                 "failure_reason": failure_reason,
             }
             records.append(record)
-            ranked = (distance, -candidate["normalized_model_score"], candidate_idx, candidate)
-            if best is None or ranked < best:
-                best = ranked
         oracle_exact += int(any(record["exact"] for record in records))
         oracle_relaxed += int(any(record["relaxed"] for record in records))
         pair_oracle_exact += int(
@@ -1560,23 +1667,30 @@ def rerank_candidate_rows(
         unique_drift_total += len(unique_drifts)
         unique_diffusion_total += len(unique_diffusions)
         unique_pair_candidate_total += len(unique_pair_candidates)
-        if best is None:
+        selection_ranked_records = tie_aware_rank_records(
+            records,
+            tie_epsilon,
+            tie_break,
+        )
+        selected_record = next(
+            (
+                record
+                for record in selection_ranked_records
+                if _finite_distance(record["distance"])
+            ),
+            None,
+        )
+        if selected_record is None:
             rows.append(torch.full((max_len,), pad_id, dtype=torch.long))
         else:
-            rows.append(best[3]["tensor"].detach().cpu())
+            rows.append(selected_record["tensor"].detach().cpu())
         if debug_topk > 0:
-            def _record_sort_key(item, distance_key: str):
-                value = item[distance_key]
-                return (
-                    value is None or not np.isfinite(value),
-                    value if value is not None else float("inf"),
-                    -item["normalized_model_score"],
-                )
-
-            ranked_records = sorted(records, key=lambda item: _record_sort_key(item, "distance"))
-            baseline_ranked_records = sorted(
+            ranked_records = selection_ranked_records
+            baseline_ranked_records = tie_aware_rank_records(
                 records,
-                key=lambda item: _record_sort_key(item, "baseline_distance"),
+                0.0,
+                "none",
+                distance_key="baseline_distance",
             )
             oracle_rank = None
             oracle_record = None
@@ -1598,6 +1712,7 @@ def rerank_candidate_rows(
                 else None
             )
             top_record = ranked_records[0] if ranked_records else None
+            tie_group = top_tie_group(ranked_records, tie_epsilon, debug_topk)
             oracle_distance = oracle_record["distance"] if oracle_record is not None else None
             oracle_baseline_distance = (
                 oracle_baseline_record["baseline_distance"]
@@ -1638,6 +1753,10 @@ def rerank_candidate_rows(
                         "greedy": greedy_words,
                         "constrained_beam": beam_words,
                         "candidates": ranked_records[:debug_topk],
+                        "tie_group": tie_group,
+                        "tie_break": tie_break,
+                        "tie_epsilon": tie_epsilon,
+                        "tie_selected_candidate": selected_record,
                         "top_candidate": top_record,
                         "oracle_rank": oracle_rank,
                         "oracle_baseline_rank": oracle_baseline_rank,
@@ -1749,6 +1868,8 @@ def evaluate(
     rerank_score: str,
     rerank_component_weights: tuple[float, float, float],
     rerank_constant_values: list[float],
+    rerank_tie_epsilon: float,
+    rerank_tie_break: str,
     fingerprint_config: FingerprintConfig,
     rerank_debug_topk: int,
     sample_candidates: int,
@@ -1843,6 +1964,8 @@ def evaluate(
                     rerank_score,
                     rerank_component_weights,
                     rerank_constant_values,
+                    rerank_tie_epsilon,
+                    rerank_tie_break,
                     seed + i * 100003,
                     trainer.params.max_generated_output_len,
                     rerank_debug_topk,
@@ -2068,6 +2191,8 @@ def main() -> None:
         args.rerank_score,
         rerank_component_weights,
         rerank_constant_values,
+        args.rerank_tie_epsilon,
+        args.rerank_tie_break,
         fingerprint_config,
         args.rerank_debug_topk,
         args.sample_candidates,
@@ -2100,6 +2225,8 @@ def main() -> None:
             print(f"truth: {' '.join(debug['truth'])}")
             print(f"greedy: {' '.join(debug['greedy'])}")
             print(f"constrained_beam: {' '.join(debug['constrained_beam'])}")
+            print(f"tie_break={debug['tie_break']}")
+            print(f"tie_epsilon={_fmt_distance(debug['tie_epsilon'])}")
             print(f"oracle_rank={debug['oracle_rank']}")
             print(f"oracle_rank_constant_1={debug['oracle_baseline_rank']}")
             print(f"top_ranked_distance={_fmt_distance(debug['top_distance'])}")
@@ -2117,11 +2244,54 @@ def main() -> None:
                 "oracle_top_distance_delta="
                 f"{_fmt_distance(debug['oracle_top_distance_delta'])}"
             )
+            if debug["tie_selected_candidate"] is not None:
+                selected = debug["tie_selected_candidate"]
+                print(
+                    "tie_selected_candidate "
+                    f"source={selected['source']} "
+                    f"is_pair={int(selected['source'] == 'pair')} "
+                    f"state_dependent_drift="
+                    f"{int(selected['state_dependent_drift'])} "
+                    f"best_constant={_fmt_constant(selected['best_constant'])} "
+                    f"distance={_fmt_distance(selected['distance'])} "
+                    f"active_kramers_moyal_distance="
+                    f"{_fmt_distance(selected['active_kramers_moyal_distance'])} "
+                    f"gaussian_weak_kernel_distance="
+                    f"{_fmt_distance(selected['gaussian_weak_kernel_distance'])} "
+                    f"model_score={selected['model_score']:.6f} "
+                    f"normalized_model_score="
+                    f"{selected['normalized_model_score']:.6f} "
+                    f"exact={int(selected['exact'])} "
+                    f"relaxed_no_constants={int(selected['relaxed'])}"
+                )
+            if debug.get("tie_group"):
+                print("tie_group_candidates:")
+                for rank, candidate in enumerate(debug["tie_group"], start=1):
+                    print(
+                        f"tie_group_rank={rank} "
+                        f"source={candidate['source']} "
+                        f"is_pair={int(candidate['source'] == 'pair')} "
+                        f"state_dependent_drift="
+                        f"{int(candidate['state_dependent_drift'])} "
+                        f"best_constant={_fmt_constant(candidate['best_constant'])} "
+                        f"distance={_fmt_distance(candidate['distance'])} "
+                        f"active_kramers_moyal_distance="
+                        f"{_fmt_distance(candidate['active_kramers_moyal_distance'])} "
+                        f"gaussian_weak_kernel_distance="
+                        f"{_fmt_distance(candidate['gaussian_weak_kernel_distance'])} "
+                        f"model_score={candidate['model_score']:.6f} "
+                        f"normalized_model_score="
+                        f"{candidate['normalized_model_score']:.6f} "
+                        f"exact={int(candidate['exact'])} "
+                        f"relaxed_no_constants={int(candidate['relaxed'])}"
+                    )
             if debug["oracle_candidate"] is not None:
                 oracle = debug["oracle_candidate"]
                 print(
                     "oracle_candidate "
                     f"source={oracle['source']} "
+                    f"state_dependent_drift="
+                    f"{int(oracle['state_dependent_drift'])} "
                     f"best_constant={_fmt_constant(oracle['best_constant'])} "
                     f"distance={_fmt_distance(oracle['distance'])} "
                     f"baseline_distance="
@@ -2146,6 +2316,8 @@ def main() -> None:
                         f"pre_oracle_rank={item['rank']} "
                         f"source={candidate['source']} "
                         f"is_pair={int(candidate['source'] == 'pair')} "
+                        f"state_dependent_drift="
+                        f"{int(candidate['state_dependent_drift'])} "
                         f"best_constant={_fmt_constant(candidate['best_constant'])} "
                         f"distance={_fmt_distance(candidate['distance'])} "
                         f"distance_delta="
@@ -2193,6 +2365,8 @@ def main() -> None:
                     f"candidate_rank={rank} "
                     f"source={candidate['source']} "
                     f"is_pair={int(candidate['source'] == 'pair')} "
+                    f"state_dependent_drift="
+                    f"{int(candidate['state_dependent_drift'])} "
                     f"best_constant={_fmt_constant(candidate['best_constant'])} "
                     f"distance={_fmt_distance(candidate['distance'])} "
                     f"baseline_distance="
