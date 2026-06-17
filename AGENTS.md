@@ -64,6 +64,35 @@ Do not rely on prior chat context if the project files disagree.
   commands, data paths, file structure, or the main workflow change.
 - Do not turn `AGENTS.md` into a lab notebook. Keep it stable.
 
+## Web GPT Snapshot Rule
+
+At the end of any Codex workflow that changes project state, update the
+lightweight Web GPT snapshot in `web_gpt_snapshot/`.
+
+Always update:
+
+- `02_RECENT_CHANGES.md`
+- `03_CURRENT_TASK.md`
+
+Also update `01_PROJECT_STATUS.md` when the current goal, best checkpoint, key
+metrics, blocker, or next-step priority changes.
+
+Update `04_COMMANDS.md` only when commands, paths, environment variables, or
+verification steps change.
+
+Update `00_WEB_GPT_INDEX.md` only when the overall project direction or
+high-level handoff policy changes.
+
+Do not generate many timestamped handoff files. Keep the fixed small snapshot
+files stable so they can be manually replaced in ChatGPT Web Project Sources.
+
+Do not copy datasets, checkpoints, `dump/`, `weights/`, `.git/`, caches, or the
+full `symbolicregression/` directory into the snapshot.
+
+If a future Web GPT task needs code-level patching, update
+`NEEDED_SOURCE_FILES.md` to list the minimal source files the user should
+temporarily upload.
+
 ## Safety Rules
 
 - Do not overwrite or delete datasets, debug outputs, or reports unless the
