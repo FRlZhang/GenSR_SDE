@@ -86,6 +86,8 @@ Current best result so far:
   oracle candidate in the first 16-sample probe.
 - global constant-grid reranking improves the inspected oracle rank but still
   does not select it, so constant sensitivity is only part of the bottleneck.
+- dropping `multi_u0_moments` from the constant-grid score nearly selects the
+  inspected oracle candidate, but selected exact / relaxed recovery is still 0.
 
 See [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md)
 and [PROJECT_STATUS.md](/Users/lzhang/Documents/GenSR_SDE/PROJECT_STATUS.md) for

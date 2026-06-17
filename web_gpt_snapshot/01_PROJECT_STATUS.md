@@ -30,16 +30,17 @@ greedy_sequence_exact=0.015625
 - Added drift/diffusion span pairing from existing candidates. A 16-sample eval-only checkpoint probe attempted 167 valid candidates, including 56 valid paired candidates, and reached `rerank_pair_oracle_sequence_exact=0.062500`, `rerank_pair_oracle_sequence_relaxed_no_constants=0.062500`; selected reranked exact/relaxed metrics remained zero.
 - Added fingerprint segment distance diagnostics and `componentwise` reranking. On the same 16-sample checkpoint probe, both full and componentwise selected reranked exact/relaxed remained zero while oracle stayed 1/16. The inspected oracle candidate ranked 11 under full scoring and 8 under componentwise scoring, with the largest disadvantage in `multi_u0_moments`.
 - Added global constant-grid reranking diagnostics. On the same 16-sample checkpoint probe, `constant_grid_componentwise` kept selected exact/relaxed at zero and oracle at 1/16, but improved the inspected oracle from rank 8 to rank 5 and reduced its distance from 5.919984 to 5.125097 with `best_constant=0.5`.
+- Added top non-oracle diagnostics and score variants. `constant_grid_componentwise_no_multi_u0` was closest: selected exact/relaxed stayed zero and oracle stayed 1/16, but the inspected oracle moved to rank 2 with distance 1.507198, behind the top non-oracle at 1.505882 by only 0.001317.
 
 ## In Progress
 
 - Transitioning from token recognition to full symbolic sequence recovery.
-- Diagnosing why constant-aware fingerprint-distance scoring still prefers non-oracle templates over paired oracle candidates.
+- Diagnosing the near-tie where active+weak constant-grid scoring ranks a non-oracle drift template just above the paired oracle candidate.
 
 ## Next Steps
 
-1. Inspect top non-oracle candidates that still beat the oracle after constant-grid fitting.
-2. Compare lightweight score variants that combine constant-grid fitting with different segment weights before considering fingerprint redesign.
+1. Investigate lightweight tie-breaking or structural penalties for the near-oracle case.
+2. Compare active+weak scoring with small model-score tie-break changes before considering fingerprint redesign.
 3. Keep drift/diffusion pairing enabled and tune candidate pool size carefully because fingerprint recomputation is CPU-expensive.
 4. Keep comparing greedy, constrained beam, reranked, and oracle metrics on the same held-out setup.
 5. Only revisit fingerprint design after candidate diversity and scoring have been tested more thoroughly.
@@ -60,6 +61,7 @@ greedy_sequence_exact=0.015625
 - Stochastic grammar-constrained sampling increased unique candidates but still produced zero oracle hits in a 16-sample checkpoint eval.
 - Drift/diffusion pairing produced nonzero oracle hits, but the current fingerprint-distance score still did not choose them in the 16-sample eval.
 - Constant-grid componentwise reranking improved the inspected oracle candidate from rank 8 to 5, but still did not select it; fixed `CONSTANT=1.0` is part of the score problem, not the whole problem.
+- Removing `multi_u0_moments` from the constant-grid score nearly selects the inspected oracle, but a non-oracle drift template still wins by 0.001317 due to weak-kernel distance.
 - The best checkpoint is outside the repo and may disappear.
 - `environment.yml` is upstream/Linux-oriented; recent work used the local macOS `gensr` conda env.
 

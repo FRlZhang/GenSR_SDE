@@ -2,8 +2,8 @@
 
 ## Next Engineering Task
 
-Diagnose why constant-grid scoring still ranks non-oracle templates above paired
-oracle candidates.
+Diagnose the near-tie where active+weak constant-grid scoring ranks a non-oracle
+template just above the paired oracle candidate.
 
 At the end of that workflow, update `web_gpt_snapshot/02_RECENT_CHANGES.md` and
 `web_gpt_snapshot/03_CURRENT_TASK.md`. Also update `01_PROJECT_STATUS.md` if the
@@ -17,6 +17,9 @@ Componentwise scoring improved the inspected oracle candidate from rank 11 to
 rank 8. Constant-grid componentwise improved it further to rank 5 and reduced
 its distance from 5.919984 to 5.125097 with `best_constant=0.5`, but selected
 reranked exact/relaxed metrics remained zero.
+`constant_grid_componentwise_no_multi_u0` moved the oracle to rank 2 with
+distance 1.507198, just behind a top non-oracle at 1.505882. The top non-oracle
+keeps the oracle diffusion but uses a constant-only drift template.
 
 ## Primary File To Modify
 
@@ -26,11 +29,10 @@ sde_validation_probe.py
 
 Likely next additions:
 
-- inspect the top non-oracle templates that still beat the oracle after
-  constant-grid fitting;
-- compare their drift/diffusion structure, best constants, and segment
-  distances against the oracle candidate;
-- try lightweight constant-grid score variants or segment weights;
+- inspect tie-breaking around the rank-1 non-oracle versus rank-2 oracle;
+- compare model-score tie-breaks, tiny weak-kernel reweighting, or simple
+  structure-aware penalties;
+- keep constant-grid active+weak scoring as the strongest current diagnostic;
 - keep pairing enabled while controlling candidate counts for CPU cost;
 - keep reporting reranked metrics beside greedy and constrained beam.
 

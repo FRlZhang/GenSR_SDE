@@ -70,6 +70,9 @@ def parse_args() -> argparse.Namespace:
             "componentwise",
             "constant_grid_full",
             "constant_grid_componentwise",
+            "constant_grid_componentwise_no_multi_u0",
+            "constant_grid_active_only",
+            "constant_grid_moments_downweighted",
         ),
         default="full_fingerprint",
     )
@@ -1125,11 +1128,17 @@ def rerank_base_score_kind(score_kind: str) -> str:
         return "full_fingerprint"
     if score_kind == "constant_grid_componentwise":
         return "componentwise"
+    if score_kind == "constant_grid_componentwise_no_multi_u0":
+        return "componentwise_no_multi_u0"
+    if score_kind == "constant_grid_active_only":
+        return "active_only"
+    if score_kind == "constant_grid_moments_downweighted":
+        return "moments_downweighted"
     return score_kind
 
 
 def uses_constant_grid(score_kind: str) -> bool:
-    return score_kind in {"constant_grid_full", "constant_grid_componentwise"}
+    return score_kind.startswith("constant_grid_")
 
 
 def empty_distance_details() -> dict:
@@ -1185,7 +1194,7 @@ def fingerprint_distance_details(
     for name, segment_slice in segment_slices.items():
         details[name] = _normalized_l2(target[segment_slice], candidate[segment_slice])
 
-    if score_kind == "short_moment":
+    if score_kind in {"short_moment", "active_only"}:
         details["distance"] = details["active_kramers_moyal_distance"]
     elif score_kind == "componentwise":
         w_multi, w_active, w_weak = component_weights
@@ -1193,6 +1202,17 @@ def fingerprint_distance_details(
             w_multi * details["multi_u0_moments_distance"]
             + w_active * details["active_kramers_moyal_distance"]
             + w_weak * details["gaussian_weak_kernel_distance"]
+        )
+    elif score_kind == "componentwise_no_multi_u0":
+        details["distance"] = (
+            details["active_kramers_moyal_distance"]
+            + details["gaussian_weak_kernel_distance"]
+        )
+    elif score_kind == "moments_downweighted":
+        details["distance"] = (
+            0.25 * details["multi_u0_moments_distance"]
+            + 2.0 * details["active_kramers_moyal_distance"]
+            + details["gaussian_weak_kernel_distance"]
         )
     else:
         details["distance"] = details["full_distance"]
@@ -1285,6 +1305,95 @@ def score_candidate_system(
         ],
         "best_constant": best_details["best_constant"],
     }, None, fingerprint_failures
+
+
+SEGMENT_DISTANCE_KEYS = (
+    ("multi_u0_moments", "multi_u0_moments_distance"),
+    ("active_kramers_moyal", "active_kramers_moyal_distance"),
+    ("gaussian_weak_kernel", "gaussian_weak_kernel_distance"),
+)
+
+
+def _finite_delta(left, right):
+    if (
+        left is None
+        or right is None
+        or not np.isfinite(left)
+        or not np.isfinite(right)
+    ):
+        return None
+    return left - right
+
+
+def score_segment_weights(
+    score_kind: str,
+    component_weights: tuple[float, float, float],
+) -> dict:
+    base_score_kind = rerank_base_score_kind(score_kind)
+    if base_score_kind == "componentwise":
+        w_multi, w_active, w_weak = component_weights
+        return {
+            "multi_u0_moments": w_multi,
+            "active_kramers_moyal": w_active,
+            "gaussian_weak_kernel": w_weak,
+        }
+    if base_score_kind == "componentwise_no_multi_u0":
+        return {
+            "multi_u0_moments": 0.0,
+            "active_kramers_moyal": 1.0,
+            "gaussian_weak_kernel": 1.0,
+        }
+    if base_score_kind == "active_only" or base_score_kind == "short_moment":
+        return {
+            "multi_u0_moments": 0.0,
+            "active_kramers_moyal": 1.0,
+            "gaussian_weak_kernel": 0.0,
+        }
+    if base_score_kind == "moments_downweighted":
+        return {
+            "multi_u0_moments": 0.25,
+            "active_kramers_moyal": 2.0,
+            "gaussian_weak_kernel": 1.0,
+        }
+    return {
+        "multi_u0_moments": 1.0,
+        "active_kramers_moyal": 1.0,
+        "gaussian_weak_kernel": 1.0,
+    }
+
+
+def oracle_gap_diagnostics(
+    oracle: dict,
+    candidate: dict,
+    score_kind: str,
+    component_weights: tuple[float, float, float],
+) -> dict:
+    segment_deltas = {
+        name: _finite_delta(oracle[key], candidate[key])
+        for name, key in SEGMENT_DISTANCE_KEYS
+    }
+    weights = score_segment_weights(score_kind, component_weights)
+    weighted_segment_deltas = {
+        name: None if value is None else value * weights[name]
+        for name, value in segment_deltas.items()
+    }
+    finite_weighted_segments = {
+        name: value
+        for name, value in weighted_segment_deltas.items()
+        if value is not None and weights[name] > 0.0
+    }
+    dominant_segment = None
+    if finite_weighted_segments:
+        dominant_segment = max(
+            finite_weighted_segments.items(),
+            key=lambda item: item[1],
+        )[0]
+    return {
+        "distance_delta": _finite_delta(oracle["distance"], candidate["distance"]),
+        "segment_deltas": segment_deltas,
+        "weighted_segment_deltas": weighted_segment_deltas,
+        "dominant_gap_segment": dominant_segment,
+    }
 
 
 def rerank_candidate_rows(
@@ -1503,6 +1612,24 @@ def rerank_candidate_rows(
                 and np.isfinite(top_distance)
                 else None
             )
+            candidates_before_oracle = []
+            if oracle_record is not None and oracle_rank is not None:
+                for rank, record in enumerate(ranked_records[: oracle_rank - 1], start=1):
+                    if len(candidates_before_oracle) >= debug_topk:
+                        break
+                    gap = oracle_gap_diagnostics(
+                        oracle_record,
+                        record,
+                        score_kind,
+                        component_weights,
+                    )
+                    candidates_before_oracle.append(
+                        {
+                            "rank": rank,
+                            "record": record,
+                            **gap,
+                        }
+                    )
             if len(debug_rows) < debug_topk or oracle_record is not None:
                 debug_rows.append(
                     {
@@ -1519,6 +1646,7 @@ def rerank_candidate_rows(
                         "oracle_distance": oracle_distance,
                         "oracle_baseline_distance": oracle_baseline_distance,
                         "oracle_top_distance_delta": distance_delta,
+                        "candidates_before_oracle": candidates_before_oracle,
                     }
                 )
 
@@ -2008,10 +2136,63 @@ def main() -> None:
                 )
                 print(f"oracle_drift_tokens: {' '.join(oracle['drift_tokens'])}")
                 print(f"oracle_diffusion_tokens: {' '.join(oracle['diffusion_tokens'])}")
+            if debug.get("candidates_before_oracle"):
+                print("candidates_before_oracle:")
+                for item in debug["candidates_before_oracle"]:
+                    candidate = item["record"]
+                    deltas = item["segment_deltas"]
+                    weighted_deltas = item["weighted_segment_deltas"]
+                    print(
+                        f"pre_oracle_rank={item['rank']} "
+                        f"source={candidate['source']} "
+                        f"is_pair={int(candidate['source'] == 'pair')} "
+                        f"best_constant={_fmt_constant(candidate['best_constant'])} "
+                        f"distance={_fmt_distance(candidate['distance'])} "
+                        f"distance_delta="
+                        f"{_fmt_distance(item['distance_delta'])} "
+                        f"multi_u0_moments_delta="
+                        f"{_fmt_distance(deltas['multi_u0_moments'])} "
+                        f"active_kramers_moyal_delta="
+                        f"{_fmt_distance(deltas['active_kramers_moyal'])} "
+                        f"gaussian_weak_kernel_delta="
+                        f"{_fmt_distance(deltas['gaussian_weak_kernel'])} "
+                        f"dominant_gap_segment="
+                        f"{item['dominant_gap_segment'] or 'none'} "
+                        f"model_score={candidate['model_score']:.6f} "
+                        f"normalized_model_score="
+                        f"{candidate['normalized_model_score']:.6f} "
+                        f"exact={int(candidate['exact'])} "
+                        f"relaxed_no_constants={int(candidate['relaxed'])} "
+                        f"failure_reason={candidate['failure_reason'] or 'none'}"
+                    )
+                    print(
+                        "pre_oracle_weighted_deltas "
+                        f"multi_u0_moments="
+                        f"{_fmt_distance(weighted_deltas['multi_u0_moments'])} "
+                        f"active_kramers_moyal="
+                        f"{_fmt_distance(weighted_deltas['active_kramers_moyal'])} "
+                        f"gaussian_weak_kernel="
+                        f"{_fmt_distance(weighted_deltas['gaussian_weak_kernel'])}"
+                    )
+                    print(
+                        "pre_oracle_segment_distances "
+                        f"multi_u0_moments="
+                        f"{_fmt_distance(candidate['multi_u0_moments_distance'])} "
+                        f"active_kramers_moyal="
+                        f"{_fmt_distance(candidate['active_kramers_moyal_distance'])} "
+                        f"gaussian_weak_kernel="
+                        f"{_fmt_distance(candidate['gaussian_weak_kernel_distance'])}"
+                    )
+                    print(f"pre_oracle_drift_tokens: {' '.join(candidate['drift_tokens'])}")
+                    print(
+                        "pre_oracle_diffusion_tokens: "
+                        f"{' '.join(candidate['diffusion_tokens'])}"
+                    )
             for rank, candidate in enumerate(debug["candidates"], start=1):
                 print(
                     f"candidate_rank={rank} "
                     f"source={candidate['source']} "
+                    f"is_pair={int(candidate['source'] == 'pair')} "
                     f"best_constant={_fmt_constant(candidate['best_constant'])} "
                     f"distance={_fmt_distance(candidate['distance'])} "
                     f"baseline_distance="

@@ -2,28 +2,30 @@
 
 ## Last Codex Workflow
 
-Codex added lightweight constant-sensitivity diagnostics for reranking in
-`sde_validation_probe.py`.
+Codex added top non-oracle template diagnostics and extra constant-grid score
+variants in `sde_validation_probe.py`.
 
 Key changes:
 
-- added `--rerank-score constant_grid_full`;
-- added `--rerank-score constant_grid_componentwise`;
-- added `--rerank-constant-values`, defaulting to `0.25,0.5,1.0,2.0,4.0`;
-- candidate scoring can now grid-search a single global replacement value for
-  all `CONSTANT` tokens and use the best fingerprint distance;
-- debug output now reports `best_constant`, baseline `CONSTANT=1.0` rank and
-  distance, and after-grid rank and distance.
+- added `--rerank-score constant_grid_componentwise_no_multi_u0`;
+- added `--rerank-score constant_grid_active_only`;
+- added `--rerank-score constant_grid_moments_downweighted`;
+- when an oracle candidate exists, debug output now prints candidates ranked
+  before it, their best constants, paired/non-paired status, model scores,
+  segment distances, raw segment deltas, weighted segment deltas, and the
+  dominant score-gap segment.
 
 Validation:
 
 - `py_compile sde_validation_probe.py`: passed.
 - `git diff --check`: passed.
-- Small 2-step smoke with constant-grid reranking diagnostics: passed.
+- Small 2-step smoke with top non-oracle diagnostics: passed.
 - Eval-only checkpoint probe with
   `/private/tmp/gensr_sde_role_token_2000/role_token_2000.pth`: passed on 16
-  held-out samples for both `componentwise` baseline and
-  `constant_grid_componentwise`.
+  held-out samples for four score variants:
+  `constant_grid_componentwise`,
+  `constant_grid_componentwise_no_multi_u0`, `constant_grid_active_only`, and
+  `constant_grid_moments_downweighted`.
 
 16-sample checkpoint probe result:
 
@@ -48,54 +50,46 @@ rerank_unique_paired_candidate_avg=3.500000
 Full and componentwise had the same selected exact/relaxed outcome: selected
 reranked exact/relaxed stayed 0 while oracle stayed 1/16.
 
-Constant-grid componentwise also kept selected exact/relaxed at 0 and oracle at
-1/16, but improved the inspected oracle candidate:
+Score variant comparison on the inspected oracle case:
 
 ```text
-baseline componentwise oracle_rank=8
-constant_grid_componentwise oracle_rank=5
-oracle_distance_constant_1=5.919984
-oracle_distance_after_grid=5.125097
-oracle_best_constant=0.5
-top_ranked_distance=3.722727
-top_ranked_best_constant=4
+constant_grid_componentwise:
+  oracle_rank=5, oracle_distance=5.125097, top_distance=3.722727
+constant_grid_componentwise_no_multi_u0:
+  oracle_rank=2, oracle_distance=1.507198, top_distance=1.505882
+constant_grid_active_only:
+  oracle_rank=4, oracle_distance=0.875270, top_distance=0.754370
+constant_grid_moments_downweighted:
+  oracle_rank=11, oracle_distance=3.996443, top_distance=2.803234
 ```
 
-Observed full-fingerprint oracle diagnostic:
+All variants kept selected reranked exact/relaxed at 0 while oracle exact/relaxed
+stayed 1/16.
+
+Closest non-oracle gap under `constant_grid_componentwise_no_multi_u0`:
 
 ```text
-oracle_rank=11
-top_ranked_distance=1.122157
-oracle_distance=1.392796
-oracle_top_distance_delta=0.270639
-oracle multi_u0_moments=2.564722
-top multi_u0_moments=1.704655
-oracle active_kramers_moyal=1.001000
-top active_kramers_moyal=1.278720
-oracle gaussian_weak_kernel=1.353263
-top gaussian_weak_kernel=0.931437
+oracle:
+  source=pair
+  best_constant=4
+  drift=mul mul CONSTANT CONSTANT sin x_0
+  diffusion=add CONSTANT mul CONSTANT abs x_0
+top non-oracle:
+  source=beam
+  best_constant=1
+  drift=mul mul CONSTANT CONSTANT CONSTANT
+  diffusion=add CONSTANT mul CONSTANT abs x_0
+distance_delta=0.001317
+weighted active delta=-0.086207
+weighted weak delta=0.087524
+dominant score-gap segment=gaussian_weak_kernel
 ```
 
-Observed componentwise oracle diagnostic:
-
-```text
-oracle_rank=8
-top_ranked_distance=5.126071
-oracle_distance=5.919984
-oracle_top_distance_delta=0.793913
-oracle multi_u0_moments=2.564722
-top multi_u0_moments=2.131954
-oracle active_kramers_moyal=1.001000
-top active_kramers_moyal=0.926156
-oracle gaussian_weak_kernel=1.353263
-top gaussian_weak_kernel=1.141805
-```
-
-Interpretation: fixed `CONSTANT=1.0` was part of the problem, because grid
-fitting improved the oracle rank and distance. It was not sufficient: a
-non-oracle candidate with `best_constant=4` still ranked first. The next step is
-to inspect those top non-oracle templates and score variants before redesigning
-the fingerprint.
+Interpretation: dropping `multi_u0_moments` nearly selects the oracle. The
+remaining miss is a tiny active+weak tradeoff: the oracle is better on active
+moments, but the non-oracle wins slightly more on weak-kernel distance. The next
+step is lightweight tie-breaking or structure-aware penalties, not fingerprint
+redesign or retraining.
 
 ## Previous Codex Workflow
 
