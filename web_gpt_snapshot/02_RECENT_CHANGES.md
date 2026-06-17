@@ -2,26 +2,28 @@
 
 ## Last Codex Workflow
 
-Codex added rerank score diagnostics and componentwise scoring for paired
-candidates in `sde_validation_probe.py`.
+Codex added lightweight constant-sensitivity diagnostics for reranking in
+`sde_validation_probe.py`.
 
 Key changes:
 
-- added `--rerank-score componentwise`;
-- added `--rerank-component-weights`, defaulting to `1.0,2.0,1.0`;
-- debug output now includes full fingerprint distance and segment distances for
-  `multi_u0_moments`, `active_kramers_moyal`, and `gaussian_weak_kernel`;
-- debug output now reports oracle candidate rank, oracle distance, top-ranked
-  distance, and oracle-minus-top distance delta when an oracle candidate exists.
+- added `--rerank-score constant_grid_full`;
+- added `--rerank-score constant_grid_componentwise`;
+- added `--rerank-constant-values`, defaulting to `0.25,0.5,1.0,2.0,4.0`;
+- candidate scoring can now grid-search a single global replacement value for
+  all `CONSTANT` tokens and use the best fingerprint distance;
+- debug output now reports `best_constant`, baseline `CONSTANT=1.0` rank and
+  distance, and after-grid rank and distance.
 
 Validation:
 
 - `py_compile sde_validation_probe.py`: passed.
 - `git diff --check`: passed.
-- Small 2-step smoke with componentwise reranking diagnostics: passed.
+- Small 2-step smoke with constant-grid reranking diagnostics: passed.
 - Eval-only checkpoint probe with
   `/private/tmp/gensr_sde_role_token_2000/role_token_2000.pth`: passed on 16
-  held-out samples for both `full_fingerprint` and `componentwise`.
+  held-out samples for both `componentwise` baseline and
+  `constant_grid_componentwise`.
 
 16-sample checkpoint probe result:
 
@@ -45,6 +47,19 @@ rerank_unique_paired_candidate_avg=3.500000
 
 Full and componentwise had the same selected exact/relaxed outcome: selected
 reranked exact/relaxed stayed 0 while oracle stayed 1/16.
+
+Constant-grid componentwise also kept selected exact/relaxed at 0 and oracle at
+1/16, but improved the inspected oracle candidate:
+
+```text
+baseline componentwise oracle_rank=8
+constant_grid_componentwise oracle_rank=5
+oracle_distance_constant_1=5.919984
+oracle_distance_after_grid=5.125097
+oracle_best_constant=0.5
+top_ranked_distance=3.722727
+top_ranked_best_constant=4
+```
 
 Observed full-fingerprint oracle diagnostic:
 
@@ -76,12 +91,11 @@ oracle gaussian_weak_kernel=1.353263
 top gaussian_weak_kernel=1.141805
 ```
 
-Interpretation: componentwise improved the inspected oracle candidate from rank
-11 to rank 8, but still did not select it. Under componentwise scoring, every
-segment was worse for the oracle than for the top-ranked candidate, with the
-largest gap in `multi_u0_moments`. This suggests the next issue may be constant
-sensitivity from evaluating all `CONSTANT` tokens as `1.0`, rather than
-fingerprint redesign.
+Interpretation: fixed `CONSTANT=1.0` was part of the problem, because grid
+fitting improved the oracle rank and distance. It was not sufficient: a
+non-oracle candidate with `best_constant=4` still ranked first. The next step is
+to inspect those top non-oracle templates and score variants before redesigning
+the fingerprint.
 
 ## Previous Codex Workflow
 

@@ -75,6 +75,7 @@ PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/
   --rerank-topk-from-beam 8 \
   --rerank-score componentwise \
   --rerank-component-weights 1.0,2.0,1.0 \
+  --rerank-constant-values 0.25,0.5,1.0,2.0,4.0 \
   --rerank-debug-topk 2 \
   --sample-candidates 8 \
   --sample-temperatures 0.8,1.0,1.2 \
@@ -83,6 +84,14 @@ PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/
   --pair-drift-diffusion-candidates 8 \
   --pair-drift-topk 4 \
   --pair-diffusion-topk 6
+```
+
+For constant-sensitivity diagnostics, change the rerank mode to:
+
+```bash
+--rerank-score constant_grid_componentwise \
+--rerank-component-weights 1.0,2.0,1.0 \
+--rerank-constant-values 0.25,0.5,1.0,2.0,4.0
 ```
 
 ## Regenerate 2000-Step Checkpoint

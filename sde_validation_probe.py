@@ -64,10 +64,17 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--rerank-topk-from-beam", type=int, default=0)
     parser.add_argument(
         "--rerank-score",
-        choices=("full_fingerprint", "short_moment", "componentwise"),
+        choices=(
+            "full_fingerprint",
+            "short_moment",
+            "componentwise",
+            "constant_grid_full",
+            "constant_grid_componentwise",
+        ),
         default="full_fingerprint",
     )
     parser.add_argument("--rerank-component-weights", type=str, default="1.0,2.0,1.0")
+    parser.add_argument("--rerank-constant-values", type=str, default="0.25,0.5,1.0,2.0,4.0")
     parser.add_argument("--rerank-debug-topk", type=int, default=0)
     parser.add_argument("--sample-candidates", type=int, default=0)
     parser.add_argument("--sample-temperature", type=float, default=1.0)
@@ -1040,36 +1047,42 @@ def sequence_metrics(
     }
 
 
-def _parse_prefix_expr(tokens: list[str], pos: int = 0):
+def _parse_prefix_expr(tokens: list[str], pos: int = 0, constant_value: float = 1.0):
     if pos >= len(tokens):
         return None, pos
     token = tokens[pos]
     if token in {"x_0", "CONSTANT"}:
-        return ("u" if token == "x_0" else "1.0"), pos + 1
+        return ("u" if token == "x_0" else repr(float(constant_value))), pos + 1
     if token in {"add", "sub", "mul"}:
-        left, next_pos = _parse_prefix_expr(tokens, pos + 1)
+        left, next_pos = _parse_prefix_expr(tokens, pos + 1, constant_value)
         if left is None:
             return None, pos
-        right, next_pos = _parse_prefix_expr(tokens, next_pos)
+        right, next_pos = _parse_prefix_expr(tokens, next_pos, constant_value)
         if right is None:
             return None, pos
         op = {"add": "+", "sub": "-", "mul": "*"}[token]
         return f"({left} {op} {right})", next_pos
     if token in {"abs", "sqrt", "sin"}:
-        child, next_pos = _parse_prefix_expr(tokens, pos + 1)
+        child, next_pos = _parse_prefix_expr(tokens, pos + 1, constant_value)
         if child is None:
             return None, pos
         return f"{token}({child})", next_pos
     return None, pos
 
 
-def candidate_tokens_to_system(tokens: list[str]) -> SDESystem | None:
+def candidate_tokens_to_system(
+    tokens: list[str],
+    constant_value: float = 1.0,
+) -> SDESystem | None:
     split = split_sde_tokens(tokens)
     if split is None:
         return None
     drift_tokens, diffusion_tokens = split
-    drift_expr, drift_pos = _parse_prefix_expr(drift_tokens)
-    diffusion_expr, diffusion_pos = _parse_prefix_expr(diffusion_tokens)
+    drift_expr, drift_pos = _parse_prefix_expr(drift_tokens, constant_value=constant_value)
+    diffusion_expr, diffusion_pos = _parse_prefix_expr(
+        diffusion_tokens,
+        constant_value=constant_value,
+    )
     if drift_expr is None or diffusion_expr is None:
         return None
     if drift_pos != len(drift_tokens) or diffusion_pos != len(diffusion_tokens):
@@ -1096,6 +1109,43 @@ def parse_component_weights(raw: str) -> tuple[float, float, float]:
     if len(parts) != 3:
         raise ValueError("--rerank-component-weights must have three comma-separated values")
     return tuple(float(part) for part in parts)
+
+
+def parse_constant_values(raw: str) -> list[float]:
+    values = [float(part.strip()) for part in raw.split(",") if part.strip()]
+    if not values:
+        raise ValueError("--rerank-constant-values must include at least one value")
+    if not all(np.isfinite(value) for value in values):
+        raise ValueError("--rerank-constant-values must be finite")
+    return values
+
+
+def rerank_base_score_kind(score_kind: str) -> str:
+    if score_kind == "constant_grid_full":
+        return "full_fingerprint"
+    if score_kind == "constant_grid_componentwise":
+        return "componentwise"
+    return score_kind
+
+
+def uses_constant_grid(score_kind: str) -> bool:
+    return score_kind in {"constant_grid_full", "constant_grid_componentwise"}
+
+
+def empty_distance_details() -> dict:
+    return {
+        "distance": None,
+        "full_distance": None,
+        "multi_u0_moments_distance": None,
+        "active_kramers_moyal_distance": None,
+        "gaussian_weak_kernel_distance": None,
+        "baseline_distance": None,
+        "baseline_full_distance": None,
+        "baseline_multi_u0_moments_distance": None,
+        "baseline_active_kramers_moyal_distance": None,
+        "baseline_gaussian_weak_kernel_distance": None,
+        "best_constant": None,
+    }
 
 
 def _normalized_l2(target: np.ndarray, candidate: np.ndarray) -> float:
@@ -1149,6 +1199,94 @@ def fingerprint_distance_details(
     return details
 
 
+def score_candidate_system(
+    words: list[str],
+    target_y: np.ndarray,
+    config: FingerprintConfig,
+    score_kind: str,
+    component_weights: tuple[float, float, float],
+    constant_values: list[float],
+    seed: int,
+) -> tuple[dict | None, str | None, int]:
+    base_score_kind = rerank_base_score_kind(score_kind)
+    grid_enabled = uses_constant_grid(score_kind)
+    eval_constants = constant_values if grid_enabled and "CONSTANT" in words else [1.0]
+    baseline_details = None
+    best_details = None
+    fingerprint_failures = 0
+    failure_reasons = []
+
+    for constant_value in eval_constants:
+        system = candidate_tokens_to_system(words, constant_value=constant_value)
+        if system is None:
+            return None, "parse_failed", 0
+        _, y_data, meta = solve_fingerprint(system, config, seed)
+        if y_data is None or not np.all(np.isfinite(y_data)):
+            fingerprint_failures += 1
+            failure_reasons.append(meta.get("error", "fingerprint_failed"))
+            continue
+        details = fingerprint_distance_details(
+            target_y,
+            y_data,
+            base_score_kind,
+            component_weights,
+        )
+        details["best_constant"] = constant_value
+        if constant_value == 1.0:
+            baseline_details = details
+        if np.isfinite(details["distance"]) and (
+            best_details is None or details["distance"] < best_details["distance"]
+        ):
+            best_details = details
+
+    if grid_enabled and baseline_details is None and 1.0 not in eval_constants:
+        baseline_system = candidate_tokens_to_system(words, constant_value=1.0)
+        if baseline_system is None:
+            return None, "parse_failed", fingerprint_failures
+        _, baseline_y, meta = solve_fingerprint(baseline_system, config, seed)
+        if baseline_y is None or not np.all(np.isfinite(baseline_y)):
+            failure_reasons.append(meta.get("error", "fingerprint_failed"))
+        else:
+            baseline_details = fingerprint_distance_details(
+                target_y,
+                baseline_y,
+                base_score_kind,
+                component_weights,
+            )
+            baseline_details["best_constant"] = 1.0
+
+    if best_details is None:
+        reason = failure_reasons[0] if failure_reasons else "fingerprint_failed"
+        return None, reason, max(1, fingerprint_failures)
+
+    if baseline_details is None:
+        baseline_details = best_details
+
+    return {
+        "distance": best_details["distance"],
+        "full_distance": best_details["full_distance"],
+        "multi_u0_moments_distance": best_details["multi_u0_moments_distance"],
+        "active_kramers_moyal_distance": best_details[
+            "active_kramers_moyal_distance"
+        ],
+        "gaussian_weak_kernel_distance": best_details[
+            "gaussian_weak_kernel_distance"
+        ],
+        "baseline_distance": baseline_details["distance"],
+        "baseline_full_distance": baseline_details["full_distance"],
+        "baseline_multi_u0_moments_distance": baseline_details[
+            "multi_u0_moments_distance"
+        ],
+        "baseline_active_kramers_moyal_distance": baseline_details[
+            "active_kramers_moyal_distance"
+        ],
+        "baseline_gaussian_weak_kernel_distance": baseline_details[
+            "gaussian_weak_kernel_distance"
+        ],
+        "best_constant": best_details["best_constant"],
+    }, None, fingerprint_failures
+
+
 def rerank_candidate_rows(
     env,
     samples: list[dict],
@@ -1159,6 +1297,7 @@ def rerank_candidate_rows(
     config: FingerprintConfig,
     score_kind: str,
     component_weights: tuple[float, float, float],
+    constant_values: list[float],
     base_seed: int,
     max_len: int,
     debug_topk: int,
@@ -1215,13 +1354,7 @@ def rerank_candidate_rows(
             relaxed_hit = template_tokens(words) == template_tokens(truth)
             failure_reason = None
             distance = None
-            distance_details = {
-                "distance": None,
-                "full_distance": None,
-                "multi_u0_moments_distance": None,
-                "active_kramers_moyal_distance": None,
-                "gaussian_weak_kernel_distance": None,
-            }
+            distance_details = empty_distance_details()
             system = candidate_tokens_to_system(words)
             if system is None:
                 failure_reason = "parse_failed"
@@ -1241,10 +1374,18 @@ def rerank_candidate_rows(
                 )
                 continue
             seed = base_seed + sample_idx * 1009 + candidate_idx
-            x_data, y_data, meta = solve_fingerprint(system, config, seed)
-            if x_data is None or y_data is None or not np.all(np.isfinite(y_data)):
+            distance_details, failure_reason, _ = score_candidate_system(
+                words,
+                sample["y_to_fit"],
+                config,
+                score_kind,
+                component_weights,
+                constant_values,
+                seed,
+            )
+            if distance_details is None:
+                distance_details = empty_distance_details()
                 fingerprint_failures += 1
-                failure_reason = meta.get("error", "fingerprint_failed")
                 records.append(
                     {
                         "words": words,
@@ -1263,12 +1404,6 @@ def rerank_candidate_rows(
             valid += 1
             if is_pair:
                 pair_valid += 1
-            distance_details = fingerprint_distance_details(
-                sample["y_to_fit"],
-                y_data,
-                score_kind,
-                component_weights,
-            )
             distance = distance_details["distance"]
             if not np.isfinite(distance):
                 fingerprint_failures += 1
@@ -1321,13 +1456,18 @@ def rerank_candidate_rows(
         else:
             rows.append(best[3]["tensor"].detach().cpu())
         if debug_topk > 0:
-            ranked_records = sorted(
-                records,
-                key=lambda item: (
-                    item["distance"] is None or not np.isfinite(item["distance"]),
-                    item["distance"] if item["distance"] is not None else float("inf"),
+            def _record_sort_key(item, distance_key: str):
+                value = item[distance_key]
+                return (
+                    value is None or not np.isfinite(value),
+                    value if value is not None else float("inf"),
                     -item["normalized_model_score"],
-                ),
+                )
+
+            ranked_records = sorted(records, key=lambda item: _record_sort_key(item, "distance"))
+            baseline_ranked_records = sorted(
+                records,
+                key=lambda item: _record_sort_key(item, "baseline_distance"),
             )
             oracle_rank = None
             oracle_record = None
@@ -1336,12 +1476,25 @@ def rerank_candidate_rows(
                     oracle_rank = rank
                     oracle_record = record
                     break
+            oracle_baseline_rank = None
+            oracle_baseline_record = None
+            for rank, record in enumerate(baseline_ranked_records, start=1):
+                if record["exact"] or record["relaxed"]:
+                    oracle_baseline_rank = rank
+                    oracle_baseline_record = record
+                    break
             top_distance = (
                 ranked_records[0]["distance"]
                 if ranked_records and ranked_records[0]["distance"] is not None
                 else None
             )
+            top_record = ranked_records[0] if ranked_records else None
             oracle_distance = oracle_record["distance"] if oracle_record is not None else None
+            oracle_baseline_distance = (
+                oracle_baseline_record["baseline_distance"]
+                if oracle_baseline_record is not None
+                else None
+            )
             distance_delta = (
                 oracle_distance - top_distance
                 if oracle_distance is not None
@@ -1358,10 +1511,13 @@ def rerank_candidate_rows(
                         "greedy": greedy_words,
                         "constrained_beam": beam_words,
                         "candidates": ranked_records[:debug_topk],
+                        "top_candidate": top_record,
                         "oracle_rank": oracle_rank,
+                        "oracle_baseline_rank": oracle_baseline_rank,
                         "oracle_candidate": oracle_record,
                         "top_distance": top_distance,
                         "oracle_distance": oracle_distance,
+                        "oracle_baseline_distance": oracle_baseline_distance,
                         "oracle_top_distance_delta": distance_delta,
                     }
                 )
@@ -1464,6 +1620,7 @@ def evaluate(
     rerank_topk_from_beam: int,
     rerank_score: str,
     rerank_component_weights: tuple[float, float, float],
+    rerank_constant_values: list[float],
     fingerprint_config: FingerprintConfig,
     rerank_debug_topk: int,
     sample_candidates: int,
@@ -1557,6 +1714,7 @@ def evaluate(
                     fingerprint_config,
                     rerank_score,
                     rerank_component_weights,
+                    rerank_constant_values,
                     seed + i * 100003,
                     trainer.params.max_generated_output_len,
                     rerank_debug_topk,
@@ -1769,6 +1927,7 @@ def main() -> None:
         args.sample_temperature,
     )
     rerank_component_weights = parse_component_weights(args.rerank_component_weights)
+    rerank_constant_values = parse_constant_values(args.rerank_constant_values)
     metrics = evaluate(
         trainer,
         eval_samples,
@@ -1780,6 +1939,7 @@ def main() -> None:
         args.rerank_topk_from_beam,
         args.rerank_score,
         rerank_component_weights,
+        rerank_constant_values,
         fingerprint_config,
         args.rerank_debug_topk,
         args.sample_candidates,
@@ -1804,14 +1964,27 @@ def main() -> None:
         def _fmt_distance(value):
             return "nan" if value is None or not np.isfinite(value) else f"{value:.6f}"
 
+        def _fmt_constant(value):
+            return "none" if value is None or not np.isfinite(value) else f"{value:.6g}"
+
         for debug in metrics["rerank_debug"]:
             print(f"sample_index={debug['sample_index']}")
             print(f"truth: {' '.join(debug['truth'])}")
             print(f"greedy: {' '.join(debug['greedy'])}")
             print(f"constrained_beam: {' '.join(debug['constrained_beam'])}")
             print(f"oracle_rank={debug['oracle_rank']}")
+            print(f"oracle_rank_constant_1={debug['oracle_baseline_rank']}")
             print(f"top_ranked_distance={_fmt_distance(debug['top_distance'])}")
+            if debug["top_candidate"] is not None:
+                print(
+                    "top_ranked_best_constant="
+                    f"{_fmt_constant(debug['top_candidate']['best_constant'])}"
+                )
             print(f"oracle_distance={_fmt_distance(debug['oracle_distance'])}")
+            print(
+                "oracle_distance_constant_1="
+                f"{_fmt_distance(debug['oracle_baseline_distance'])}"
+            )
             print(
                 "oracle_top_distance_delta="
                 f"{_fmt_distance(debug['oracle_top_distance_delta'])}"
@@ -1821,7 +1994,10 @@ def main() -> None:
                 print(
                     "oracle_candidate "
                     f"source={oracle['source']} "
+                    f"best_constant={_fmt_constant(oracle['best_constant'])} "
                     f"distance={_fmt_distance(oracle['distance'])} "
+                    f"baseline_distance="
+                    f"{_fmt_distance(oracle['baseline_distance'])} "
                     f"full_distance={_fmt_distance(oracle['full_distance'])} "
                     f"multi_u0_moments_distance="
                     f"{_fmt_distance(oracle['multi_u0_moments_distance'])} "
@@ -1836,7 +2012,10 @@ def main() -> None:
                 print(
                     f"candidate_rank={rank} "
                     f"source={candidate['source']} "
+                    f"best_constant={_fmt_constant(candidate['best_constant'])} "
                     f"distance={_fmt_distance(candidate['distance'])} "
+                    f"baseline_distance="
+                    f"{_fmt_distance(candidate['baseline_distance'])} "
                     f"full_distance={_fmt_distance(candidate['full_distance'])} "
                     f"multi_u0_moments_distance="
                     f"{_fmt_distance(candidate['multi_u0_moments_distance'])} "

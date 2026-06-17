@@ -57,6 +57,11 @@ diagnosing why the rerank score does not select those oracle candidates.
   1/16. The observed oracle candidate ranked 11 under `full_fingerprint` and 8
   under `componentwise`; all fingerprint segments scored it worse than the top
   candidate, with the largest gap in `multi_u0_moments`.
+- Added global constant-grid reranking diagnostics. On the same 16-sample
+  checkpoint probe, `constant_grid_componentwise` kept selected exact/relaxed at
+  0 and oracle at 1/16, but improved the inspected oracle candidate from rank 8
+  to rank 5 and reduced its distance from 5.919984 to 5.125097 with
+  `best_constant=0.5`.
 - Logged validated experiments in
   [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md).
 
@@ -64,15 +69,16 @@ diagnosing why the rerank score does not select those oracle candidates.
 
 - Transitioning from "can the model learn the fingerprint?" to "can we decode
   the right symbolic sequence?".
-- Diagnosing why fingerprint-distance segment scores prefer non-oracle templates
-  over the oracle candidate exposed by drift/diffusion pairing.
+- Diagnosing why constant-aware fingerprint-distance scoring still prefers
+  non-oracle templates over the oracle candidate exposed by drift/diffusion
+  pairing.
 
 ## Next Steps
 
-1. Add richer candidate-score diagnostics around constants/template equivalence,
-   because the oracle template can have worse simulated fingerprint distance
-   when `CONSTANT` is fixed to `1.0`.
-2. Compare score variants that reduce constant-sensitivity before considering
+1. Inspect the top non-oracle candidates that beat the oracle after constant
+   grid fitting; compare their drift/diffusion structure and segment distances.
+2. Try lightweight score variants that combine constant-grid fitting with
+   different segment weights or top-k oracle diagnostics before considering
    fingerprint redesign.
 3. Keep drift/diffusion pairing enabled and tune candidate pool size carefully
    because fingerprint recomputation is CPU-expensive.
@@ -123,9 +129,9 @@ diagnosing why the rerank score does not select those oracle candidates.
   did not produce oracle hits in a 16-sample checkpoint eval.
 - Drift/diffusion pairing produced nonzero oracle hits, but the current
   fingerprint-distance score still did not choose them in the 16-sample eval.
-- Full and componentwise reranking both missed the inspected oracle candidate;
-  `componentwise` improved its rank from 11 to 8, but `multi_u0_moments`
-  still contributed the largest disadvantage.
+- Constant-grid componentwise reranking improved the inspected oracle candidate
+  from rank 8 to 5, but still did not select it; fixed `CONSTANT=1.0` is part of
+  the score problem, not the whole problem.
 - The main checkpoint currently lives outside the repo in `/private/tmp`, so it
   may disappear.
 - `environment.yml` is upstream and Linux-oriented; the recent local experiments

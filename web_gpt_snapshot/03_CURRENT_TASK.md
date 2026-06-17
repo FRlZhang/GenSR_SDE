@@ -2,7 +2,8 @@
 
 ## Next Engineering Task
 
-Diagnose constant sensitivity and score behavior over paired oracle candidates.
+Diagnose why constant-grid scoring still ranks non-oracle templates above paired
+oracle candidates.
 
 At the end of that workflow, update `web_gpt_snapshot/02_RECENT_CHANGES.md` and
 `web_gpt_snapshot/03_CURRENT_TASK.md`. Also update `01_PROJECT_STATUS.md` if the
@@ -13,9 +14,9 @@ sampling, and drift/diffusion pairing are implemented and verified. A 16-sample
 eval-only checkpoint probe with pairing produced nonzero oracle exact/relaxed
 hits (`1/16`), but selected reranked exact/relaxed metrics remained zero.
 Componentwise scoring improved the inspected oracle candidate from rank 11 to
-rank 8 but still missed it; in that case, all componentwise segments scored the
-oracle worse than the top candidate, with `multi_u0_moments` contributing the
-largest gap.
+rank 8. Constant-grid componentwise improved it further to rank 5 and reduced
+its distance from 5.919984 to 5.125097 with `best_constant=0.5`, but selected
+reranked exact/relaxed metrics remained zero.
 
 ## Primary File To Modify
 
@@ -25,10 +26,11 @@ sde_validation_probe.py
 
 Likely next additions:
 
-- inspect how fixed `CONSTANT=1.0` affects oracle template fingerprints;
-- test lightweight constant handling for reranking candidates without changing
-  training or target format;
-- compare score variants that reduce constant sensitivity;
+- inspect the top non-oracle templates that still beat the oracle after
+  constant-grid fitting;
+- compare their drift/diffusion structure, best constants, and segment
+  distances against the oracle candidate;
+- try lightweight constant-grid score variants or segment weights;
 - keep pairing enabled while controlling candidate counts for CPU cost;
 - keep reporting reranked metrics beside greedy and constrained beam.
 
