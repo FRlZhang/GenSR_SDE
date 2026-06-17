@@ -34,7 +34,7 @@ if not torch.cuda.is_available():
 from parsers import get_parser
 from sde_dataset_generator import build_sample, encode_sde
 from sde_fingerprint import FingerprintConfig
-from simulator_sde import SDESystem, sample_sde_system
+from simulator_sde import SDESystem, sample_sde_system, solve_fingerprint
 from symbolicregression.envs import build_env
 from symbolicregression.model import build_modules, check_model_params
 from symbolicregression.trainer_vae import Trainer
@@ -60,6 +60,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--model-dim", type=int, default=None)
     parser.add_argument("--split-sde-loss", action="store_true")
     parser.add_argument("--constrained-beam-size", type=int, default=0)
+    parser.add_argument("--rerank-candidates", type=int, default=0)
+    parser.add_argument("--rerank-topk-from-beam", type=int, default=0)
+    parser.add_argument(
+        "--rerank-score",
+        choices=("full_fingerprint", "short_moment"),
+        default="full_fingerprint",
+    )
+    parser.add_argument("--rerank-debug-topk", type=int, default=0)
     parser.add_argument("--save-checkpoint", type=Path, default=None)
     parser.add_argument("--load-checkpoint", type=Path, default=None)
     parser.add_argument("--eval-only", action="store_true")
@@ -336,11 +344,32 @@ def generate_sde_constrained_beam(
     beam_size: int,
     length_penalty: float = 0.7,
 ) -> torch.Tensor:
+    candidate_rows = generate_sde_constrained_beam_candidates(
+        decoder,
+        src_enc,
+        env,
+        max_len,
+        beam_size,
+        1,
+        length_penalty,
+    )
+    return torch.stack([rows[0]["tensor"] for rows in candidate_rows], dim=0)
+
+
+def generate_sde_constrained_beam_candidates(
+    decoder,
+    src_enc,
+    env,
+    max_len: int,
+    beam_size: int,
+    n_candidates: int,
+    length_penalty: float = 0.7,
+) -> list[list[dict]]:
     token_sets = _sde_token_sets(env)
     eos_id = decoder.eos_index
     pad_id = decoder.pad_index
     device = src_enc.device
-    rows = []
+    all_rows = []
 
     for sample_idx in range(src_enc.size(0)):
         one_src = src_enc[sample_idx : sample_idx + 1]
@@ -418,21 +447,48 @@ def generate_sde_constrained_beam(
             )
 
         candidates = complete or beams
-        best = max(
+        ranked = heapq.nlargest(
+            max(1, n_candidates),
             candidates,
             key=lambda item: item["score"] / (len(item["tokens"]) ** length_penalty),
         )
-        tokens = best["tokens"]
-        if tokens[-1] != eos_id:
-            tokens = tokens + [eos_id]
-        if len(tokens) > max_len:
-            tokens = tokens[:max_len]
-            tokens[-1] = eos_id
-        row = torch.full((max_len,), pad_id, dtype=torch.long, device=device)
-        row[: len(tokens)] = torch.tensor(tokens, dtype=torch.long, device=device)
-        rows.append(row)
+        rows = []
+        seen = set()
+        for candidate in ranked:
+            tokens = candidate["tokens"]
+            if tokens[-1] != eos_id:
+                tokens = tokens + [eos_id]
+            if len(tokens) > max_len:
+                tokens = tokens[:max_len]
+                tokens[-1] = eos_id
+            key = tuple(tokens)
+            if key in seen:
+                continue
+            seen.add(key)
+            row = torch.full((max_len,), pad_id, dtype=torch.long, device=device)
+            row[: len(tokens)] = torch.tensor(tokens, dtype=torch.long, device=device)
+            rows.append(
+                {
+                    "tensor": row,
+                    "tokens": tokens,
+                    "model_score": candidate["score"],
+                    "normalized_model_score": candidate["score"]
+                    / (len(tokens) ** length_penalty),
+                }
+            )
+        if not rows:
+            row = torch.full((max_len,), pad_id, dtype=torch.long, device=device)
+            rows.append(
+                {
+                    "tensor": row,
+                    "tokens": [],
+                    "model_score": -float("inf"),
+                    "normalized_model_score": -float("inf"),
+                }
+            )
+        all_rows.append(rows)
 
-    return torch.stack(rows, dim=0)
+    return all_rows
 
 
 def prior_scores_for_batch(trainer: Trainer, samples: dict, min_generated_len: int):
@@ -514,6 +570,8 @@ def prior_scores_for_joint_batch(
     samples: dict,
     min_generated_len: int,
     constrained_beam_size: int = 0,
+    rerank_candidates: int = 0,
+    rerank_topk_from_beam: int = 0,
 ):
     env = trainer.env
     params = trainer.params
@@ -574,6 +632,22 @@ def prior_scores_for_joint_batch(
                 trainer.params.max_generated_output_len,
                 constrained_beam_size,
             )
+        rerank_beam_candidates = None
+        if rerank_candidates > 0:
+            rerank_beam_size = max(
+                1,
+                rerank_topk_from_beam,
+                constrained_beam_size,
+                rerank_candidates,
+            )
+            rerank_beam_candidates = generate_sde_constrained_beam_candidates(
+                decoder,
+                mapped_src_enc_prior,
+                env,
+                trainer.params.max_generated_output_len,
+                rerank_beam_size,
+                rerank_candidates,
+            )
     return (
         scores,
         y,
@@ -583,6 +657,7 @@ def prior_scores_for_joint_batch(
         constrained_generations.transpose(0, 1),
         constrained_len,
         constrained_beam,
+        rerank_beam_candidates,
     )
 
 
@@ -670,6 +745,234 @@ def sequence_metrics(
     }
 
 
+def _parse_prefix_expr(tokens: list[str], pos: int = 0):
+    if pos >= len(tokens):
+        return None, pos
+    token = tokens[pos]
+    if token in {"x_0", "CONSTANT"}:
+        return ("u" if token == "x_0" else "1.0"), pos + 1
+    if token in {"add", "sub", "mul"}:
+        left, next_pos = _parse_prefix_expr(tokens, pos + 1)
+        if left is None:
+            return None, pos
+        right, next_pos = _parse_prefix_expr(tokens, next_pos)
+        if right is None:
+            return None, pos
+        op = {"add": "+", "sub": "-", "mul": "*"}[token]
+        return f"({left} {op} {right})", next_pos
+    if token in {"abs", "sqrt", "sin"}:
+        child, next_pos = _parse_prefix_expr(tokens, pos + 1)
+        if child is None:
+            return None, pos
+        return f"{token}({child})", next_pos
+    return None, pos
+
+
+def candidate_tokens_to_system(tokens: list[str]) -> SDESystem | None:
+    split = split_sde_tokens(tokens)
+    if split is None:
+        return None
+    drift_tokens, diffusion_tokens = split
+    drift_expr, drift_pos = _parse_prefix_expr(drift_tokens)
+    diffusion_expr, diffusion_pos = _parse_prefix_expr(diffusion_tokens)
+    if drift_expr is None or diffusion_expr is None:
+        return None
+    if drift_pos != len(drift_tokens) or diffusion_pos != len(diffusion_tokens):
+        return None
+    return SDESystem(drift_expr, diffusion_expr)
+
+
+def split_sde_tokens(tokens: list[str]) -> tuple[list[str], list[str]] | None:
+    if "<DRIFT>" not in tokens or "<DIFFUSION>" not in tokens:
+        return None
+    drift_idx = tokens.index("<DRIFT>")
+    diffusion_idx = tokens.index("<DIFFUSION>")
+    if drift_idx > diffusion_idx:
+        return None
+    drift_tokens = tokens[drift_idx + 1 : diffusion_idx]
+    diffusion_tokens = tokens[diffusion_idx + 1 :]
+    if not drift_tokens or not diffusion_tokens:
+        return None
+    return drift_tokens, diffusion_tokens
+
+
+def rerank_distance(
+    target_y: np.ndarray,
+    candidate_y: np.ndarray,
+    score_kind: str,
+    config: FingerprintConfig,
+) -> float:
+    target = np.asarray(target_y, dtype=np.float64).reshape(-1)
+    candidate = np.asarray(candidate_y, dtype=np.float64).reshape(-1)
+    if target.shape != candidate.shape:
+        return float("inf")
+    if score_kind == "short_moment":
+        multi_len = len(config.multi_u0s) * config.moment_time_samples * 2
+        active_len = len(config.active_probe_times) * len(config.active_probe_x0s) * 2
+        score_slice = slice(multi_len, multi_len + active_len)
+        target = target[score_slice]
+        candidate = candidate[score_slice]
+    diff = target - candidate
+    if not np.all(np.isfinite(diff)):
+        return float("inf")
+    denom = np.linalg.norm(target) + 1e-8
+    return float(np.linalg.norm(diff) / denom)
+
+
+def rerank_candidate_rows(
+    env,
+    samples: list[dict],
+    truth_sequences: list[list[str]],
+    greedy_generations: torch.Tensor,
+    constrained_beam: torch.Tensor | None,
+    candidate_rows: list[list[dict]] | None,
+    config: FingerprintConfig,
+    score_kind: str,
+    base_seed: int,
+    max_len: int,
+    debug_topk: int,
+) -> tuple[torch.Tensor, dict]:
+    pad_id = env.equation_word2id["<PAD>"]
+    rows = []
+    attempted = 0
+    valid = 0
+    fingerprint_failures = 0
+    oracle_exact = 0
+    oracle_relaxed = 0
+    debug_rows = []
+
+    for sample_idx, sample in enumerate(samples):
+        best = None
+        records = []
+        candidates = candidate_rows[sample_idx] if candidate_rows is not None else []
+        truth = truth_sequences[sample_idx]
+        greedy_words = decode_generation(env, greedy_generations[sample_idx])
+        beam_words = (
+            decode_generation(env, constrained_beam[sample_idx])
+            if constrained_beam is not None
+            else []
+        )
+        for candidate_idx, candidate in enumerate(candidates):
+            attempted += 1
+            words = decode_generation(env, candidate["tensor"])
+            split = split_sde_tokens(words)
+            drift_tokens = split[0] if split is not None else []
+            diffusion_tokens = split[1] if split is not None else []
+            exact_hit = words == truth
+            relaxed_hit = template_tokens(words) == template_tokens(truth)
+            failure_reason = None
+            distance = None
+            system = candidate_tokens_to_system(words)
+            if system is None:
+                failure_reason = "parse_failed"
+                records.append(
+                    {
+                        "words": words,
+                        "drift_tokens": drift_tokens,
+                        "diffusion_tokens": diffusion_tokens,
+                        "distance": distance,
+                        "model_score": candidate["model_score"],
+                        "normalized_model_score": candidate["normalized_model_score"],
+                        "exact": exact_hit,
+                        "relaxed": relaxed_hit,
+                        "failure_reason": failure_reason,
+                    }
+                )
+                continue
+            seed = base_seed + sample_idx * 1009 + candidate_idx
+            x_data, y_data, meta = solve_fingerprint(system, config, seed)
+            if x_data is None or y_data is None or not np.all(np.isfinite(y_data)):
+                fingerprint_failures += 1
+                failure_reason = meta.get("error", "fingerprint_failed")
+                records.append(
+                    {
+                        "words": words,
+                        "drift_tokens": drift_tokens,
+                        "diffusion_tokens": diffusion_tokens,
+                        "distance": distance,
+                        "model_score": candidate["model_score"],
+                        "normalized_model_score": candidate["normalized_model_score"],
+                        "exact": exact_hit,
+                        "relaxed": relaxed_hit,
+                        "failure_reason": failure_reason,
+                    }
+                )
+                continue
+            valid += 1
+            distance = rerank_distance(
+                sample["y_to_fit"],
+                y_data,
+                score_kind,
+                config,
+            )
+            if not np.isfinite(distance):
+                fingerprint_failures += 1
+                failure_reason = "nonfinite_distance"
+                records.append(
+                    {
+                        "words": words,
+                        "drift_tokens": drift_tokens,
+                        "diffusion_tokens": diffusion_tokens,
+                        "distance": distance,
+                        "model_score": candidate["model_score"],
+                        "normalized_model_score": candidate["normalized_model_score"],
+                        "exact": exact_hit,
+                        "relaxed": relaxed_hit,
+                        "failure_reason": failure_reason,
+                    }
+                )
+                continue
+            record = {
+                "words": words,
+                "drift_tokens": drift_tokens,
+                "diffusion_tokens": diffusion_tokens,
+                "distance": distance,
+                "model_score": candidate["model_score"],
+                "normalized_model_score": candidate["normalized_model_score"],
+                "exact": exact_hit,
+                "relaxed": relaxed_hit,
+                "failure_reason": failure_reason,
+            }
+            records.append(record)
+            ranked = (distance, -candidate["normalized_model_score"], candidate_idx, candidate)
+            if best is None or ranked < best:
+                best = ranked
+        oracle_exact += int(any(record["exact"] for record in records))
+        oracle_relaxed += int(any(record["relaxed"] for record in records))
+        if best is None:
+            rows.append(torch.full((max_len,), pad_id, dtype=torch.long))
+        else:
+            rows.append(best[3]["tensor"].detach().cpu())
+        if debug_topk > 0 and len(debug_rows) < debug_topk:
+            ranked_records = sorted(
+                records,
+                key=lambda item: (
+                    item["distance"] is None or not np.isfinite(item["distance"]),
+                    item["distance"] if item["distance"] is not None else float("inf"),
+                    -item["normalized_model_score"],
+                ),
+            )
+            debug_rows.append(
+                {
+                    "sample_index": sample_idx,
+                    "truth": truth,
+                    "greedy": greedy_words,
+                    "constrained_beam": beam_words,
+                    "candidates": ranked_records[:debug_topk],
+                }
+            )
+
+    return torch.stack(rows, dim=0), {
+        "rerank_candidates_attempted": attempted,
+        "rerank_candidates_valid": valid,
+        "rerank_fingerprint_failures": fingerprint_failures,
+        "rerank_oracle_sequence_exact_count": oracle_exact,
+        "rerank_oracle_sequence_relaxed_no_constants_count": oracle_relaxed,
+        "rerank_oracle_total": len(samples),
+        "rerank_debug": debug_rows,
+    }
+
+
 def generate_eval_samples(args: argparse.Namespace, env, params) -> list[dict]:
     config = FingerprintConfig(
         n_paths=args.n_paths,
@@ -745,10 +1048,16 @@ def evaluate(
     seed: int,
     min_generated_len: int,
     constrained_beam_size: int,
+    rerank_candidates: int,
+    rerank_topk_from_beam: int,
+    rerank_score: str,
+    fingerprint_config: FingerprintConfig,
+    rerank_debug_topk: int,
 ) -> dict:
     rows = []
     seq_rows = []
     examples = []
+    rerank_stat_rows = []
     n_batches = int(np.ceil(len(eval_samples) / batch_size))
     for i in range(n_batches):
         chunk = eval_samples[i * batch_size : (i + 1) * batch_size]
@@ -771,12 +1080,15 @@ def evaluate(
                 constrained_generations,
                 _,
                 constrained_beam,
+                rerank_beam_candidates,
             ) = (
                 prior_scores_for_joint_batch(
                     trainer,
                     batch,
                     min_generated_len,
                     constrained_beam_size,
+                    rerank_candidates,
+                    rerank_topk_from_beam,
                 )
             )
             metrics = topk_metrics(scores, y)
@@ -803,6 +1115,30 @@ def evaluate(
                 )
                 seq.update({k: v for k, v in beam_seq.items() if k != "examples"})
                 examples.extend(beam_seq["examples"])
+            if rerank_candidates > 0:
+                reranked_generations, rerank_stats = rerank_candidate_rows(
+                    trainer.env,
+                    normalized,
+                    batch["tree_encoded"],
+                    generations,
+                    constrained_beam,
+                    rerank_beam_candidates,
+                    fingerprint_config,
+                    rerank_score,
+                    seed + i * 100003,
+                    trainer.params.max_generated_output_len,
+                    rerank_debug_topk,
+                )
+                reranked_seq = sequence_metrics(
+                    trainer.env,
+                    batch["tree_encoded"],
+                    reranked_generations,
+                    "reranked",
+                )
+                seq.update({k: v for k, v in reranked_seq.items() if k != "examples"})
+                rerank_stat_rows.append(rerank_stats)
+                if constrained_beam is None:
+                    examples.extend(reranked_seq["examples"])
             seq_rows.append({k: v for k, v in seq.items() if k != "examples"})
             if constrained_beam is None:
                 examples.extend(constrained_seq["examples"])
@@ -885,6 +1221,34 @@ def evaluate(
         result[key] = float(np.mean([row[key] for row in rows]))
     for key in seq_rows[0]:
         result[key] = float(np.mean([row[key] for row in seq_rows]))
+    if rerank_stat_rows:
+        for key in [
+            "rerank_candidates_attempted",
+            "rerank_candidates_valid",
+            "rerank_fingerprint_failures",
+        ]:
+            result[key] = float(np.sum([row[key] for row in rerank_stat_rows]))
+        oracle_total = max(
+            1.0,
+            float(np.sum([row["rerank_oracle_total"] for row in rerank_stat_rows])),
+        )
+        result["rerank_oracle_sequence_exact"] = float(
+            np.sum([row["rerank_oracle_sequence_exact_count"] for row in rerank_stat_rows])
+            / oracle_total
+        )
+        result["rerank_oracle_sequence_relaxed_no_constants"] = float(
+            np.sum(
+                [
+                    row["rerank_oracle_sequence_relaxed_no_constants_count"]
+                    for row in rerank_stat_rows
+                ]
+            )
+            / oracle_total
+        )
+        debug_rows = []
+        for row in rerank_stat_rows:
+            debug_rows.extend(row["rerank_debug"])
+        result["rerank_debug"] = debug_rows[:rerank_debug_topk]
     result["examples"] = examples[:5]
     return result
 
@@ -930,6 +1294,11 @@ def main() -> None:
     print(f"generated_eval_samples={len(eval_samples)}")
 
     print("phase=evaluate")
+    fingerprint_config = FingerprintConfig(
+        n_paths=args.n_paths,
+        n_steps=args.n_steps,
+        active_paths=args.active_paths,
+    )
     metrics = evaluate(
         trainer,
         eval_samples,
@@ -937,15 +1306,41 @@ def main() -> None:
         args.eval_seed + 17,
         args.min_generated_len,
         args.constrained_beam_size,
+        args.rerank_candidates,
+        args.rerank_topk_from_beam,
+        args.rerank_score,
+        fingerprint_config,
+        args.rerank_debug_topk,
     )
     for key, value in metrics.items():
-        if key == "examples":
+        if key in {"examples", "rerank_debug"}:
             continue
         print(f"{key}={value:.6f}")
     print("examples:")
     for ex in metrics["examples"]:
         print(f"truth: {ex['truth']}")
         print(f"pred : {ex['pred']}")
+    if args.rerank_debug_topk > 0 and metrics.get("rerank_debug"):
+        print("rerank_debug:")
+        for debug in metrics["rerank_debug"]:
+            print(f"sample_index={debug['sample_index']}")
+            print(f"truth: {' '.join(debug['truth'])}")
+            print(f"greedy: {' '.join(debug['greedy'])}")
+            print(f"constrained_beam: {' '.join(debug['constrained_beam'])}")
+            for rank, candidate in enumerate(debug["candidates"], start=1):
+                distance = candidate["distance"]
+                distance_str = "nan" if distance is None else f"{distance:.6f}"
+                print(
+                    f"candidate_rank={rank} "
+                    f"distance={distance_str} "
+                    f"model_score={candidate['model_score']:.6f} "
+                    f"normalized_model_score={candidate['normalized_model_score']:.6f} "
+                    f"exact={int(candidate['exact'])} "
+                    f"relaxed_no_constants={int(candidate['relaxed'])} "
+                    f"failure_reason={candidate['failure_reason'] or 'none'}"
+                )
+                print(f"drift_tokens: {' '.join(candidate['drift_tokens'])}")
+                print(f"diffusion_tokens: {' '.join(candidate['diffusion_tokens'])}")
 
 
 if __name__ == "__main__":

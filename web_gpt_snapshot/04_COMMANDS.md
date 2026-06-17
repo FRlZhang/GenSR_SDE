@@ -70,7 +70,11 @@ PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/
   --n-steps 60 \
   --max-generated-len 40 \
   --min-generated-len 8 \
-  --constrained-beam-size 8
+  --constrained-beam-size 8 \
+  --rerank-candidates 8 \
+  --rerank-topk-from-beam 8 \
+  --rerank-score full_fingerprint \
+  --rerank-debug-topk 2
 ```
 
 ## Regenerate 2000-Step Checkpoint

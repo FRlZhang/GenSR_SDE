@@ -3,9 +3,10 @@
 ## Current Goal
 
 Improve sequence-level SDE recovery after establishing that the current unified
-fingerprint and role-token target are learnable by GenSR. The immediate next
-step is candidate generation plus fingerprint-based reranking, not another
-fingerprint redesign.
+fingerprint and role-token target are learnable by GenSR. Candidate generation
+plus fingerprint-distance reranking is now implemented in the validation probe;
+the next step is improving candidate diversity and rerank scoring because the
+first small eval did not improve exact/relaxed recovery.
 
 ## Last Updated
 
@@ -27,6 +28,17 @@ fingerprint redesign.
   `token_top1=0.820002`, `token_top3=0.960833`, `token_top5=1.000000`.
 - Ran an eval-only constrained-beam test from the 2000-step checkpoint; exact
   recovery improved only slightly (`1/32`).
+- Added diverse constrained-beam candidate generation and SDE fingerprint-distance
+  reranking to [sde_validation_probe.py](/Users/lzhang/Documents/GenSR_SDE/sde_validation_probe.py).
+- Verified reranking on a 4-sample eval-only checkpoint probe:
+  `rerank_candidates_attempted=16`, `rerank_candidates_valid=16`, but
+  `reranked_sequence_exact=0.000000` and
+  `reranked_sequence_relaxed_no_constants=0.000000`.
+- Added rerank debug output and oracle candidate metrics. A 16-sample eval-only
+  checkpoint probe with 64 valid candidates reported
+  `rerank_oracle_sequence_exact=0.000000` and
+  `rerank_oracle_sequence_relaxed_no_constants=0.000000`, indicating the
+  current constrained-beam candidate pool did not contain the target templates.
 - Logged validated experiments in
   [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md).
 
@@ -34,18 +46,24 @@ fingerprint redesign.
 
 - Transitioning from "can the model learn the fingerprint?" to "can we decode
   the right symbolic sequence?".
-- Preparing the next decoding stage: diverse candidate generation plus
-  fingerprint-distance reranking.
+- Diagnosing candidate-pool diversity after oracle metrics showed the current
+  constrained-beam n-best pool did not contain exact/relaxed targets in a
+  16-sample eval.
 
 ## Next Steps
 
-1. Implement candidate reranking using SDE fingerprint distance.
-2. Reuse the saved 2000-step checkpoint for decoding experiments instead of
+1. Improve candidate diversity beyond the current constrained-beam n-best list;
+   oracle metrics show reranking cannot recover targets that are absent.
+2. Add candidate-pool diagnostics across larger held-out samples and inspect top
+   candidates / distances.
+3. Compare full-fingerprint, short-moment, and componentwise reranking scores
+   after the candidate pool can contain plausible alternatives.
+4. Reuse the saved 2000-step checkpoint for decoding experiments instead of
    retraining.
-3. Compare greedy, constrained beam, and reranked candidate metrics on the same
+5. Compare greedy, constrained beam, reranked, and oracle candidate metrics on the same
    held-out evaluation setup.
-4. If reranking helps, consider improving candidate diversity before changing
-   the fingerprint again.
+6. Only revisit fingerprint design after candidate diversity and scoring have
+   been tested more thoroughly.
 
 ## Open Questions
 
@@ -79,6 +97,10 @@ fingerprint redesign.
   is strong.
 - Grammar-constrained beam helps only slightly; it enforces validity better than
   correctness.
+- First-pass fingerprint reranking can produce valid candidates but did not
+  improve exact/relaxed recovery in a small 4-sample checkpoint eval.
+- Rerank oracle metrics were also zero in a 16-sample checkpoint eval, so the
+  immediate blocker is candidate diversity rather than only rerank scoring.
 - The main checkpoint currently lives outside the repo in `/private/tmp`, so it
   may disappear.
 - `environment.yml` is upstream and Linux-oriented; the recent local experiments

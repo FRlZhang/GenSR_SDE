@@ -69,8 +69,8 @@ The active research direction is:
 - replace algebraic function-value fingerprints with SDE fingerprints;
 - predict symbolic sequences in the form
   `<DRIFT> drift_tokens <DIFFUSION> diffusion_tokens`;
-- improve sequence-level recovery with decoding constraints and, next, candidate
-  reranking by fingerprint distance.
+- improve sequence-level recovery with constrained candidate generation and SDE
+  fingerprint-distance reranking.
 
 Current best result so far:
 
@@ -78,6 +78,8 @@ Current best result so far:
   `token_top3=0.960833`, `token_top5=1.000000`;
 - greedy exact recovery is still low (`1/64`), so decoding remains the main
   bottleneck.
+- first-pass fingerprint reranking is implemented, but a small checkpoint eval
+  did not improve exact / relaxed recovery yet.
 
 See [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md)
 and [PROJECT_STATUS.md](/Users/lzhang/Documents/GenSR_SDE/PROJECT_STATUS.md) for
@@ -175,7 +177,11 @@ PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/
   --n-steps 60 \
   --max-generated-len 40 \
   --min-generated-len 8 \
-  --constrained-beam-size 8
+  --constrained-beam-size 8 \
+  --rerank-candidates 8 \
+  --rerank-topk-from-beam 8 \
+  --rerank-score full_fingerprint \
+  --rerank-debug-topk 2
 ```
 
 ### Full training entry
@@ -220,8 +226,8 @@ Recommended verification order after code changes that affect SDE training:
 - Treating the old 100-step / 500-step loss-only probes from before the
   `EnvDataset.generate_sample` fix as valid SDE evidence.
 - Using two fully independent drift / diffusion decoders as the default path.
-- Focusing first on changing the fingerprint again before improving decoding and
-  candidate reranking.
+- Focusing first on changing the fingerprint again before improving candidate
+  diversity and reranking scores.
 
 ## Acknowledge
 

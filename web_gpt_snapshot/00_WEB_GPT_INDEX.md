@@ -24,7 +24,7 @@ token_top3=0.960833
 token_top5=1.000000
 ```
 
-But sequence-level recovery is still weak: greedy exact recovery is about `1/64`, and constrained beam only slightly improves exact hits. The main bottleneck is decoding/candidate selection, not fingerprint separability.
+But sequence-level recovery is still weak: greedy exact recovery is about `1/64`, and constrained beam only slightly improves exact hits. First-pass fingerprint reranking is implemented and verified, but a small checkpoint eval did not improve exact / relaxed recovery. The main bottleneck remains candidate diversity and reranking score quality, not fingerprint separability.
 
 Current best checkpoint:
 
@@ -54,7 +54,7 @@ Only ask for source files when writing a concrete patch.
 
 ## Source Files To Upload Only For Patch Work
 
-- `sde_validation_probe.py`: primary file for diverse candidate generation and reranking.
+- `sde_validation_probe.py`: primary file for candidate diversity and reranking improvements.
 - `sde_fingerprint.py`: fingerprint scoring/recomputation.
 - `sde_dataset_generator.py`: target token format and expression encoding.
 - `simulator_sde.py`: `SDESystem` and `solve_fingerprint`.

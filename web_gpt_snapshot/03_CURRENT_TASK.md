@@ -2,15 +2,16 @@
 
 ## Next Engineering Task
 
-Implement diverse candidate generation plus SDE fingerprint-distance reranking.
+Improve candidate diversity for the first-pass reranking pipeline.
 
 At the end of that workflow, update `web_gpt_snapshot/02_RECENT_CHANGES.md` and
 `web_gpt_snapshot/03_CURRENT_TASK.md`. Also update `01_PROJECT_STATUS.md` if the
 goal, best checkpoint, key metrics, blocker, or next-step priority changes.
 
-The handoff system is now ready for commit: `web_gpt_snapshot/` is the stable
-lightweight snapshot to keep, while `web_gpt_handoff/` is ignored as a local
-temporary package.
+The reranking path and debug/oracle diagnostics are implemented and verified.
+A 16-sample eval-only checkpoint probe produced 64 valid candidates, but oracle
+exact and oracle relaxed metrics were both zero. This means the current n-best
+constrained-beam candidate pool did not contain the target templates.
 
 ## Primary File To Modify
 
@@ -18,14 +19,14 @@ temporary package.
 sde_validation_probe.py
 ```
 
-Likely additions:
+Likely next additions:
 
-- generate multiple valid candidate sequences per sample;
-- parse candidates into drift/diffusion expressions;
-- reject invalid expressions without crashing;
-- compute candidate SDE fingerprints;
-- rank by distance to the target held-out fingerprint;
-- report reranked metrics beside greedy and constrained beam.
+- improve candidate diversity beyond current constrained-beam n-best;
+- inspect rerank debug output across larger held-out samples;
+- add more diverse generation modes before focusing on score tweaks;
+- add or compare componentwise reranking scores after candidate diversity improves;
+- consider pairing drift and diffusion candidates separately;
+- keep reporting reranked metrics beside greedy and constrained beam.
 
 ## Supporting Files If Needed
 
@@ -62,6 +63,8 @@ Report each for greedy, constrained beam, and reranked candidates:
 - `sequence_nonempty`
 - `sequence_avg_len`
 - `sequence_structural_token_frac`
+- `rerank_oracle_sequence_exact`
+- `rerank_oracle_sequence_relaxed_no_constants`
 
 ## Success Standard
 
