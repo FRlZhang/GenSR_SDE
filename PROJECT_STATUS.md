@@ -10,6 +10,9 @@ hits, but a 32-sample tie-break validation did not show incremental benefit
 from the near-tie heuristics. Oracle-miss diagnostics show the immediate
 selected-versus-oracle gap is mostly rerank score / constant handling, while
 candidate generation remains the larger ceiling for samples with no oracle.
+Role-wise constant-grid scoring rescued one selected-miss case and improved
+selected exact/relaxed from `4/32` to `5/32`; active/weak reweighting variants
+tested so far regressed.
 
 ## Last Updated
 
@@ -92,6 +95,13 @@ candidate generation remains the larger ceiling for samples with no oracle.
   wrong diffusion, 2 both drift and diffusion wrong, 0 constant-only mismatch.
   Four misses had oracle candidates from beam/sampling but were scored lower
   than non-oracles, and one oracle appeared only from pairing.
+- Added `constant_grid_rolewise_no_multi_u0`, which keeps the active+weak
+  no-`multi_u0` score but searches separate shared constants for drift and
+  diffusion roles. On the same 32-sample eval-only setup it improved selected
+  exact/relaxed from `4/32` to `5/32` while the oracle ceiling stayed `9/32`.
+  It rescued the same-drift/wrong-diffusion miss at sample 17 by using
+  drift constant `1.0` and diffusion constant `0.5`. Active-heavy `2:1` and
+  weak-downweighted `1:0.5` variants both regressed to `3/32`.
 - Logged validated experiments in
   [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md).
 
@@ -107,9 +117,10 @@ candidate generation remains the larger ceiling for samples with no oracle.
 
 1. Do not make `active_distance` or `state_dependent_drift` the default based
    on the 16-sample hit; on 32 samples they matched, but did not beat, no tie.
-2. For the immediate `4/32` selected versus `9/32` oracle gap, focus on rerank
-   score calibration and constant handling; the miss cases usually prefer a
-   non-oracle with lower active/weak distance.
+2. Keep `constant_grid_rolewise_no_multi_u0` as the strongest current
+   no-retraining decoding setting (`5/32` selected, `9/32` oracle), but do not
+   continue broad active/weak weight search because the two tested variants
+   regressed.
 3. Preserve and inspect drift/diffusion pairing, but treat it as coverage
    support rather than the main selector fix: only 2/9 best oracles came from
    pairs and one miss was pair-only.
@@ -176,6 +187,9 @@ candidate generation remains the larger ceiling for samples with no oracle.
 - In the 32-sample oracle-miss diagnostics, selected candidates often beat the
   oracle on the active/weak score even when the oracle template is present. This
   points to score calibration / constant handling, not a missing tie-break.
+- Role-wise constants can rescue near misses, but only one of the five shared
+  selected misses was rescued. The remaining misses still favor non-oracles in
+  active/weak distance even after oracle scores improve.
 - Candidate generation is still a ceiling: only 9/32 samples had any oracle
   candidate in the current beam+sampling+pair pool.
 - The 32-sample constant-grid + pairing probe is CPU-expensive, so 64-sample

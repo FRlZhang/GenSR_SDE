@@ -71,6 +71,7 @@ def parse_args() -> argparse.Namespace:
             "constant_grid_full",
             "constant_grid_componentwise",
             "constant_grid_componentwise_no_multi_u0",
+            "constant_grid_rolewise_no_multi_u0",
             "constant_grid_active_weak",
             "constant_grid_active_only",
             "constant_grid_moments_downweighted",
@@ -1083,15 +1084,24 @@ def _parse_prefix_expr(tokens: list[str], pos: int = 0, constant_value: float = 
 def candidate_tokens_to_system(
     tokens: list[str],
     constant_value: float = 1.0,
+    drift_constant_value: float | None = None,
+    diffusion_constant_value: float | None = None,
 ) -> SDESystem | None:
     split = split_sde_tokens(tokens)
     if split is None:
         return None
     drift_tokens, diffusion_tokens = split
-    drift_expr, drift_pos = _parse_prefix_expr(drift_tokens, constant_value=constant_value)
+    drift_value = constant_value if drift_constant_value is None else drift_constant_value
+    diffusion_value = (
+        constant_value if diffusion_constant_value is None else diffusion_constant_value
+    )
+    drift_expr, drift_pos = _parse_prefix_expr(
+        drift_tokens,
+        constant_value=drift_value,
+    )
     diffusion_expr, diffusion_pos = _parse_prefix_expr(
         diffusion_tokens,
-        constant_value=constant_value,
+        constant_value=diffusion_value,
     )
     if drift_expr is None or diffusion_expr is None:
         return None
@@ -1137,6 +1147,8 @@ def rerank_base_score_kind(score_kind: str) -> str:
         return "componentwise"
     if score_kind == "constant_grid_componentwise_no_multi_u0":
         return "componentwise_no_multi_u0"
+    if score_kind == "constant_grid_rolewise_no_multi_u0":
+        return "rolewise_no_multi_u0"
     if score_kind == "constant_grid_active_weak":
         return "componentwise"
     if score_kind == "constant_grid_active_only":
@@ -1163,6 +1175,14 @@ def empty_distance_details() -> dict:
         "baseline_active_kramers_moyal_distance": None,
         "baseline_gaussian_weak_kernel_distance": None,
         "best_constant": None,
+        "best_drift_constant": None,
+        "best_diffusion_constant": None,
+        "shared_constant_distance": None,
+        "shared_constant_full_distance": None,
+        "shared_constant_multi_u0_moments_distance": None,
+        "shared_constant_active_kramers_moyal_distance": None,
+        "shared_constant_gaussian_weak_kernel_distance": None,
+        "shared_best_constant": None,
     }
 
 
@@ -1217,6 +1237,14 @@ def fingerprint_distance_details(
             details["active_kramers_moyal_distance"]
             + details["gaussian_weak_kernel_distance"]
         )
+    elif score_kind == "rolewise_no_multi_u0":
+        _, w_active, w_weak = component_weights
+        if component_weights == (1.0, 2.0, 1.0):
+            w_active, w_weak = 1.0, 1.0
+        details["distance"] = (
+            w_active * details["active_kramers_moyal_distance"]
+            + w_weak * details["gaussian_weak_kernel_distance"]
+        )
     elif score_kind == "moments_downweighted":
         details["distance"] = (
             0.25 * details["multi_u0_moments_distance"]
@@ -1239,14 +1267,43 @@ def score_candidate_system(
 ) -> tuple[dict | None, str | None, int]:
     base_score_kind = rerank_base_score_kind(score_kind)
     grid_enabled = uses_constant_grid(score_kind)
+    rolewise_grid_enabled = score_kind == "constant_grid_rolewise_no_multi_u0"
+    split = split_sde_tokens(words)
+    if split is None:
+        return None, "parse_failed", 0
+    drift_tokens, diffusion_tokens = split
+    drift_constants = (
+        constant_values
+        if rolewise_grid_enabled and "CONSTANT" in drift_tokens
+        else [1.0]
+    )
+    diffusion_constants = (
+        constant_values
+        if rolewise_grid_enabled and "CONSTANT" in diffusion_tokens
+        else [1.0]
+    )
     eval_constants = constant_values if grid_enabled and "CONSTANT" in words else [1.0]
     baseline_details = None
     best_details = None
+    shared_details = None
     fingerprint_failures = 0
     failure_reasons = []
 
-    for constant_value in eval_constants:
-        system = candidate_tokens_to_system(words, constant_value=constant_value)
+    if rolewise_grid_enabled:
+        eval_constant_pairs = [
+            (drift_value, diffusion_value)
+            for drift_value in drift_constants
+            for diffusion_value in diffusion_constants
+        ]
+    else:
+        eval_constant_pairs = [(value, value) for value in eval_constants]
+
+    for drift_value, diffusion_value in eval_constant_pairs:
+        system = candidate_tokens_to_system(
+            words,
+            drift_constant_value=drift_value,
+            diffusion_constant_value=diffusion_value,
+        )
         if system is None:
             return None, "parse_failed", 0
         _, y_data, meta = solve_fingerprint(system, config, seed)
@@ -1260,16 +1317,28 @@ def score_candidate_system(
             base_score_kind,
             component_weights,
         )
-        details["best_constant"] = constant_value
-        if constant_value == 1.0:
+        details["best_constant"] = (
+            drift_value if drift_value == diffusion_value else None
+        )
+        details["best_drift_constant"] = drift_value
+        details["best_diffusion_constant"] = diffusion_value
+        if drift_value == 1.0 and diffusion_value == 1.0:
             baseline_details = details
+        if drift_value == diffusion_value and np.isfinite(details["distance"]) and (
+            shared_details is None or details["distance"] < shared_details["distance"]
+        ):
+            shared_details = details
         if np.isfinite(details["distance"]) and (
             best_details is None or details["distance"] < best_details["distance"]
         ):
             best_details = details
 
-    if grid_enabled and baseline_details is None and 1.0 not in eval_constants:
-        baseline_system = candidate_tokens_to_system(words, constant_value=1.0)
+    if grid_enabled and baseline_details is None:
+        baseline_system = candidate_tokens_to_system(
+            words,
+            drift_constant_value=1.0,
+            diffusion_constant_value=1.0,
+        )
         if baseline_system is None:
             return None, "parse_failed", fingerprint_failures
         _, baseline_y, meta = solve_fingerprint(baseline_system, config, seed)
@@ -1283,6 +1352,8 @@ def score_candidate_system(
                 component_weights,
             )
             baseline_details["best_constant"] = 1.0
+            baseline_details["best_drift_constant"] = 1.0
+            baseline_details["best_diffusion_constant"] = 1.0
 
     if best_details is None:
         reason = failure_reasons[0] if failure_reasons else "fingerprint_failed"
@@ -1290,6 +1361,8 @@ def score_candidate_system(
 
     if baseline_details is None:
         baseline_details = best_details
+    if shared_details is None:
+        shared_details = best_details
 
     return {
         "distance": best_details["distance"],
@@ -1313,6 +1386,20 @@ def score_candidate_system(
             "gaussian_weak_kernel_distance"
         ],
         "best_constant": best_details["best_constant"],
+        "best_drift_constant": best_details["best_drift_constant"],
+        "best_diffusion_constant": best_details["best_diffusion_constant"],
+        "shared_constant_distance": shared_details["distance"],
+        "shared_constant_full_distance": shared_details["full_distance"],
+        "shared_constant_multi_u0_moments_distance": shared_details[
+            "multi_u0_moments_distance"
+        ],
+        "shared_constant_active_kramers_moyal_distance": shared_details[
+            "active_kramers_moyal_distance"
+        ],
+        "shared_constant_gaussian_weak_kernel_distance": shared_details[
+            "gaussian_weak_kernel_distance"
+        ],
+        "shared_best_constant": shared_details["best_drift_constant"],
     }, None, fingerprint_failures
 
 
@@ -1351,6 +1438,15 @@ def score_segment_weights(
             "multi_u0_moments": 0.0,
             "active_kramers_moyal": 1.0,
             "gaussian_weak_kernel": 1.0,
+        }
+    if base_score_kind == "rolewise_no_multi_u0":
+        _, w_active, w_weak = component_weights
+        if component_weights == (1.0, 2.0, 1.0):
+            w_active, w_weak = 1.0, 1.0
+        return {
+            "multi_u0_moments": 0.0,
+            "active_kramers_moyal": w_active,
+            "gaussian_weak_kernel": w_weak,
         }
     if base_score_kind == "active_only" or base_score_kind == "short_moment":
         return {
@@ -1569,6 +1665,17 @@ def empty_oracle_diagnostic_counts() -> dict:
         "rerank_oracle_miss_oracle_lower_model_score_count": 0,
         "rerank_oracle_miss_oracle_only_pair_count": 0,
         "rerank_oracle_miss_beam_or_sampling_score_miss_count": 0,
+        "rerank_oracle_miss_rescue_cases_total": 0,
+        "rerank_oracle_miss_rescued_by_rolewise_constant_grid": 0,
+        "rerank_oracle_miss_still_missed_after_rolewise_constant_grid": 0,
+        "rerank_selected_exact_shared_constant_count": 0,
+        "rerank_selected_relaxed_shared_constant_count": 0,
+        "rerank_selected_exact_rolewise_constant_count": 0,
+        "rerank_selected_relaxed_rolewise_constant_count": 0,
+        "rerank_oracle_exact_shared_constant_count": 0,
+        "rerank_oracle_relaxed_shared_constant_count": 0,
+        "rerank_oracle_exact_rolewise_constant_count": 0,
+        "rerank_oracle_relaxed_rolewise_constant_count": 0,
     }
     for bucket in ("beam", "sampling", "pair", "unknown"):
         counts[f"rerank_oracle_best_source_{bucket}_count"] = 0
@@ -1614,6 +1721,7 @@ def rerank_candidate_rows(
     debug_rows = []
     oracle_diagnostic_counts = empty_oracle_diagnostic_counts()
     oracle_miss_rows = []
+    oracle_rescue_rows = []
 
     for sample_idx, sample in enumerate(samples):
         global_sample_idx = sample_offset + sample_idx
@@ -1763,11 +1871,25 @@ def rerank_candidate_rows(
             tie_epsilon,
             tie_break,
         )
+        shared_ranked_records = tie_aware_rank_records(
+            records,
+            0.0,
+            "none",
+            distance_key="shared_constant_distance",
+        )
         selected_record = next(
             (
                 record
                 for record in selection_ranked_records
                 if _finite_distance(record["distance"])
+            ),
+            None,
+        )
+        shared_selected_record = next(
+            (
+                record
+                for record in shared_ranked_records
+                if _finite_distance(record["shared_constant_distance"])
             ),
             None,
         )
@@ -1778,6 +1900,18 @@ def rerank_candidate_rows(
 
         oracle_records = [record for record in selection_ranked_records if is_oracle_record(record)]
         best_oracle_record = oracle_records[0] if oracle_records else None
+        shared_oracle_records = [
+            record for record in shared_ranked_records if is_oracle_record(record)
+        ]
+        shared_best_oracle_record = (
+            shared_oracle_records[0] if shared_oracle_records else None
+        )
+        shared_oracle_rank = None
+        if shared_best_oracle_record is not None:
+            shared_oracle_rank = shared_ranked_records.index(shared_best_oracle_record) + 1
+        rolewise_oracle_rank = None
+        if best_oracle_record is not None:
+            rolewise_oracle_rank = selection_ranked_records.index(best_oracle_record) + 1
         oracle_source_buckets = {
             source_bucket(record["source"])
             for record in records
@@ -1793,6 +1927,61 @@ def rerank_candidate_rows(
                     f"rerank_oracle_any_source_{bucket}_count"
                 ] += 1
         selected_is_oracle = selected_record is not None and is_oracle_record(selected_record)
+        shared_selected_is_oracle = (
+            shared_selected_record is not None and is_oracle_record(shared_selected_record)
+        )
+        if shared_selected_record is not None:
+            oracle_diagnostic_counts["rerank_selected_exact_shared_constant_count"] += int(
+                shared_selected_record["exact"]
+            )
+            oracle_diagnostic_counts[
+                "rerank_selected_relaxed_shared_constant_count"
+            ] += int(shared_selected_record["relaxed"])
+        if selected_record is not None:
+            oracle_diagnostic_counts[
+                "rerank_selected_exact_rolewise_constant_count"
+            ] += int(selected_record["exact"])
+            oracle_diagnostic_counts[
+                "rerank_selected_relaxed_rolewise_constant_count"
+            ] += int(selected_record["relaxed"])
+        oracle_diagnostic_counts["rerank_oracle_exact_shared_constant_count"] += int(
+            any(record["exact"] for record in records)
+        )
+        oracle_diagnostic_counts[
+            "rerank_oracle_relaxed_shared_constant_count"
+        ] += int(any(record["relaxed"] for record in records))
+        oracle_diagnostic_counts["rerank_oracle_exact_rolewise_constant_count"] += int(
+            any(record["exact"] for record in records)
+        )
+        oracle_diagnostic_counts[
+            "rerank_oracle_relaxed_rolewise_constant_count"
+        ] += int(any(record["relaxed"] for record in records))
+        if shared_best_oracle_record is not None and not shared_selected_is_oracle:
+            rescued_by_rolewise = selected_is_oracle
+            oracle_diagnostic_counts["rerank_oracle_miss_rescue_cases_total"] += 1
+            oracle_diagnostic_counts[
+                "rerank_oracle_miss_rescued_by_rolewise_constant_grid"
+            ] += int(rescued_by_rolewise)
+            oracle_diagnostic_counts[
+                "rerank_oracle_miss_still_missed_after_rolewise_constant_grid"
+            ] += int(not rescued_by_rolewise)
+            oracle_rescue_rows.append(
+                {
+                    "sample_index": global_sample_idx,
+                    "truth": truth,
+                    "shared_selected": shared_selected_record,
+                    "rolewise_selected": selected_record,
+                    "oracle": best_oracle_record or shared_best_oracle_record,
+                    "shared_oracle_rank": shared_oracle_rank,
+                    "rolewise_oracle_rank": rolewise_oracle_rank,
+                    "rescued": rescued_by_rolewise,
+                    "oracle_rank_improved": (
+                        shared_oracle_rank is not None
+                        and rolewise_oracle_rank is not None
+                        and rolewise_oracle_rank < shared_oracle_rank
+                    ),
+                }
+            )
         if selected_is_oracle:
             oracle_diagnostic_counts["rerank_oracle_samples_selected_count"] += 1
             oracle_diagnostic_counts[
@@ -1952,6 +2141,7 @@ def rerank_candidate_rows(
         "rerank_unique_paired_candidate_total": unique_pair_candidate_total,
         "rerank_debug": debug_rows,
         "rerank_oracle_misses": oracle_miss_rows,
+        "rerank_oracle_rescue_cases": oracle_rescue_rows,
         **oracle_diagnostic_counts,
     }
 
@@ -2252,6 +2442,17 @@ def evaluate(
             "rerank_oracle_miss_oracle_lower_model_score_count",
             "rerank_oracle_miss_oracle_only_pair_count",
             "rerank_oracle_miss_beam_or_sampling_score_miss_count",
+            "rerank_oracle_miss_rescue_cases_total",
+            "rerank_oracle_miss_rescued_by_rolewise_constant_grid",
+            "rerank_oracle_miss_still_missed_after_rolewise_constant_grid",
+            "rerank_selected_exact_shared_constant_count",
+            "rerank_selected_relaxed_shared_constant_count",
+            "rerank_selected_exact_rolewise_constant_count",
+            "rerank_selected_relaxed_rolewise_constant_count",
+            "rerank_oracle_exact_shared_constant_count",
+            "rerank_oracle_relaxed_shared_constant_count",
+            "rerank_oracle_exact_rolewise_constant_count",
+            "rerank_oracle_relaxed_rolewise_constant_count",
             "rerank_oracle_best_source_beam_count",
             "rerank_oracle_best_source_sampling_count",
             "rerank_oracle_best_source_pair_count",
@@ -2317,11 +2518,14 @@ def evaluate(
         )
         debug_rows = []
         oracle_miss_rows = []
+        oracle_rescue_rows = []
         for row in rerank_stat_rows:
             debug_rows.extend(row["rerank_debug"])
             oracle_miss_rows.extend(row["rerank_oracle_misses"])
+            oracle_rescue_rows.extend(row["rerank_oracle_rescue_cases"])
         result["rerank_debug"] = debug_rows
         result["rerank_oracle_misses"] = oracle_miss_rows
+        result["rerank_oracle_rescue_cases"] = oracle_rescue_rows
     result["examples"] = examples[:5]
     return result
 
@@ -2403,7 +2607,12 @@ def main() -> None:
         args.pair_diffusion_topk,
     )
     for key, value in metrics.items():
-        if key in {"examples", "rerank_debug", "rerank_oracle_misses"}:
+        if key in {
+            "examples",
+            "rerank_debug",
+            "rerank_oracle_misses",
+            "rerank_oracle_rescue_cases",
+        }:
             continue
         print(f"{key}={value:.6f}")
     print("examples:")
@@ -2422,6 +2631,9 @@ def main() -> None:
 
     def _record_tokens(record, key):
         return "" if record is None else " ".join(record[key])
+
+    def _record_value(record, key):
+        return None if record is None else record[key]
 
     if "rerank_oracle_total" in metrics:
         print("oracle_case_summary:")
@@ -2490,6 +2702,35 @@ def main() -> None:
         )
         print(f"parse_failures={int(metrics['rerank_parse_failures'])}")
         print(f"fingerprint_failures={int(metrics['rerank_fingerprint_failures'])}")
+        print("oracle_miss_rescue_summary:")
+        print(
+            "miss_cases_total="
+            f"{int(metrics['rerank_oracle_miss_rescue_cases_total'])}"
+        )
+        print(
+            "rescued_by_rolewise_constant_grid="
+            f"{int(metrics['rerank_oracle_miss_rescued_by_rolewise_constant_grid'])}"
+        )
+        print(
+            "still_missed_after_rolewise_constant_grid="
+            f"{int(metrics['rerank_oracle_miss_still_missed_after_rolewise_constant_grid'])}"
+        )
+        print(
+            "selected_exact_shared_constant="
+            f"{int(metrics['rerank_selected_exact_shared_constant_count'])}"
+        )
+        print(
+            "selected_exact_rolewise_constant="
+            f"{int(metrics['rerank_selected_exact_rolewise_constant_count'])}"
+        )
+        print(
+            "oracle_exact_shared_constant="
+            f"{int(metrics['rerank_oracle_exact_shared_constant_count'])}"
+        )
+        print(
+            "oracle_exact_rolewise_constant="
+            f"{int(metrics['rerank_oracle_exact_rolewise_constant_count'])}"
+        )
     if metrics.get("rerank_oracle_misses") is not None:
         print("oracle_miss_cases:")
         for miss in metrics["rerank_oracle_misses"]:
@@ -2511,10 +2752,25 @@ def main() -> None:
                 f"gap={_fmt_distance(miss['score_gap'])}"
             )
             print(
+                "shared_constant_scores "
+                f"selected="
+                f"{_fmt_distance(_record_value(selected, 'shared_constant_distance'))} "
+                f"oracle={_fmt_distance(oracle['shared_constant_distance'])}"
+            )
+            print(
                 "best_constants "
                 f"selected="
                 f"{_fmt_constant(selected['best_constant'] if selected is not None else None)} "
                 f"oracle={_fmt_constant(oracle['best_constant'])}"
+            )
+            print(
+                "rolewise_best_constants "
+                f"selected_drift="
+                f"{_fmt_constant(_record_value(selected, 'best_drift_constant'))} "
+                f"selected_diffusion="
+                f"{_fmt_constant(_record_value(selected, 'best_diffusion_constant'))} "
+                f"oracle_drift={_fmt_constant(oracle['best_drift_constant'])} "
+                f"oracle_diffusion={_fmt_constant(oracle['best_diffusion_constant'])}"
             )
             print(
                 "model_scores "
@@ -2543,12 +2799,77 @@ def main() -> None:
                 f"gaussian_weak_kernel={_fmt_distance(oracle['gaussian_weak_kernel_distance'])}"
             )
             print(
+                "shared_segment_distances_selected "
+                f"active_kramers_moyal="
+                f"{_fmt_distance(_record_value(selected, 'shared_constant_active_kramers_moyal_distance'))} "
+                f"gaussian_weak_kernel="
+                f"{_fmt_distance(_record_value(selected, 'shared_constant_gaussian_weak_kernel_distance'))}"
+            )
+            print(
+                "shared_segment_distances_oracle "
+                f"active_kramers_moyal="
+                f"{_fmt_distance(oracle['shared_constant_active_kramers_moyal_distance'])} "
+                f"gaussian_weak_kernel="
+                f"{_fmt_distance(oracle['shared_constant_gaussian_weak_kernel_distance'])}"
+            )
+            print(
                 "match_flags "
                 f"shares_drift={int(miss['shares_drift'])} "
                 f"shares_diffusion={int(miss['shares_diffusion'])} "
                 f"constant_mismatch={int(miss['constant_mismatch'])} "
                 f"miss_side={miss['miss_side']} "
                 f"oracle_only_pair={int(miss['oracle_only_pair'])}"
+            )
+    if metrics.get("rerank_oracle_rescue_cases") is not None:
+        print("oracle_miss_rescue_cases:")
+        for rescue in metrics["rerank_oracle_rescue_cases"]:
+            shared_selected = rescue["shared_selected"]
+            rolewise_selected = rescue["rolewise_selected"]
+            oracle = rescue["oracle"]
+            print(f"sample_index={rescue['sample_index']}")
+            print(f"truth: {' '.join(rescue['truth'])}")
+            print(f"shared_selected_sequence: {_record_words(shared_selected)}")
+            print(f"rolewise_selected_sequence: {_record_words(rolewise_selected)}")
+            print(f"oracle_sequence: {_record_words(oracle)}")
+            print(
+                "ranks "
+                f"shared_oracle_rank={rescue['shared_oracle_rank']} "
+                f"rolewise_oracle_rank={rescue['rolewise_oracle_rank']} "
+                f"oracle_rank_improved={int(rescue['oracle_rank_improved'])} "
+                f"rescued={int(rescue['rescued'])}"
+            )
+            print(
+                "rolewise_scores "
+                f"selected={_fmt_distance(_record_value(rolewise_selected, 'distance'))} "
+                f"oracle={_fmt_distance(oracle['distance'])}"
+            )
+            print(
+                "shared_scores "
+                f"selected={_fmt_distance(_record_value(shared_selected, 'shared_constant_distance'))} "
+                f"oracle={_fmt_distance(oracle['shared_constant_distance'])}"
+            )
+            print(
+                "rolewise_best_constants "
+                f"selected_drift="
+                f"{_fmt_constant(_record_value(rolewise_selected, 'best_drift_constant'))} "
+                f"selected_diffusion="
+                f"{_fmt_constant(_record_value(rolewise_selected, 'best_diffusion_constant'))} "
+                f"oracle_drift={_fmt_constant(oracle['best_drift_constant'])} "
+                f"oracle_diffusion={_fmt_constant(oracle['best_diffusion_constant'])}"
+            )
+            print(
+                "rolewise_segment_distances_selected "
+                f"active_kramers_moyal="
+                f"{_fmt_distance(_record_value(rolewise_selected, 'active_kramers_moyal_distance'))} "
+                f"gaussian_weak_kernel="
+                f"{_fmt_distance(_record_value(rolewise_selected, 'gaussian_weak_kernel_distance'))}"
+            )
+            print(
+                "rolewise_segment_distances_oracle "
+                f"active_kramers_moyal="
+                f"{_fmt_distance(oracle['active_kramers_moyal_distance'])} "
+                f"gaussian_weak_kernel="
+                f"{_fmt_distance(oracle['gaussian_weak_kernel_distance'])}"
             )
     if args.rerank_debug_topk > 0 and metrics.get("rerank_debug"):
         print("rerank_debug:")

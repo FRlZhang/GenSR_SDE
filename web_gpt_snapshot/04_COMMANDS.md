@@ -98,18 +98,25 @@ Other lightweight score modes now available:
 
 ```bash
 --rerank-score constant_grid_componentwise_no_multi_u0
+--rerank-score constant_grid_rolewise_no_multi_u0
 --rerank-score constant_grid_active_weak
 --rerank-score constant_grid_active_only
 --rerank-score constant_grid_moments_downweighted
 ```
 
-Current 32-sample validation setting:
+Current strongest 32-sample validation setting:
 
 ```bash
---rerank-score constant_grid_componentwise_no_multi_u0 \
+--rerank-score constant_grid_rolewise_no_multi_u0 \
 --rerank-constant-values 0.25,0.5,1.0,2.0,4.0 \
 --rerank-tie-epsilon 0.005 \
 --rerank-tie-break none
+```
+
+Shared-constant baseline for comparison:
+
+```bash
+--rerank-score constant_grid_componentwise_no_multi_u0
 ```
 
 Tie-break variants to compare, not defaults:
@@ -119,10 +126,12 @@ Tie-break variants to compare, not defaults:
 --rerank-tie-break state_dependent_drift
 ```
 
-Latest 32-sample eval-only result: no-tie baseline, `active_distance`, and
-`state_dependent_drift` all matched at selected exact/relaxed `4/32`, with
-oracle exact/relaxed `9/32`. Do not run 64-sample expansion unless a setting
-first improves selected metrics over the 32-sample no-tie baseline.
+Latest 32-sample eval-only result: shared-constant no-tie baseline selected
+exact/relaxed `4/32`; role-wise constants with active:weak `1:1` improved this
+to `5/32`, with oracle exact/relaxed still `9/32`. Active-heavy `2:1` and
+weak-downweighted `1:0.5` role-wise variants regressed to `3/32`. Do not run
+64-sample expansion unless a setting first improves selected metrics over the
+32-sample role-wise baseline.
 
 ## Regenerate 2000-Step Checkpoint
 

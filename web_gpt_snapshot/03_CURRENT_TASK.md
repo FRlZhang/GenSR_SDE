@@ -2,45 +2,24 @@
 
 ## Next Engineering Task
 
-Use the oracle-gap diagnostics to improve selected reranking from `4/32` toward
-the current oracle ceiling of `9/32`.
+Diagnose the remaining role-wise constant misses after
+`constant_grid_rolewise_no_multi_u0` improved selected recovery from `4/32` to
+`5/32`.
 
-The 32-sample no-tie eval-only rerun from
-`/private/tmp/gensr_sde_role_token_2000/role_token_2000.pth` reproduced the
-previous metrics and added miss classification:
+Current strongest no-retraining decoding setting:
 
 ```text
-selected exact/relaxed=4/32
+rerank_score=constant_grid_rolewise_no_multi_u0
+active:weak=1:1
+selected exact/relaxed=5/32
 oracle exact/relaxed=9/32
 pair oracle exact/relaxed=2/32
-oracle misses=5
-parse_failures=0
-fingerprint_failures=0
 ```
 
-Oracle sources:
-
-```text
-best oracle sources: beam=6 sampling=1 pair=2
-selected hit sources: beam=3 pair=1
-```
-
-Miss types:
-
-```text
-same diffusion but wrong drift=2
-same drift but wrong diffusion=1
-both drift and diffusion wrong=2
-constant-only mismatch=0
-oracle lower model-score candidate=2
-oracle only appears from pair=1
-oracle from beam/sampling but score misses=4
-```
-
-The immediate problem is not another tie-break. In the 5 miss cases, the oracle
-template is present, but current active/weak constant-grid scoring prefers a
-non-oracle. The larger ceiling remains candidate generation because 23/32
-samples still have no oracle candidate.
+Role-wise constants rescued one shared-constant miss, sample 17, by allowing
+drift constant `1.0` and diffusion constant `0.5`. The active-heavy `2:1` and
+weak-downweighted `1:0.5` variants both regressed to `3/32`, so do not continue
+broad active/weak grid search.
 
 ## Primary File To Modify
 
@@ -50,31 +29,30 @@ sde_validation_probe.py
 
 Likely next additions:
 
-- compare selected versus oracle score components in the 5 miss cases;
-- test score calibration or constant-handling diagnostics without changing the
-  target format, training path, or fingerprint schema;
-- inspect whether active versus weak weighting is over-rewarding wrong drift or
-  wrong diffusion templates;
-- preserve oracle-gap summary output so each change reports selected, oracle,
-  source, and miss-type counts.
+- inspect the 4 remaining role-wise selected misses and why their non-oracles
+  still beat the oracle in active+weak score;
+- compare candidate semantics for wrong drift versus wrong diffusion cases;
+- keep role-wise constant diagnostics in every rerank experiment;
+- consider candidate-generation changes only after explaining whether the
+  current scorer can choose among existing oracle candidates.
 
 ## Supporting Files If Needed
 
-- `sde_fingerprint.py`: only for reading score component semantics; do not
-  redesign the schema first.
+- `sde_fingerprint.py`: read score component semantics only; do not redesign the
+  schema first.
 - `simulator_sde.py`: expression lambdification and fingerprint evaluation.
 - `sde_dataset_generator.py`: role-token encoding and expression normalization.
 
 ## Do Not Touch First
 
 - Do not make `active_distance` or `state_dependent_drift` the default.
-- Do not redesign `multi_active_weak_v1` before exhausting score and constant
-  diagnostics.
+- Do not run more broad active/weak weight grids.
+- Do not redesign `multi_active_weak_v1`.
 - Do not change `<DRIFT> ... <DIFFUSION> ...`.
-- Do not retrain for this diagnostic loop.
+- Do not retrain.
 - Do not overwrite data pickles or checkpoints.
 - Do not run 64-sample expansion until a 32-sample setting improves selected
-  recovery over `4/32`.
+  recovery again.
 
 ## Verification Order
 
@@ -89,6 +67,6 @@ Likely next additions:
 
 ## Success Standard
 
-Improve selected reranked exact or relaxed recovery above `4/32` on the same
-32-sample setup, while reporting whether the oracle ceiling remains `9/32` or
-candidate generation changed.
+The next useful decoding change should exceed the current role-wise baseline of
+`5/32` selected exact/relaxed on the same 32-sample setup, or clearly explain
+why candidate generation must be improved before scoring can move further.

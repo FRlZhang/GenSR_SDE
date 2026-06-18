@@ -2,7 +2,7 @@
 
 ## Current Goal
 
-Improve sequence-level SDE recovery after establishing that the current unified fingerprint and role-token target are learnable by GenSR. Candidate generation plus fingerprint-distance reranking is implemented; drift/diffusion pairing and constant-grid scoring now produce selected hits, but 32-sample validation showed the near-tie tie-breaks do not improve over no-tie baseline. Oracle-miss diagnostics now point to rerank score calibration / constant handling as the immediate selected-versus-oracle bottleneck.
+Improve sequence-level SDE recovery after establishing that the current unified fingerprint and role-token target are learnable by GenSR. Candidate generation plus fingerprint-distance reranking is implemented; drift/diffusion pairing and role-wise constant-grid scoring now produce selected hits. The current strongest no-retraining decoding setting is `constant_grid_rolewise_no_multi_u0` at selected exact/relaxed `5/32`, with oracle exact/relaxed still `9/32`.
 
 ## Completed
 
@@ -34,20 +34,22 @@ greedy_sequence_exact=0.015625
 - Added epsilon tie-breaking for near-equal rerank distances. With `constant_grid_componentwise_no_multi_u0`, `--rerank-tie-epsilon 0.005`, and either `--rerank-tie-break active_distance` or `--rerank-tie-break state_dependent_drift`, a 16-sample checkpoint probe reached the first selected reranked hit: exact/relaxed = 1/16.
 - Ran the larger 32-sample eval-only tie-break validation from `/private/tmp/gensr_sde_role_token_2000/role_token_2000.pth`. Baseline no tie, `active_distance`, and `state_dependent_drift` all matched at selected exact/relaxed = 4/32, with oracle exact/relaxed = 9/32 and pair oracle exact/relaxed = 2/32. Since no tie-break exceeded baseline and each run was CPU-expensive, 64-sample validation was not run.
 - Added oracle gap diagnostics to `sde_validation_probe.py`. The 32-sample no-tie rerun found 9 samples with oracle candidates, 4 selected hits, and 5 selected misses. Miss types: 2 same diffusion but wrong drift, 1 same drift but wrong diffusion, 2 both sides wrong, 0 constant-only mismatch. Best oracle sources were beam 6, sampling 1, pair 2; selected hits came from beam 3 and pair 1.
+- Added `constant_grid_rolewise_no_multi_u0`. It searches separate drift and diffusion constants over the same constant grid. On the same 32-sample setup, active:weak 1:1 improved selected exact/relaxed to 5/32 and rescued 1/5 shared-constant misses; active:weak 2:1 and 1:0.5 both regressed to 3/32.
 
 ## In Progress
 
 - Transitioning from token recognition to full symbolic sequence recovery.
-- Using oracle gap diagnostics to reduce the 4/32 selected versus 9/32 oracle gap.
+- Using role-wise constant diagnostics to reduce the remaining 5/32 selected versus 9/32 oracle gap.
 
 ## Next Steps
 
 1. Do not make `active_distance` or `state_dependent_drift` the default based on the 16-sample hit; on 32 samples they matched no-tie baseline.
-2. Focus next on rerank score calibration and constant handling for the 5 selected misses; the oracle is already present but scored worse than a non-oracle.
-3. Treat candidate generation as the larger ceiling after that, because 23/32 samples still have no oracle candidate.
-4. Keep drift/diffusion pairing enabled and tune candidate pool size carefully because fingerprint recomputation is CPU-expensive.
-5. Keep comparing greedy, constrained beam, reranked, oracle, and oracle-miss metrics on the same held-out setup.
-6. Only revisit fingerprint design after candidate diversity and scoring have been tested more thoroughly.
+2. Keep `constant_grid_rolewise_no_multi_u0` active:weak 1:1 as the strongest current eval setting; do not make active-heavy weights the default.
+3. Focus next on why the remaining 4 role-wise misses still score non-oracles lower than oracles.
+4. Treat candidate generation as the larger ceiling after that, because 23/32 samples still have no oracle candidate.
+5. Keep drift/diffusion pairing enabled and tune candidate pool size carefully because fingerprint recomputation is CPU-expensive.
+6. Keep comparing greedy, constrained beam, reranked, oracle, and oracle-miss metrics on the same held-out setup.
+7. Only revisit fingerprint design after candidate diversity and scoring have been tested more thoroughly.
 
 ## Open Questions
 
@@ -68,6 +70,7 @@ greedy_sequence_exact=0.015625
 - Removing `multi_u0_moments` from the constant-grid score nearly selects the inspected oracle, but a non-oracle drift template still wins by 0.001317 due to weak-kernel distance.
 - Tie-breaking can select the paired oracle in the inspected 16-sample near-tie case, but on 32 samples both tie-break modes matched the no-tie baseline instead of improving it.
 - In the 32-sample oracle-miss diagnostics, selected non-oracles often beat oracle templates on active/weak distance. This points to score calibration / constant handling rather than a missing tie-break.
+- Role-wise constants rescued one miss, but active/weak reweighting was brittle: 2:1 and 1:0.5 both dropped selected exact/relaxed to 3/32.
 - Candidate generation remains a ceiling: only 9/32 samples had any oracle candidate.
 - Constant-grid + pairing rerank is CPU-expensive; reserve 64-sample expansion for settings that first improve the 32-sample selected metrics.
 - The best checkpoint is outside the repo and may disappear.

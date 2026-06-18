@@ -103,6 +103,10 @@ Current best result so far:
   diffusion, and 2 miss both sides. The immediate next target is rerank score
   calibration / constant handling; candidate generation remains the larger
   ceiling because 23/32 samples still have no oracle candidate.
+- role-wise constant-grid scoring, with separate drift/diffusion constants,
+  rescues one selected miss and improves selected exact / relaxed recovery to
+  `5/32`; active-heavy and weak-downweighted role-wise variants regressed to
+  `3/32`.
 
 See [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md)
 and [PROJECT_STATUS.md](/Users/lzhang/Documents/GenSR_SDE/PROJECT_STATUS.md) for

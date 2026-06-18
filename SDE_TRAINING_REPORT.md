@@ -2,6 +2,45 @@
 
 Date: 2026-06-11
 
+Update, 2026-06-18 role-wise constant handling: added
+`constant_grid_rolewise_no_multi_u0`, which keeps the no-`multi_u0` active+weak
+score but searches separate role-wise constants:
+
+```text
+drift_CONSTANT_value in 0.25,0.5,1.0,2.0,4.0
+diffusion_CONSTANT_value in 0.25,0.5,1.0,2.0,4.0
+```
+
+The 32-sample eval-only checkpoint setup was unchanged otherwise. Results:
+
+| Setting | Selected exact | Selected relaxed | Oracle exact | Pair oracle exact | Shared-miss rescues |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `constant_grid_componentwise_no_multi_u0` shared constant | 0.125000 | 0.125000 | 0.281250 | 0.062500 | - |
+| `constant_grid_rolewise_no_multi_u0` active:weak 1:1 | 0.156250 | 0.156250 | 0.281250 | 0.062500 | 1/5 |
+| `constant_grid_rolewise_no_multi_u0` active:weak 2:1 | 0.093750 | 0.093750 | 0.281250 | 0.062500 | 0/6 |
+| `constant_grid_rolewise_no_multi_u0` active:weak 1:0.5 | 0.093750 | 0.093750 | 0.281250 | 0.062500 | 0/6 |
+
+The default 1:1 role-wise setting rescued sample 17, a same-drift /
+wrong-diffusion miss under shared constants:
+
+```text
+truth/oracle diffusion: mul CONSTANT sqrt abs x_0
+shared selected diffusion: mul CONSTANT abs x_0
+rolewise selected/oracle score: 0.818141
+shared selected/oracle scores: 0.872129 / 0.903798
+rolewise best constants: drift=1, diffusion=0.5
+```
+
+Role-wise constants also lowered several oracle scores without selecting them.
+For example sample 13 improved oracle score from `2.641107` to `1.674129`, and
+sample 24 improved from `2.270083` to `2.019098`, but the selected non-oracles
+still had lower active+weak scores. Active-heavy and weak-downweighted variants
+both regressed to `3/32`, so broad active/weak weight search is not the next
+best move. Interpretation: role-wise constant handling is useful and should be
+kept as the current strongest decoding setting, but the remaining selected
+misses require better score discrimination or candidate-level evidence, not
+just another simple active/weak weighting.
+
 Update, 2026-06-18 oracle-gap diagnostics: `sde_validation_probe.py` now prints
 an oracle case summary and per-case miss diagnostics for reranked candidates.
 The 32-sample no-tie eval-only setting was rerun from the same checkpoint with

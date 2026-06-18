@@ -2,6 +2,75 @@
 
 ## Last Codex Workflow
 
+Codex added role-wise constant-grid scoring to `sde_validation_probe.py` and ran
+the requested 32-sample eval-only calibration experiments. No training was run,
+no 64-sample probe was run, and no checkpoint or dataset pickle was overwritten.
+
+New score mode:
+
+```text
+constant_grid_rolewise_no_multi_u0
+```
+
+It keeps the active+weak no-`multi_u0` score, but searches separate shared
+constants for the drift and diffusion roles over `--rerank-constant-values`.
+The probe also prints role-wise best drift/diffusion constants and shared-vs-
+rolewise rescue summaries.
+
+32-sample results:
+
+```text
+shared constant baseline:
+  selected exact/relaxed=4/32
+  oracle exact/relaxed=9/32
+  pair oracle exact/relaxed=2/32
+
+role-wise constant, active:weak 1:1:
+  selected exact/relaxed=5/32
+  oracle exact/relaxed=9/32
+  pair oracle exact/relaxed=2/32
+  rescued shared misses=1/5
+
+role-wise constant, active:weak 2:1:
+  selected exact/relaxed=3/32
+  oracle exact/relaxed=9/32
+  pair oracle exact/relaxed=2/32
+  rescued shared misses=0/6
+
+role-wise constant, active:weak 1:0.5:
+  selected exact/relaxed=3/32
+  oracle exact/relaxed=9/32
+  pair oracle exact/relaxed=2/32
+  rescued shared misses=0/6
+```
+
+Main rescue:
+
+```text
+sample_index=17
+shared selected diffusion: mul CONSTANT abs x_0
+oracle / rolewise selected diffusion: mul CONSTANT sqrt abs x_0
+rolewise constants: drift=1, diffusion=0.5
+rolewise selected/oracle score=0.818141
+shared selected/oracle scores=0.872129 / 0.903798
+```
+
+Interpretation: role-wise constants are worth keeping as the current strongest
+setting, but simple active/weak reweighting is brittle. The remaining misses are
+not solved by constant handling alone: even when role-wise constants lower the
+oracle score, non-oracles still often have lower active+weak distance.
+
+Raw logs:
+
+```text
+/private/tmp/gensr_sde_rolewise_smoke_8.log
+/private/tmp/gensr_sde_32_rolewise_no_multi_u0.log
+/private/tmp/gensr_sde_32_rolewise_active2_weak1.log
+/private/tmp/gensr_sde_32_rolewise_active1_weak05.log
+```
+
+## Previous Codex Workflow
+
 Codex added oracle gap diagnostics to `sde_validation_probe.py` and reran the
 32-sample no-tie eval-only checkpoint probe. No training was run, no target
 format changed, and no checkpoint or dataset pickle was overwritten.
