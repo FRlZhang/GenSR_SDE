@@ -2,10 +2,9 @@
 
 ## Next Engineering Task
 
-Use residual-vector diagnostics plus offline score ablation to decide whether
-the remaining role-wise constant misses should be attacked through feature
-normalization / score calibration, or whether the scorer is too
-fingerprint-ambiguous and the next work should return to candidate generation.
+Use candidate coverage diagnostics to raise the current `9/32` oracle ceiling.
+Scorer-only work is no longer the priority because mild robust residual
+ablation rescued `0/4` remaining oracle-present misses.
 
 Current strongest no-retraining decoding setting:
 
@@ -53,6 +52,28 @@ Key result: mild robust/normalization variants rescued `0/4`; only aggressive
 tested offline score. Do not add a robust-scoring rerank mode from this evidence
 alone.
 
+Candidate coverage diagnostics now exist:
+
+```text
+scripts/analyze_candidate_coverage.py
+candidate_coverage_diagnostics.md
+/private/tmp/gensr_sde_candidate_coverage.log
+```
+
+Key result:
+
+```text
+full_oracle_present=9/32
+oracle_absent=23/32
+diffusion_only_present=17
+drift_and_diffusion_separately_present_but_not_paired=6
+drift_only_present=0
+neither_side_present=0
+```
+
+Interpretation: prioritize drift span diversity first, then pairing
+coverage/ranking. Diffusion coverage is already broad in this candidate pool.
+
 ## Primary File To Modify
 
 No primary source file needs to change unless the next task explicitly adds a
@@ -61,10 +82,10 @@ before modifying `sde_validation_probe.py`.
 
 Likely next additions:
 
-- if continuing scoring work, inspect why sample 19 flips only under aggressive
-  clipping and whether that behavior is principled enough to test;
-- otherwise move back toward candidate generation / fingerprint identifiability
-  because robust offline scores did not rescue samples 24 or 26;
+- improve drift span diversity for the 17 oracle-absent samples where diffusion
+  is already exact but drift is missing;
+- improve pairing coverage/ranking for the 6 samples where exact drift and exact
+  diffusion appear separately but not together;
 - keep role-wise constant diagnostics in every rerank experiment;
 - consider candidate-generation changes only after deciding whether the current
   scorer can reliably choose among existing oracle candidates.

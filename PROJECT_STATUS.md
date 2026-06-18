@@ -118,6 +118,15 @@ tested so far regressed.
   Mild robust/normalization variants rescued `0/4` remaining role-wise misses;
   only the aggressive `clipped_l2_p90` variant flipped sample 19. This does not
   justify a formal 32-sample robust-scoring eval yet.
+- Added a candidate coverage diagnostic helper in
+  [scripts/analyze_candidate_coverage.py](/Users/lzhang/Documents/GenSR_SDE/scripts/analyze_candidate_coverage.py)
+  and wrote
+  [candidate_coverage_diagnostics.md](/Users/lzhang/Documents/GenSR_SDE/candidate_coverage_diagnostics.md).
+  It reruns candidate generation only, without fingerprint scoring, retraining,
+  or 64-sample expansion. It reproduced the `9/32` full-oracle ceiling and
+  found the 23 oracle-absent samples split into 17 diffusion-only coverage cases
+  and 6 exact-drift/exact-diffusion separate-but-unpaired cases. No sample had
+  drift-only or neither-side coverage.
 - Logged validated experiments in
   [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md).
 
@@ -125,9 +134,9 @@ tested so far regressed.
 
 - Transitioning from "can the model learn the fingerprint?" to "can we decode
   the right symbolic sequence?".
-- Using the 32-sample oracle gap diagnostics to choose the next decoding fix:
-  rerank scoring and constant handling for the 5 selected misses, then candidate
-  generation for the 23 samples without any oracle candidate.
+- Using candidate coverage diagnostics to raise the `9/32` oracle ceiling,
+  with drift span diversity as the leading blocker and pairing as a secondary
+  blocker.
 
 ## Next Steps
 
@@ -143,11 +152,12 @@ tested so far regressed.
    favor selected non-oracles on aggregate active+weak residuals.
 4. Do not add a robust-scoring rerank mode based on the offline ablation alone:
    mild variants rescued `0/4`, and the only flip required aggressive clipping.
-5. Preserve and inspect drift/diffusion pairing, but treat it as coverage
-   support rather than the main selector fix: only 2/9 best oracles came from
-   pairs and one miss was pair-only.
-6. After the selected/oracle gap is reduced, improve candidate generation for
-   the 23/32 samples where no oracle candidate exists.
+5. Shift candidate-generation work toward drift span diversity: among the
+   23 oracle-absent samples, 17 already contain the truth diffusion but miss the
+   truth drift.
+6. Also improve pairing coverage/ranking for the 6 samples where exact drift
+   and exact diffusion are both present separately but not paired into a full
+   oracle.
 7. Keep drift/diffusion pairing enabled and tune candidate pool size carefully
    because fingerprint recomputation is CPU-expensive.
 8. Reuse the saved 2000-step checkpoint for decoding experiments instead of

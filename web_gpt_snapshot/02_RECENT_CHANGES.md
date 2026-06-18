@@ -2,6 +2,55 @@
 
 ## Last Codex Workflow
 
+Codex added candidate coverage diagnostics:
+
+```text
+scripts/analyze_candidate_coverage.py
+candidate_coverage_diagnostics.md
+/private/tmp/gensr_sde_candidate_coverage.log
+```
+
+This was not a formal eval. The helper loaded the existing 2000-step checkpoint
+read-only and reran candidate generation for the 32 held-out samples without
+fingerprint scoring, retraining, 64-sample expansion, active/weak grids, or a
+new rerank heuristic.
+
+Coverage summary:
+
+```text
+full_oracle_present=9/32
+scorer_selected_oracle=5/32
+oracle_present_but_selected_missed=4/32
+drift_only_present=0
+diffusion_only_present=17
+drift_and_diffusion_separately_present_but_not_paired=6
+neither_side_present=0
+```
+
+Source breakdown:
+
+```text
+beam:     full oracle 6, exact drift 15, exact diffusion 32
+sampling: full oracle 1, exact drift 3,  exact diffusion 8
+pair:     full oracle 2, exact drift 7,  exact diffusion 17
+```
+
+Interpretation: the 23 oracle-absent samples are not missing diffusion. The
+main blocker is drift span generation: 17/23 oracle-absent samples already have
+the truth diffusion but not the truth drift. The other 6/23 have exact drift and
+exact diffusion separately but fail to pair them into a full oracle. Next work
+should prioritize drift candidate diversity, then pairing coverage/ranking.
+
+Validation:
+
+```text
+py_compile scripts/analyze_candidate_coverage.py: passed
+candidate coverage diagnostic run: passed
+git diff --check: passed
+```
+
+## Previous Codex Workflow
+
 Codex added offline residual score ablation:
 
 ```text
@@ -46,7 +95,7 @@ offline score ablation: passed
 git diff --check: passed
 ```
 
-## Previous Codex Workflow
+## Earlier Codex Workflow
 
 Codex added a narrow helper script:
 

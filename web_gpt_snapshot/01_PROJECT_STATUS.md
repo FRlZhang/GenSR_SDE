@@ -37,19 +37,20 @@ greedy_sequence_exact=0.015625
 - Added `constant_grid_rolewise_no_multi_u0`. It searches separate drift and diffusion constants over the same constant grid. On the same 32-sample setup, active:weak 1:1 improved selected exact/relaxed to 5/32 and rescued 1/5 shared-constant misses; active:weak 2:1 and 1:0.5 both regressed to 3/32.
 - Added targeted residual-vector diagnostics in `scripts/analyze_rolewise_residuals.py` and `rolewise_residual_vector_diagnostics.md`. The helper reproduces only samples 13, 19, 24, and 26 from the eval seed and scores selected/oracle role swaps. All four remaining misses were flagged as feature-scaling/fingerprint-ambiguity cases; sample 13 also has a model-score conflict.
 - Added offline residual score ablation in `scripts/analyze_residual_score_ablation.py` and `rolewise_residual_score_ablation.md`. Mild robust/normalization variants rescued 0/4 remaining misses; only aggressive `clipped_l2_p90` flipped sample 19. No formal eval was run.
+- Added candidate coverage diagnostics in `scripts/analyze_candidate_coverage.py` and `candidate_coverage_diagnostics.md`. The diagnostic reproduced the 9/32 full-oracle ceiling without fingerprint scoring. Among 23 oracle-absent samples, 17 have exact diffusion only and 6 have exact drift+diffusion separately but not paired.
 
 ## In Progress
 
 - Transitioning from token recognition to full symbolic sequence recovery.
-- Using residual-vector and offline ablation diagnostics to decide whether the remaining 5/32 selected versus 9/32 oracle gap should be attacked through targeted feature scaling, or whether scoring is too ambiguous and work should return to candidate generation.
+- Using candidate coverage diagnostics to raise the 9/32 oracle ceiling; drift span diversity is now the leading blocker, with pairing coverage/ranking secondary.
 
 ## Next Steps
 
 1. Do not make `active_distance` or `state_dependent_drift` the default based on the 16-sample hit; on 32 samples they matched no-tie baseline.
 2. Keep `constant_grid_rolewise_no_multi_u0` active:weak 1:1 as the strongest current eval setting; do not make active-heavy weights the default.
-3. Do not add a robust-scoring rerank mode from the current offline ablation alone: mild variants rescued 0/4 and the only flip required aggressive clipping.
-4. Treat candidate generation as the larger ceiling after that, because 23/32 samples still have no oracle candidate.
-5. Keep drift/diffusion pairing enabled and tune candidate pool size carefully because fingerprint recomputation is CPU-expensive.
+3. Prioritize drift span diversity: 17/23 oracle-absent samples already contain the truth diffusion but miss the truth drift.
+4. Improve pairing coverage/ranking for 6/23 oracle-absent samples where exact drift and exact diffusion appear separately but not as a full oracle.
+5. Do not add a robust-scoring rerank mode from the current offline ablation alone: mild variants rescued 0/4 and the only flip required aggressive clipping.
 6. Keep comparing greedy, constrained beam, reranked, oracle, and oracle-miss metrics on the same held-out setup.
 7. Only revisit fingerprint design after candidate diversity and scoring have been tested more thoroughly.
 

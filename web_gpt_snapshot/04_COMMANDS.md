@@ -82,6 +82,27 @@ PYTHONPYCACHEPREFIX=/private/tmp/gensr_pycache \
   scripts/analyze_residual_score_ablation.py
 ```
 
+## Candidate Coverage Diagnostic
+
+This reruns candidate generation only for the 32 held-out samples. It is not a
+formal rerank eval and does not compute fingerprint scores.
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/tmp/cache \
+/opt/miniconda3/envs/gensr/bin/python3 scripts/analyze_candidate_coverage.py \
+  --source-log /private/tmp/gensr_sde_32_rolewise_no_multi_u0.log \
+  --report candidate_coverage_diagnostics.md \
+  > /private/tmp/gensr_sde_candidate_coverage.log 2>&1
+```
+
+Compile check:
+
+```bash
+PYTHONPYCACHEPREFIX=/private/tmp/gensr_pycache \
+/opt/miniconda3/envs/gensr/bin/python3 -m py_compile \
+  scripts/analyze_candidate_coverage.py
+```
+
 ## Small Smoke Test
 
 ```bash

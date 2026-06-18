@@ -2,6 +2,41 @@
 
 Date: 2026-06-11
 
+Update, 2026-06-18 candidate coverage diagnostic: added
+`scripts/analyze_candidate_coverage.py` and wrote
+`candidate_coverage_diagnostics.md`. This was a candidate-generation diagnostic
+only: no fingerprint rerank scoring, no formal 32-sample eval, no 64-sample
+eval, and no retraining. The helper loaded the 2000-step checkpoint read-only
+and regenerated the 32 held-out candidate pools with beam, sampling, and
+drift/diffusion pairing.
+
+Coverage summary:
+
+| Category | Count |
+| --- | ---: |
+| Full oracle present | 9 |
+| Scorer selected oracle | 5 |
+| Oracle present but selected missed | 4 |
+| Drift-only present | 0 |
+| Diffusion-only present | 17 |
+| Drift+diffusion separately present but not paired | 6 |
+| Neither side present | 0 |
+
+Source breakdown:
+
+| Source | Candidate rows | Full oracle samples | Exact drift samples | Exact diffusion samples |
+| --- | ---: | ---: | ---: | ---: |
+| beam | 256 | 6 | 15 | 32 |
+| sampling | 46 | 1 | 3 | 8 |
+| pair | 103 | 2 | 7 | 17 |
+
+Interpretation: the `9/32` oracle ceiling is mainly a drift-span coverage
+problem. Among the 23 oracle-absent samples, 17 already contain the truth
+diffusion but miss the truth drift; the other 6 contain exact drift and exact
+diffusion separately but do not pair them into a full oracle. No oracle-absent
+sample is missing both sides. Next candidate-generation work should prioritize
+drift diversity first, then pairing coverage/ranking.
+
 Update, 2026-06-18 offline residual score ablation: added
 `scripts/analyze_residual_score_ablation.py`. Because the previous residual
 helper's log did not contain machine-readable full residual vectors, the
