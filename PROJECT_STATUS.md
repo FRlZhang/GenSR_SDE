@@ -102,6 +102,15 @@ tested so far regressed.
   It rescued the same-drift/wrong-diffusion miss at sample 17 by using
   drift constant `1.0` and diffusion constant `0.5`. Active-heavy `2:1` and
   weak-downweighted `1:0.5` variants both regressed to `3/32`.
+- Added a targeted residual-vector diagnostic helper in
+  [scripts/analyze_rolewise_residuals.py](/Users/lzhang/Documents/GenSR_SDE/scripts/analyze_rolewise_residuals.py)
+  and wrote
+  [rolewise_residual_vector_diagnostics.md](/Users/lzhang/Documents/GenSR_SDE/rolewise_residual_vector_diagnostics.md).
+  The helper does not run a formal 32-sample eval; it reproduces the four known
+  role-wise misses (`13`, `19`, `24`, `26`) from the eval seed and scores only
+  selected/oracle role swaps. The residual vectors flagged all four misses as
+  feature-scaling/fingerprint-ambiguity cases, with sample 13 also carrying a
+  model-score conflict.
 - Logged validated experiments in
   [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md).
 
@@ -121,18 +130,22 @@ tested so far regressed.
    no-retraining decoding setting (`5/32` selected, `9/32` oracle), but do not
    continue broad active/weak weight search because the two tested variants
    regressed.
-3. Preserve and inspect drift/diffusion pairing, but treat it as coverage
+3. Use the residual-vector diagnostic output to decide whether feature
+   normalization/scaling needs a targeted check before adding any new scoring
+   heuristic. The four remaining role-wise misses are not near-ties and still
+   favor selected non-oracles on aggregate active+weak residuals.
+4. Preserve and inspect drift/diffusion pairing, but treat it as coverage
    support rather than the main selector fix: only 2/9 best oracles came from
    pairs and one miss was pair-only.
-4. After the selected/oracle gap is reduced, improve candidate generation for
+5. After the selected/oracle gap is reduced, improve candidate generation for
    the 23/32 samples where no oracle candidate exists.
-5. Keep drift/diffusion pairing enabled and tune candidate pool size carefully
+6. Keep drift/diffusion pairing enabled and tune candidate pool size carefully
    because fingerprint recomputation is CPU-expensive.
-6. Reuse the saved 2000-step checkpoint for decoding experiments instead of
+7. Reuse the saved 2000-step checkpoint for decoding experiments instead of
    retraining.
-7. Compare greedy, constrained beam, reranked, and oracle candidate metrics on the same
+8. Compare greedy, constrained beam, reranked, and oracle candidate metrics on the same
    held-out evaluation setup.
-8. Only revisit fingerprint design after candidate diversity and scoring have
+9. Only revisit fingerprint design after candidate diversity and scoring have
    been tested more thoroughly.
 
 ## Open Questions

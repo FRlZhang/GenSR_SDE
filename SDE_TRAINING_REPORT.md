@@ -2,6 +2,37 @@
 
 Date: 2026-06-11
 
+Update, 2026-06-18 targeted residual-vector diagnostics: added
+`scripts/analyze_rolewise_residuals.py` and wrote
+`rolewise_residual_vector_diagnostics.md`. This was a diagnostic-only run, not
+a formal 32-sample eval: it reproduced the known remaining role-wise selected
+misses (`13`, `19`, `24`, `26`) from the eval seed and scored only the selected
+/ oracle role-swap combinations.
+
+The helper completed in about 9 seconds with:
+
+```text
+/private/tmp/gensr_sde_rolewise_residual_vectors.log
+```
+
+Diagnostic classifications:
+
+| Sample | Classification |
+| ---: | --- |
+| 13 | both-side ambiguity; feature-scaling artifact; model-score conflict |
+| 19 | both-side ambiguity; feature-scaling artifact |
+| 24 | drift-side ambiguity; feature-scaling artifact |
+| 26 | diffusion-side ambiguity; feature-scaling artifact |
+
+The recomputed residual vectors still show selected non-oracles beating the
+oracle on aggregate active+weak distance for all four cases. The role-swap
+diagnostic is most decisive for samples 24 and 26 because one role is shared:
+sample 24 isolates a drift-side ambiguity, while sample 26 isolates a
+diffusion-side ambiguity. This supports a targeted feature-normalization /
+residual-scaling diagnostic before adding another rerank heuristic. It does not
+change the current headline metric: role-wise selected exact/relaxed remains
+`5/32` against an oracle ceiling of `9/32`.
+
 Update, 2026-06-18 role-wise constant handling: added
 `constant_grid_rolewise_no_multi_u0`, which keeps the no-`multi_u0` active+weak
 score but searches separate role-wise constants:

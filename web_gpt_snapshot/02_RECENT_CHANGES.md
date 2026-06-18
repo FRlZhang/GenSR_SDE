@@ -2,6 +2,51 @@
 
 ## Last Codex Workflow
 
+Codex added a narrow helper script:
+
+```text
+scripts/analyze_rolewise_residuals.py
+```
+
+and generated:
+
+```text
+rolewise_residual_vector_diagnostics.md
+/private/tmp/gensr_sde_rolewise_residual_vectors.log
+```
+
+This was not a formal 32-sample eval. The helper reproduced only the known
+remaining role-wise miss samples `13,19,24,26` from the eval seed and scored
+selected/oracle role-swap combinations. No retraining, 64-sample eval,
+active/weak grid, target-format change, fingerprint-schema change, checkpoint
+overwrite, or data-pickle overwrite was performed.
+
+Residual-vector classifications:
+
+```text
+sample 13: both-side ambiguity; feature-scaling artifact; model-score conflict
+sample 19: both-side ambiguity; feature-scaling artifact
+sample 24: drift-side ambiguity; feature-scaling artifact
+sample 26: diffusion-side ambiguity; feature-scaling artifact
+```
+
+Key interpretation: the remaining four role-wise misses still favor selected
+non-oracles on aggregate active+weak residuals. Samples 24 and 26 isolate the
+problem cleanly because one role is shared: sample 24 is drift-side ambiguity,
+sample 26 is diffusion-side ambiguity. Do not add a new rerank heuristic from
+this alone; the next low-cost move is targeted feature normalization /
+residual-scaling diagnostics, then candidate generation if the scorer remains
+ambiguous.
+
+Validation:
+
+```text
+py_compile scripts/analyze_rolewise_residuals.py: passed
+git diff --check: passed
+```
+
+## Previous Codex Workflow
+
 Codex added role-wise constant-grid scoring to `sde_validation_probe.py` and ran
 the requested 32-sample eval-only calibration experiments. No training was run,
 no 64-sample probe was run, and no checkpoint or dataset pickle was overwritten.
@@ -69,7 +114,7 @@ Raw logs:
 /private/tmp/gensr_sde_32_rolewise_active1_weak05.log
 ```
 
-## Previous Codex Workflow
+## Earlier Codex Workflow
 
 Codex added oracle gap diagnostics to `sde_validation_probe.py` and reran the
 32-sample no-tie eval-only checkpoint probe. No training was run, no target

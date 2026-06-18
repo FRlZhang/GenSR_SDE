@@ -2,9 +2,10 @@
 
 ## Next Engineering Task
 
-Diagnose the remaining role-wise constant misses after
-`constant_grid_rolewise_no_multi_u0` improved selected recovery from `4/32` to
-`5/32`.
+Use the targeted residual-vector diagnostics to decide whether the remaining
+role-wise constant misses should be attacked through feature normalization /
+score calibration, or whether the scorer is too fingerprint-ambiguous and the
+next work should return to candidate generation.
 
 Current strongest no-retraining decoding setting:
 
@@ -21,20 +22,38 @@ drift constant `1.0` and diffusion constant `0.5`. The active-heavy `2:1` and
 weak-downweighted `1:0.5` variants both regressed to `3/32`, so do not continue
 broad active/weak grid search.
 
-## Primary File To Modify
+Targeted residual-vector diagnostics now exist:
 
 ```text
-sde_validation_probe.py
+scripts/analyze_rolewise_residuals.py
+rolewise_residual_vector_diagnostics.md
+/private/tmp/gensr_sde_rolewise_residual_vectors.log
 ```
+
+Residual-vector classifications:
+
+```text
+sample 13: both-side ambiguity; feature-scaling artifact; model-score conflict
+sample 19: both-side ambiguity; feature-scaling artifact
+sample 24: drift-side ambiguity; feature-scaling artifact
+sample 26: diffusion-side ambiguity; feature-scaling artifact
+```
+
+## Primary File To Modify
+
+No primary source file needs to change unless the next task explicitly adds a
+new diagnostic. If adding diagnostics, prefer a narrow helper under `scripts/`
+before modifying `sde_validation_probe.py`.
 
 Likely next additions:
 
-- inspect the 4 remaining role-wise selected misses and why their non-oracles
-  still beat the oracle in active+weak score;
-- compare candidate semantics for wrong drift versus wrong diffusion cases;
+- inspect whether a few normalized active/weak features dominate the wrong
+  selections;
+- test feature normalization / residual scaling as diagnostics before any new
+  rerank heuristic;
 - keep role-wise constant diagnostics in every rerank experiment;
-- consider candidate-generation changes only after explaining whether the
-  current scorer can choose among existing oracle candidates.
+- consider candidate-generation changes only after deciding whether the current
+  scorer can reliably choose among existing oracle candidates.
 
 ## Supporting Files If Needed
 
@@ -58,8 +77,10 @@ Likely next additions:
 
 1. `py_compile` edited Python files.
 2. `git diff --check`.
-3. 8- or 16-sample eval-only smoke if debug/output changes.
-4. 32-sample eval-only probe from:
+3. For helper-only diagnostics, run the helper and redirect output to
+   `/private/tmp/<descriptive>.log`.
+4. 8- or 16-sample eval-only smoke if probe debug/output changes.
+5. 32-sample eval-only probe from:
 
 ```text
 /private/tmp/gensr_sde_role_token_2000/role_token_2000.pth
@@ -69,4 +90,5 @@ Likely next additions:
 
 The next useful decoding change should exceed the current role-wise baseline of
 `5/32` selected exact/relaxed on the same 32-sample setup, or clearly explain
-why candidate generation must be improved before scoring can move further.
+why feature normalization/fingerprint ambiguity prevents scorer-only progress
+and candidate generation must be improved before scoring can move further.

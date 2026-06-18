@@ -35,6 +35,31 @@ PYTHONPYCACHEPREFIX=/private/tmp/gensr_pycache \
 git diff --check
 ```
 
+## Targeted Residual-vector Diagnostic
+
+This is not a formal 32-sample eval. It reproduces only known role-wise miss
+samples and scores selected/oracle role swaps.
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/tmp/cache \
+/opt/miniconda3/envs/gensr/bin/python3 scripts/analyze_rolewise_residuals.py \
+  --source-log /private/tmp/gensr_sde_32_rolewise_no_multi_u0.log \
+  --samples 13,19,24,26 \
+  --report rolewise_residual_vector_diagnostics.md \
+  --n-paths 800 \
+  --active-paths 800 \
+  --n-steps 60 \
+  > /private/tmp/gensr_sde_rolewise_residual_vectors.log 2>&1
+```
+
+Compile check for the helper:
+
+```bash
+PYTHONPYCACHEPREFIX=/private/tmp/gensr_pycache \
+/opt/miniconda3/envs/gensr/bin/python3 -m py_compile \
+  scripts/analyze_rolewise_residuals.py
+```
+
 ## Small Smoke Test
 
 ```bash
