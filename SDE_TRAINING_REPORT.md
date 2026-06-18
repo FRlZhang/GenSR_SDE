@@ -2,6 +2,43 @@
 
 Date: 2026-06-11
 
+Update, 2026-06-18: the near-tie rerank tie-breaks were validated on a larger
+32-sample eval-only probe using the 2000-step role-token checkpoint:
+
+```text
+/private/tmp/gensr_sde_role_token_2000/role_token_2000.pth
+```
+
+All three settings used `constant_grid_componentwise_no_multi_u0`,
+`--rerank-tie-epsilon 0.005`, beam+sampling candidates, and drift/diffusion
+pairing. Only `--rerank-tie-break` changed:
+
+| Tie-break | Selected exact | Selected relaxed | Oracle exact | Oracle relaxed | Pair oracle exact | Pair oracle relaxed |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `none` | 0.125000 | 0.125000 | 0.281250 | 0.281250 | 0.062500 | 0.062500 |
+| `active_distance` | 0.125000 | 0.125000 | 0.281250 | 0.281250 | 0.062500 | 0.062500 |
+| `state_dependent_drift` | 0.125000 | 0.125000 | 0.281250 | 0.281250 | 0.062500 | 0.062500 |
+
+Shared candidate diagnostics:
+
+```text
+rerank_candidates_attempted=405
+rerank_candidates_valid=405
+rerank_fingerprint_failures=0
+rerank_unique_candidate_avg=12.656250
+rerank_unique_drift_avg=4.468750
+rerank_unique_diffusion_avg=5.000000
+rerank_unique_paired_candidate_avg=3.218750
+```
+
+Interpretation: the 16-sample near-tie hit was real as a diagnostic, but it did
+not scale into a stable improvement over the no-tie baseline on 32 samples.
+Selected reranking now recovers 4/32 while the candidate oracle contains 9/32,
+so the next work should focus on candidate generation, pairing coverage, and
+constant handling rather than adding another tie-break heuristic. Because
+neither tie-break exceeded baseline and each 32-sample run was CPU-expensive,
+the 64-sample extension was not run.
+
 Update, 2026-06-12: the original SDE data injection patched
 `env.generate_sample`, but the GenSR train dataloader actually calls
 `EnvDataset.generate_sample`. The 100-step and 500-step loss probes below are

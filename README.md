@@ -80,16 +80,23 @@ Current best result so far:
   bottleneck.
 - first-pass fingerprint reranking is implemented, but a small checkpoint eval
   did not improve exact / relaxed recovery yet.
-- drift/diffusion pairing produced nonzero oracle hits (`1/16`) in a
-  16-sample checkpoint eval, but the current rerank score did not select them.
+- drift/diffusion pairing produced nonzero oracle hits and, with constant-grid
+  scoring, selected reranked recovery now reaches `4/32` on a 32-sample
+  eval-only checkpoint probe.
 - componentwise reranking has been added for diagnostics; it also missed the
   oracle candidate in the first 16-sample probe.
-- global constant-grid reranking improves the inspected oracle rank but still
-  does not select it, so constant sensitivity is only part of the bottleneck.
-- dropping `multi_u0_moments` from the constant-grid score nearly selects the
-  inspected oracle candidate, but selected exact / relaxed recovery is still 0.
+- global constant-grid reranking improved the inspected oracle rank in the
+  original 16-sample diagnostic but still did not select it there, so constant
+  sensitivity is only part of the bottleneck.
+- dropping `multi_u0_moments` from the constant-grid score nearly selected the
+  inspected oracle candidate in the 16-sample diagnostic, but no-tie selected
+  exact / relaxed recovery was still 0 there.
 - epsilon tie-breaking on active distance or state-dependent drift produced the
   first selected reranked exact / relaxed hit (`1/16`) in a checkpoint probe.
+- on a larger 32-sample eval-only validation, baseline no tie,
+  `active_distance`, and `state_dependent_drift` all matched at selected
+  exact/relaxed `4/32` while oracle exact/relaxed remained `9/32`, so the
+  near-tie heuristics are not yet stable improvements over baseline.
 
 See [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md)
 and [PROJECT_STATUS.md](/Users/lzhang/Documents/GenSR_SDE/PROJECT_STATUS.md) for

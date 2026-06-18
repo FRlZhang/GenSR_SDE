@@ -2,7 +2,7 @@
 
 ## Current Goal
 
-Improve sequence-level SDE recovery after establishing that the current unified fingerprint and role-token target are learnable by GenSR. Candidate generation plus fingerprint-distance reranking is implemented; drift/diffusion pairing now produces nonzero oracle hits, so the next step is diagnosing why the rerank score does not select those oracle candidates.
+Improve sequence-level SDE recovery after establishing that the current unified fingerprint and role-token target are learnable by GenSR. Candidate generation plus fingerprint-distance reranking is implemented; drift/diffusion pairing and constant-grid scoring now produce selected hits, but 32-sample validation showed the near-tie tie-breaks do not improve over no-tie baseline.
 
 ## Completed
 
@@ -32,16 +32,17 @@ greedy_sequence_exact=0.015625
 - Added global constant-grid reranking diagnostics. On the same 16-sample checkpoint probe, `constant_grid_componentwise` kept selected exact/relaxed at zero and oracle at 1/16, but improved the inspected oracle from rank 8 to rank 5 and reduced its distance from 5.919984 to 5.125097 with `best_constant=0.5`.
 - Added top non-oracle diagnostics and score variants. `constant_grid_componentwise_no_multi_u0` was closest: selected exact/relaxed stayed zero and oracle stayed 1/16, but the inspected oracle moved to rank 2 with distance 1.507198, behind the top non-oracle at 1.505882 by only 0.001317.
 - Added epsilon tie-breaking for near-equal rerank distances. With `constant_grid_componentwise_no_multi_u0`, `--rerank-tie-epsilon 0.005`, and either `--rerank-tie-break active_distance` or `--rerank-tie-break state_dependent_drift`, a 16-sample checkpoint probe reached the first selected reranked hit: exact/relaxed = 1/16.
+- Ran the larger 32-sample eval-only tie-break validation from `/private/tmp/gensr_sde_role_token_2000/role_token_2000.pth`. Baseline no tie, `active_distance`, and `state_dependent_drift` all matched at selected exact/relaxed = 4/32, with oracle exact/relaxed = 9/32 and pair oracle exact/relaxed = 2/32. Since no tie-break exceeded baseline and each run was CPU-expensive, 64-sample validation was not run.
 
 ## In Progress
 
 - Transitioning from token recognition to full symbolic sequence recovery.
-- Validating whether active-distance or state-dependent-drift tie-breaking is stable beyond the 16-sample diagnostic where it first selected the oracle.
+- Diagnosing why selected reranking gets only 4/32 while the candidate oracle contains 9/32 on the 32-sample probe.
 
 ## Next Steps
 
-1. Re-run the strongest tie-break setting on 32/64 held-out samples.
-2. Compare active-distance versus state-dependent-drift tie-breaking for false positives before making either the default rerank recipe.
+1. Do not make `active_distance` or `state_dependent_drift` the default based on the 16-sample hit; on 32 samples they matched no-tie baseline.
+2. Focus next on candidate generation, pairing coverage, and constant handling to close the 4/32 selected versus 9/32 oracle gap.
 3. Keep drift/diffusion pairing enabled and tune candidate pool size carefully because fingerprint recomputation is CPU-expensive.
 4. Keep comparing greedy, constrained beam, reranked, and oracle metrics on the same held-out setup.
 5. Only revisit fingerprint design after candidate diversity and scoring have been tested more thoroughly.
@@ -63,7 +64,8 @@ greedy_sequence_exact=0.015625
 - Drift/diffusion pairing produced nonzero oracle hits, but the current fingerprint-distance score still did not choose them in the 16-sample eval.
 - Constant-grid componentwise reranking improved the inspected oracle candidate from rank 8 to 5, but still did not select it; fixed `CONSTANT=1.0` is part of the score problem, not the whole problem.
 - Removing `multi_u0_moments` from the constant-grid score nearly selects the inspected oracle, but a non-oracle drift template still wins by 0.001317 due to weak-kernel distance.
-- Tie-breaking can select the paired oracle in the inspected near-tie case, but this is only verified on 16 samples so far.
+- Tie-breaking can select the paired oracle in the inspected 16-sample near-tie case, but on 32 samples both tie-break modes matched the no-tie baseline instead of improving it.
+- Constant-grid + pairing rerank is CPU-expensive; reserve 64-sample expansion for settings that first improve the 32-sample selected metrics.
 - The best checkpoint is outside the repo and may disappear.
 - `environment.yml` is upstream/Linux-oriented; recent work used the local macOS `gensr` conda env.
 

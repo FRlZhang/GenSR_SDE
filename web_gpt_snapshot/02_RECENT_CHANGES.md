@@ -2,6 +2,93 @@
 
 ## Last Codex Workflow
 
+Codex validated the near-tie rerank tie-breaks on a larger 32-sample eval-only
+held-out probe. No training was run, and no checkpoint or dataset pickle was
+overwritten.
+
+Checkpoint:
+
+```text
+/private/tmp/gensr_sde_role_token_2000/role_token_2000.pth
+```
+
+Shared eval settings:
+
+```text
+eval_samples=32
+batch_size=8
+n_paths=800
+active_paths=800
+n_steps=60
+constrained_beam_size=8
+rerank_score=constant_grid_componentwise_no_multi_u0
+rerank_constant_values=0.25,0.5,1.0,2.0,4.0
+rerank_tie_epsilon=0.005
+sample_candidates=8
+sample_temperatures=0.8,1.0,1.2
+pair_drift_diffusion_candidates=8
+```
+
+32-sample comparison:
+
+```text
+baseline no tie:
+  greedy exact/relaxed=0/32
+  constrained beam exact/relaxed=0/32
+  selected reranked exact/relaxed=4/32
+  oracle exact/relaxed=9/32
+  pair oracle exact/relaxed=2/32
+
+active_distance tie-break:
+  selected reranked exact/relaxed=4/32
+  oracle exact/relaxed=9/32
+  pair oracle exact/relaxed=2/32
+
+state_dependent_drift tie-break:
+  selected reranked exact/relaxed=4/32
+  oracle exact/relaxed=9/32
+  pair oracle exact/relaxed=2/32
+```
+
+Candidate diagnostics were identical across the three settings:
+
+```text
+rerank_candidates_attempted=405
+rerank_candidates_valid=405
+rerank_fingerprint_failures=0
+rerank_unique_candidate_avg=12.656250
+rerank_unique_drift_avg=4.468750
+rerank_unique_diffusion_avg=5.000000
+rerank_unique_paired_candidate_avg=3.218750
+```
+
+Debug notes:
+
+- Neither `active_distance` nor `state_dependent_drift` improved selected
+  exact/relaxed over no-tie baseline on 32 samples.
+- Both tie-breaks stayed below the oracle ceiling (`4/32` selected versus
+  `9/32` oracle).
+- The printed debug top-k did not show multi-candidate tie groups
+  (`tie_group_rank=2` did not appear), so no clear tie-break-specific mistaken
+  selection was visible in the logged debug cases.
+- Because neither tie-break exceeded baseline and each 32-sample constant-grid
+  + pairing run was CPU-expensive, the 64-sample extension was not run.
+
+Raw logs for local follow-up:
+
+```text
+/private/tmp/gensr_sde_32_baseline_no_tie.log
+/private/tmp/gensr_sde_32_active_distance.log
+/private/tmp/gensr_sde_32_state_dependent_drift.log
+```
+
+Interpretation: the 16-sample near-tie hit was useful diagnostically, but it is
+not yet stable enough to make either tie-break the default. The next priority is
+closing the selected-versus-oracle gap through candidate generation, pairing
+coverage, and constant handling.
+
+## Previous Codex Workflow
+
 Codex added epsilon tie-breaking for near-equal rerank distances in
 `sde_validation_probe.py`.
 

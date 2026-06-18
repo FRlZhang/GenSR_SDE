@@ -103,20 +103,26 @@ Other lightweight score modes now available:
 --rerank-score constant_grid_moments_downweighted
 ```
 
-Current strongest 16-sample diagnostic setting:
+Current 32-sample validation setting:
 
 ```bash
 --rerank-score constant_grid_componentwise_no_multi_u0 \
 --rerank-constant-values 0.25,0.5,1.0,2.0,4.0 \
 --rerank-tie-epsilon 0.005 \
---rerank-tie-break active_distance
+--rerank-tie-break none
 ```
 
-Alternative successful tie-break:
+Tie-break variants to compare, not defaults:
 
 ```bash
+--rerank-tie-break active_distance
 --rerank-tie-break state_dependent_drift
 ```
+
+Latest 32-sample eval-only result: no-tie baseline, `active_distance`, and
+`state_dependent_drift` all matched at selected exact/relaxed `4/32`, with
+oracle exact/relaxed `9/32`. Do not run 64-sample expansion unless a setting
+first improves selected metrics over the 32-sample no-tie baseline.
 
 ## Regenerate 2000-Step Checkpoint
 

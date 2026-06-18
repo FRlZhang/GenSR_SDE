@@ -2,26 +2,24 @@
 
 ## Next Engineering Task
 
-Validate the successful near-tie rerank tie-breaks on larger held-out probes.
+Close the rerank selected-versus-oracle gap on the 32-sample eval-only probe.
 
-At the end of that workflow, update `web_gpt_snapshot/02_RECENT_CHANGES.md` and
-`web_gpt_snapshot/03_CURRENT_TASK.md`. Also update `01_PROJECT_STATUS.md` if the
-goal, best checkpoint, key metrics, blocker, or next-step priority changes.
+The near-tie tie-break validation is complete. With the 2000-step checkpoint,
+`constant_grid_componentwise_no_multi_u0`, `--rerank-tie-epsilon 0.005`,
+beam+sampling candidates, and drift/diffusion pairing, all three 32-sample
+settings matched:
 
-The reranking path, debug/oracle diagnostics, grammar-constrained stochastic
-sampling, and drift/diffusion pairing are implemented and verified. A 16-sample
-eval-only checkpoint probe with pairing produced nonzero oracle exact/relaxed
-hits (`1/16`), but selected reranked exact/relaxed metrics remained zero.
-Componentwise scoring improved the inspected oracle candidate from rank 11 to
-rank 8. Constant-grid componentwise improved it further to rank 5 and reduced
-its distance from 5.919984 to 5.125097 with `best_constant=0.5`, but selected
-reranked exact/relaxed metrics remained zero.
-`constant_grid_componentwise_no_multi_u0` moved the oracle to rank 2 with
-distance 1.507198, just behind a top non-oracle at 1.505882. The top non-oracle
-keeps the oracle diffusion but uses a constant-only drift template.
-Adding `--rerank-tie-epsilon 0.005` plus either `--rerank-tie-break
-active_distance` or `--rerank-tie-break state_dependent_drift` selected that
-oracle and produced the first selected reranked exact/relaxed hit (`1/16`).
+```text
+baseline no tie selected exact/relaxed=4/32
+active_distance selected exact/relaxed=4/32
+state_dependent_drift selected exact/relaxed=4/32
+oracle exact/relaxed=9/32
+pair oracle exact/relaxed=2/32
+```
+
+Because neither tie-break exceeded the no-tie baseline, 64-sample validation was
+not run. The current bottleneck is not a missing near-tie rule; it is that the
+candidate pool contains more correct templates than the score selects.
 
 ## Primary File To Modify
 
@@ -31,13 +29,14 @@ sde_validation_probe.py
 
 Likely next additions:
 
-- re-run `constant_grid_componentwise_no_multi_u0` with `active_distance` and
-  `state_dependent_drift` tie-breaks on 32/64 samples;
-- compare false positives and whether selected exact/relaxed remains above 0;
-- keep constant-grid active+weak scoring plus epsilon tie-breaks as the strongest
-  current diagnostic;
-- keep pairing enabled while controlling candidate counts for CPU cost;
-- keep reporting reranked metrics beside greedy and constrained beam.
+- inspect the 32-sample cases where oracle exists but selected rerank misses;
+- compare selected versus oracle constants and active/weak segment distances;
+- improve candidate generation or drift/diffusion pairing coverage before
+  adding another tie-break heuristic;
+- consider more targeted constant handling, since fixed/global constants still
+  distort ranking;
+- keep reporting reranked metrics beside greedy, constrained beam, oracle, and
+  pair-oracle metrics.
 
 ## Supporting Files If Needed
 
@@ -48,7 +47,10 @@ Likely next additions:
 
 ## Do Not Touch First
 
-- Do not redesign `multi_active_weak_v1` fingerprint before testing reranking.
+- Do not make `active_distance` or `state_dependent_drift` the default based on
+  the earlier 16-sample hit.
+- Do not redesign `multi_active_weak_v1` fingerprint before exhausting decoding
+  and reranking diagnostics.
 - Do not switch to two fully independent decoders by default.
 - Do not change the target format away from `<DRIFT> ... <DIFFUSION> ...`.
 - Do not rely on training loss alone as evidence.
@@ -58,7 +60,7 @@ Likely next additions:
 
 1. `py_compile` edited Python files.
 2. `git diff --check`.
-3. Small `sde_validation_probe.py` smoke test.
+3. Small `sde_validation_probe.py` smoke test if code changes.
 4. Eval-only held-out decoding from:
 
 ```text
@@ -67,16 +69,21 @@ Likely next additions:
 
 ## Metrics To Compare
 
-Report each for greedy, constrained beam, and reranked candidates:
+Report each for greedy, constrained beam, reranked candidates, oracle, and pair
+oracle:
 
 - `sequence_exact`
 - `sequence_relaxed_no_constants`
-- `sequence_nonempty`
-- `sequence_avg_len`
-- `sequence_structural_token_frac`
-- `rerank_oracle_sequence_exact`
-- `rerank_oracle_sequence_relaxed_no_constants`
+- `rerank_candidates_attempted`
+- `rerank_candidates_valid`
+- `rerank_fingerprint_failures`
+- `rerank_unique_candidate_avg`
+- `rerank_unique_drift_avg`
+- `rerank_unique_diffusion_avg`
+- `rerank_unique_paired_candidate_avg`
 
 ## Success Standard
 
-Reranking should improve `sequence_exact` or `sequence_relaxed_no_constants` over greedy and constrained beam on the same held-out setup.
+The next decoding change should improve selected reranked exact or relaxed
+recovery beyond the current 32-sample no-tie baseline of `4/32`, while staying
+below and explaining the oracle ceiling of `9/32`.
