@@ -2,6 +2,52 @@
 
 ## Last Codex Workflow
 
+Codex added offline residual score ablation:
+
+```text
+scripts/analyze_residual_score_ablation.py
+rolewise_residual_score_ablation.md
+```
+
+Because the prior residual-vector log was not machine-readable enough, Codex
+extended `scripts/analyze_rolewise_residuals.py` to emit:
+
+```text
+rolewise_residual_vector_diagnostics.json
+```
+
+This was offline analysis only: no formal 32-sample eval, no 64-sample eval, no
+retraining, no active/weak grid, and no new rerank mode/default change.
+
+Results over samples `13,19,24,26`:
+
+```text
+current active+weak L2: 0/4 oracle wins
+L1 residual sum: 0/4 oracle wins
+L2 residual sum: 0/4 oracle wins
+mild clipped/Huber/per-segment normalization: 0/4 oracle wins
+aggressive clipping/top-k removal: 1/4 oracle wins
+```
+
+Only sample 19 flipped, and only under aggressive `clipped_l2_p90`. Sample 24
+(drift-side ambiguity) and sample 26 (diffusion-side ambiguity) did not flip
+under any tested offline variant.
+
+Interpretation: a formal 32-sample robust-scoring eval is not justified yet.
+The remaining misses look more like fingerprint ambiguity / insufficient
+candidate evidence than an easy feature-normalization scorer fix.
+
+Validation:
+
+```text
+py_compile scripts/analyze_rolewise_residuals.py scripts/analyze_residual_score_ablation.py: passed
+targeted residual helper rerun for JSON sidecar: passed
+offline score ablation: passed
+git diff --check: passed
+```
+
+## Previous Codex Workflow
+
 Codex added a narrow helper script:
 
 ```text
@@ -45,7 +91,7 @@ py_compile scripts/analyze_rolewise_residuals.py: passed
 git diff --check: passed
 ```
 
-## Previous Codex Workflow
+## Earlier Codex Workflow
 
 Codex added role-wise constant-grid scoring to `sde_validation_probe.py` and ran
 the requested 32-sample eval-only calibration experiments. No training was run,

@@ -111,6 +111,13 @@ tested so far regressed.
   selected/oracle role swaps. The residual vectors flagged all four misses as
   feature-scaling/fingerprint-ambiguity cases, with sample 13 also carrying a
   model-score conflict.
+- Added an offline residual score-ablation helper in
+  [scripts/analyze_residual_score_ablation.py](/Users/lzhang/Documents/GenSR_SDE/scripts/analyze_residual_score_ablation.py)
+  and wrote
+  [rolewise_residual_score_ablation.md](/Users/lzhang/Documents/GenSR_SDE/rolewise_residual_score_ablation.md).
+  Mild robust/normalization variants rescued `0/4` remaining role-wise misses;
+  only the aggressive `clipped_l2_p90` variant flipped sample 19. This does not
+  justify a formal 32-sample robust-scoring eval yet.
 - Logged validated experiments in
   [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md).
 
@@ -134,18 +141,20 @@ tested so far regressed.
    normalization/scaling needs a targeted check before adding any new scoring
    heuristic. The four remaining role-wise misses are not near-ties and still
    favor selected non-oracles on aggregate active+weak residuals.
-4. Preserve and inspect drift/diffusion pairing, but treat it as coverage
+4. Do not add a robust-scoring rerank mode based on the offline ablation alone:
+   mild variants rescued `0/4`, and the only flip required aggressive clipping.
+5. Preserve and inspect drift/diffusion pairing, but treat it as coverage
    support rather than the main selector fix: only 2/9 best oracles came from
    pairs and one miss was pair-only.
-5. After the selected/oracle gap is reduced, improve candidate generation for
+6. After the selected/oracle gap is reduced, improve candidate generation for
    the 23/32 samples where no oracle candidate exists.
-6. Keep drift/diffusion pairing enabled and tune candidate pool size carefully
+7. Keep drift/diffusion pairing enabled and tune candidate pool size carefully
    because fingerprint recomputation is CPU-expensive.
-7. Reuse the saved 2000-step checkpoint for decoding experiments instead of
+8. Reuse the saved 2000-step checkpoint for decoding experiments instead of
    retraining.
-8. Compare greedy, constrained beam, reranked, and oracle candidate metrics on the same
+9. Compare greedy, constrained beam, reranked, and oracle candidate metrics on the same
    held-out evaluation setup.
-9. Only revisit fingerprint design after candidate diversity and scoring have
+10. Only revisit fingerprint design after candidate diversity and scoring have
    been tested more thoroughly.
 
 ## Open Questions

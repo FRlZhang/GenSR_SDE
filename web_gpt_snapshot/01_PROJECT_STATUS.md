@@ -36,17 +36,18 @@ greedy_sequence_exact=0.015625
 - Added oracle gap diagnostics to `sde_validation_probe.py`. The 32-sample no-tie rerun found 9 samples with oracle candidates, 4 selected hits, and 5 selected misses. Miss types: 2 same diffusion but wrong drift, 1 same drift but wrong diffusion, 2 both sides wrong, 0 constant-only mismatch. Best oracle sources were beam 6, sampling 1, pair 2; selected hits came from beam 3 and pair 1.
 - Added `constant_grid_rolewise_no_multi_u0`. It searches separate drift and diffusion constants over the same constant grid. On the same 32-sample setup, active:weak 1:1 improved selected exact/relaxed to 5/32 and rescued 1/5 shared-constant misses; active:weak 2:1 and 1:0.5 both regressed to 3/32.
 - Added targeted residual-vector diagnostics in `scripts/analyze_rolewise_residuals.py` and `rolewise_residual_vector_diagnostics.md`. The helper reproduces only samples 13, 19, 24, and 26 from the eval seed and scores selected/oracle role swaps. All four remaining misses were flagged as feature-scaling/fingerprint-ambiguity cases; sample 13 also has a model-score conflict.
+- Added offline residual score ablation in `scripts/analyze_residual_score_ablation.py` and `rolewise_residual_score_ablation.md`. Mild robust/normalization variants rescued 0/4 remaining misses; only aggressive `clipped_l2_p90` flipped sample 19. No formal eval was run.
 
 ## In Progress
 
 - Transitioning from token recognition to full symbolic sequence recovery.
-- Using role-wise residual-vector diagnostics to decide whether the remaining 5/32 selected versus 9/32 oracle gap should be attacked through feature normalization/scoring diagnostics or by returning to candidate generation.
+- Using residual-vector and offline ablation diagnostics to decide whether the remaining 5/32 selected versus 9/32 oracle gap should be attacked through targeted feature scaling, or whether scoring is too ambiguous and work should return to candidate generation.
 
 ## Next Steps
 
 1. Do not make `active_distance` or `state_dependent_drift` the default based on the 16-sample hit; on 32 samples they matched no-tie baseline.
 2. Keep `constant_grid_rolewise_no_multi_u0` active:weak 1:1 as the strongest current eval setting; do not make active-heavy weights the default.
-3. Do one targeted feature-normalization/residual-scaling check before adding a new scoring heuristic; the remaining 4 role-wise misses are not near-ties.
+3. Do not add a robust-scoring rerank mode from the current offline ablation alone: mild variants rescued 0/4 and the only flip required aggressive clipping.
 4. Treat candidate generation as the larger ceiling after that, because 23/32 samples still have no oracle candidate.
 5. Keep drift/diffusion pairing enabled and tune candidate pool size carefully because fingerprint recomputation is CPU-expensive.
 6. Keep comparing greedy, constrained beam, reranked, oracle, and oracle-miss metrics on the same held-out setup.

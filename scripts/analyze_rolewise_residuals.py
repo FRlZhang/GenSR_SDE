@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import math
 import random
 import re
@@ -42,6 +43,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--source-log", type=Path, required=True)
     parser.add_argument("--samples", type=str, default="13,19,24,26")
     parser.add_argument("--report", type=Path, default=Path("rolewise_residual_vector_diagnostics.md"))
+    parser.add_argument("--json-output", type=Path, default=None)
     parser.add_argument("--eval-seed", type=int, default=20260712)
     parser.add_argument("--n-paths", type=int, default=800)
     parser.add_argument("--active-paths", type=int, default=800)
@@ -499,6 +501,44 @@ def write_report(
     path.write_text("\n".join(lines))
 
 
+def json_ready(value):
+    if isinstance(value, np.ndarray):
+        return value.astype(float).tolist()
+    if isinstance(value, np.floating):
+        return float(value)
+    if isinstance(value, np.integer):
+        return int(value)
+    if isinstance(value, dict):
+        return {key: json_ready(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [json_ready(item) for item in value]
+    return value
+
+
+def write_json_sidecar(
+    path: Path,
+    rows: dict[int, dict],
+    diagnostics: dict[int, dict],
+    args: argparse.Namespace,
+) -> None:
+    payload = {
+        "metadata": {
+            "source_log": str(args.source_log),
+            "samples": parse_sample_ids(args.samples),
+            "eval_seed": args.eval_seed,
+            "n_paths": args.n_paths,
+            "active_paths": args.active_paths,
+            "n_steps": args.n_steps,
+            "constant_values": parse_constant_values(args.constant_values),
+            "active_feature_count": 18,
+            "weak_feature_count": 96,
+        },
+        "rows": rows,
+        "diagnostics": diagnostics,
+    }
+    path.write_text(json.dumps(json_ready(payload), indent=2, sort_keys=True))
+
+
 def main() -> None:
     args = parse_args()
     sample_ids = parse_sample_ids(args.samples)
@@ -591,7 +631,10 @@ def main() -> None:
         )
 
     write_report(args.report, rows, diagnostics, args)
+    json_output = args.json_output or args.report.with_suffix(".json")
+    write_json_sidecar(json_output, rows, diagnostics, args)
     print(f"wrote_report={args.report}")
+    print(f"wrote_json={json_output}")
     for sample_idx in sample_ids:
         diag = diagnostics[sample_idx]
         selected = diag["combos"]["selected+selected"]

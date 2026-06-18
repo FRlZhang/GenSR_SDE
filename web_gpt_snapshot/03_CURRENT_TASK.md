@@ -2,10 +2,10 @@
 
 ## Next Engineering Task
 
-Use the targeted residual-vector diagnostics to decide whether the remaining
-role-wise constant misses should be attacked through feature normalization /
-score calibration, or whether the scorer is too fingerprint-ambiguous and the
-next work should return to candidate generation.
+Use residual-vector diagnostics plus offline score ablation to decide whether
+the remaining role-wise constant misses should be attacked through feature
+normalization / score calibration, or whether the scorer is too
+fingerprint-ambiguous and the next work should return to candidate generation.
 
 Current strongest no-retraining decoding setting:
 
@@ -27,6 +27,7 @@ Targeted residual-vector diagnostics now exist:
 ```text
 scripts/analyze_rolewise_residuals.py
 rolewise_residual_vector_diagnostics.md
+rolewise_residual_vector_diagnostics.json
 /private/tmp/gensr_sde_rolewise_residual_vectors.log
 ```
 
@@ -39,6 +40,19 @@ sample 24: drift-side ambiguity; feature-scaling artifact
 sample 26: diffusion-side ambiguity; feature-scaling artifact
 ```
 
+Offline score ablation also exists:
+
+```text
+scripts/analyze_residual_score_ablation.py
+rolewise_residual_score_ablation.md
+/private/tmp/gensr_sde_residual_score_ablation.log
+```
+
+Key result: mild robust/normalization variants rescued `0/4`; only aggressive
+`clipped_l2_p90` flipped sample 19. Samples 24 and 26 did not flip under any
+tested offline score. Do not add a robust-scoring rerank mode from this evidence
+alone.
+
 ## Primary File To Modify
 
 No primary source file needs to change unless the next task explicitly adds a
@@ -47,10 +61,10 @@ before modifying `sde_validation_probe.py`.
 
 Likely next additions:
 
-- inspect whether a few normalized active/weak features dominate the wrong
-  selections;
-- test feature normalization / residual scaling as diagnostics before any new
-  rerank heuristic;
+- if continuing scoring work, inspect why sample 19 flips only under aggressive
+  clipping and whether that behavior is principled enough to test;
+- otherwise move back toward candidate generation / fingerprint identifiability
+  because robust offline scores did not rescue samples 24 or 26;
 - keep role-wise constant diagnostics in every rerank experiment;
 - consider candidate-generation changes only after deciding whether the current
   scorer can reliably choose among existing oracle candidates.

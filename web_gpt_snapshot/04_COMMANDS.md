@@ -46,6 +46,7 @@ PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/
   --source-log /private/tmp/gensr_sde_32_rolewise_no_multi_u0.log \
   --samples 13,19,24,26 \
   --report rolewise_residual_vector_diagnostics.md \
+  --json-output rolewise_residual_vector_diagnostics.json \
   --n-paths 800 \
   --active-paths 800 \
   --n-steps 60 \
@@ -58,6 +59,27 @@ Compile check for the helper:
 PYTHONPYCACHEPREFIX=/private/tmp/gensr_pycache \
 /opt/miniconda3/envs/gensr/bin/python3 -m py_compile \
   scripts/analyze_rolewise_residuals.py
+```
+
+## Offline Residual Score Ablation
+
+This is not a formal eval and does not add a rerank mode.
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/tmp/cache \
+/opt/miniconda3/envs/gensr/bin/python3 scripts/analyze_residual_score_ablation.py \
+  --input-log /private/tmp/gensr_sde_rolewise_residual_vectors.log \
+  --report rolewise_residual_score_ablation.md \
+  > /private/tmp/gensr_sde_residual_score_ablation.log 2>&1
+```
+
+Compile check:
+
+```bash
+PYTHONPYCACHEPREFIX=/private/tmp/gensr_pycache \
+/opt/miniconda3/envs/gensr/bin/python3 -m py_compile \
+  scripts/analyze_rolewise_residuals.py \
+  scripts/analyze_residual_score_ablation.py
 ```
 
 ## Small Smoke Test

@@ -2,6 +2,33 @@
 
 Date: 2026-06-11
 
+Update, 2026-06-18 offline residual score ablation: added
+`scripts/analyze_residual_score_ablation.py`. Because the previous residual
+helper's log did not contain machine-readable full residual vectors, the
+residual helper now also emits
+`rolewise_residual_vector_diagnostics.json`. The ablation report is
+`rolewise_residual_score_ablation.md`.
+
+This was offline analysis only: no formal 32-sample eval, no 64-sample eval, no
+retraining, no active/weak grid, and no new rerank mode.
+
+Results over samples `13`, `19`, `24`, and `26`:
+
+| Offline score variant family | Oracle wins |
+| --- | ---: |
+| Current active+weak L2 sum | 0/4 |
+| L1 residual sum | 0/4 |
+| L2 residual sum | 0/4 |
+| Mild clipped/Huber/per-segment normalization | 0/4 |
+| Aggressive clipping / top-k removal | 1/4 |
+
+Only sample 19 flipped, and only under aggressive `clipped_l2_p90`; sample 24
+drift-side ambiguity and sample 26 diffusion-side ambiguity did not flip under
+any tested offline variant. Interpretation: a formal 32-sample robust-scoring
+eval is not justified yet. The remaining misses look more like fingerprint
+ambiguity / candidate evidence limitations than an easy feature-normalization
+scorer fix.
+
 Update, 2026-06-18 targeted residual-vector diagnostics: added
 `scripts/analyze_rolewise_residuals.py` and wrote
 `rolewise_residual_vector_diagnostics.md`. This was a diagnostic-only run, not
