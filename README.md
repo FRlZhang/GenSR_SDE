@@ -97,6 +97,12 @@ Current best result so far:
   `active_distance`, and `state_dependent_drift` all matched at selected
   exact/relaxed `4/32` while oracle exact/relaxed remained `9/32`, so the
   near-tie heuristics are not yet stable improvements over baseline.
+- oracle-miss diagnostics show the 5 selected misses are score-selection
+  failures, not parse/fingerprint failures: 2 keep the oracle diffusion but
+  choose the wrong drift, 1 keeps the oracle drift but chooses the wrong
+  diffusion, and 2 miss both sides. The immediate next target is rerank score
+  calibration / constant handling; candidate generation remains the larger
+  ceiling because 23/32 samples still have no oracle candidate.
 
 See [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md)
 and [PROJECT_STATUS.md](/Users/lzhang/Documents/GenSR_SDE/PROJECT_STATUS.md) for

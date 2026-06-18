@@ -2,6 +2,62 @@
 
 Date: 2026-06-11
 
+Update, 2026-06-18 oracle-gap diagnostics: `sde_validation_probe.py` now prints
+an oracle case summary and per-case miss diagnostics for reranked candidates.
+The 32-sample no-tie eval-only setting was rerun from the same checkpoint with
+the same candidate/scoring configuration:
+
+```text
+/private/tmp/gensr_sde_role_token_2000/role_token_2000.pth
+```
+
+The run reproduced the previous selected/oracle metrics:
+
+```text
+reranked_sequence_exact=0.125000
+reranked_sequence_relaxed_no_constants=0.125000
+rerank_oracle_sequence_exact=0.281250
+rerank_oracle_sequence_relaxed_no_constants=0.281250
+rerank_pair_oracle_sequence_exact=0.062500
+rerank_pair_oracle_sequence_relaxed_no_constants=0.062500
+rerank_candidates_attempted=405
+rerank_candidates_valid=405
+rerank_parse_failures=0
+rerank_fingerprint_failures=0
+```
+
+Oracle case summary:
+
+| Diagnostic | Count |
+| --- | ---: |
+| Total samples | 32 |
+| Samples with any oracle candidate | 9 |
+| Samples where selected is oracle | 4 |
+| Samples where oracle exists but selected misses | 5 |
+| Best oracle source: beam | 6 |
+| Best oracle source: sampling | 1 |
+| Best oracle source: pair | 2 |
+| Selected hit source: beam | 3 |
+| Selected hit source: pair | 1 |
+
+Selected-miss types:
+
+| Miss type | Count |
+| --- | ---: |
+| Constant-only mismatch | 0 |
+| Same diffusion but wrong drift | 2 |
+| Same drift but wrong diffusion | 1 |
+| Both drift and diffusion wrong | 2 |
+| Oracle is lower model-score candidate | 2 |
+| Oracle only appears from pair | 1 |
+| Oracle appears from beam/sampling but score misses | 4 |
+
+Interpretation: the immediate selected-versus-oracle gap is a rerank
+score/constant-handling problem. In the 5 miss cases the oracle template is
+present, but the selected non-oracle usually has a lower active/weak rerank
+distance. The larger ceiling remains candidate generation: 23/32 samples still
+have no oracle candidate at all.
+
 Update, 2026-06-18: the near-tie rerank tie-breaks were validated on a larger
 32-sample eval-only probe using the 2000-step role-token checkpoint:
 

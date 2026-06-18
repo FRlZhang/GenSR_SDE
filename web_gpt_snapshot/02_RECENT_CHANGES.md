@@ -2,6 +2,72 @@
 
 ## Last Codex Workflow
 
+Codex added oracle gap diagnostics to `sde_validation_probe.py` and reran the
+32-sample no-tie eval-only checkpoint probe. No training was run, no target
+format changed, and no checkpoint or dataset pickle was overwritten.
+
+New diagnostic output:
+
+- `oracle_case_summary`
+- `oracle_miss_type_summary`
+- `oracle_miss_cases`
+
+The per-miss output includes sample index, truth, selected sequence, best oracle
+sequence, selected/oracle sources, selected/oracle rerank score, score gap,
+best constants, normalized model scores, drift/diffusion tokens, segment
+distances, shared-drift/shared-diffusion flags, miss side, and whether the
+oracle appeared only from pairing.
+
+Validation:
+
+```text
+py_compile sde_validation_probe.py: passed
+git diff --check: passed
+8-sample eval-only output smoke: passed
+32-sample eval-only oracle-gap diagnostic: passed
+```
+
+32-sample oracle-gap summary:
+
+```text
+total_samples=32
+samples_with_any_oracle_candidate=9
+samples_where_selected_is_oracle=4
+samples_where_oracle_exists_but_selected_misses=5
+oracle_best_source_counts beam=6 sampling=1 pair=2 unknown=0
+oracle_any_source_counts beam=6 sampling=1 pair=2 unknown=0
+selected_hit_source_counts beam=3 sampling=0 pair=1 unknown=0
+```
+
+Miss type summary:
+
+```text
+constant_mismatch=0
+same_diffusion_but_wrong_drift=2
+same_drift_but_wrong_diffusion=1
+both_drift_and_diffusion_wrong=2
+oracle_lower_model_score_candidate=2
+oracle_only_appears_from_pair=1
+oracle_from_beam_or_sampling_but_score_misses=4
+parse_failures=0
+fingerprint_failures=0
+```
+
+Key interpretation: the immediate `4/32` selected versus `9/32` oracle gap is
+mostly rerank score / constant-handling behavior. In all 5 miss cases, an oracle
+template is present, but the active/weak score selects a non-oracle. Candidate
+generation remains the larger ceiling because 23/32 samples still have no oracle
+candidate.
+
+Raw logs:
+
+```text
+/private/tmp/gensr_sde_oracle_diag_smoke_8.log
+/private/tmp/gensr_sde_32_oracle_gap_diagnostics.log
+```
+
+## Previous Codex Workflow
+
 Codex validated the near-tie rerank tie-breaks on a larger 32-sample eval-only
 held-out probe. No training was run, and no checkpoint or dataset pickle was
 overwritten.

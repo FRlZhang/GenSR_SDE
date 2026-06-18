@@ -7,8 +7,9 @@ fingerprint and role-token target are learnable by GenSR. Candidate generation
 plus fingerprint-distance reranking is now implemented in the validation probe;
 drift/diffusion pairing and constant-grid scoring now produce nonzero selected
 hits, but a 32-sample tie-break validation did not show incremental benefit
-from the near-tie heuristics. The next step is to improve candidate diversity
-and constant handling rather than making a tie-break the default.
+from the near-tie heuristics. Oracle-miss diagnostics show the immediate
+selected-versus-oracle gap is mostly rerank score / constant handling, while
+candidate generation remains the larger ceiling for samples with no oracle.
 
 ## Last Updated
 
@@ -83,6 +84,14 @@ and constant handling rather than making a tie-break the default.
   `reranked_sequence_relaxed_no_constants=0.125000`, with oracle exact/relaxed
   still at `0.281250`. Since neither tie-break exceeded baseline, the 64-sample
   extension was not triggered.
+- Added oracle gap diagnostics to [sde_validation_probe.py](/Users/lzhang/Documents/GenSR_SDE/sde_validation_probe.py)
+  and ran the 32-sample no-tie setting again. The probe found 9 samples with an
+  oracle candidate, 4 selected hits, and 5 selected misses. Best oracle source
+  counts were beam 6, sampling 1, pair 2; selected hits came from beam 3 and
+  pair 1. Miss types were: 2 same diffusion but wrong drift, 1 same drift but
+  wrong diffusion, 2 both drift and diffusion wrong, 0 constant-only mismatch.
+  Four misses had oracle candidates from beam/sampling but were scored lower
+  than non-oracles, and one oracle appeared only from pairing.
 - Logged validated experiments in
   [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md).
 
@@ -90,23 +99,29 @@ and constant handling rather than making a tie-break the default.
 
 - Transitioning from "can the model learn the fingerprint?" to "can we decode
   the right symbolic sequence?".
-- Diagnosing the remaining gap between selected rerank hits (`4/32`) and
-  candidate oracle hits (`9/32`) on the 32-sample eval-only probe.
+- Using the 32-sample oracle gap diagnostics to choose the next decoding fix:
+  rerank scoring and constant handling for the 5 selected misses, then candidate
+  generation for the 23 samples without any oracle candidate.
 
 ## Next Steps
 
 1. Do not make `active_distance` or `state_dependent_drift` the default based
    on the 16-sample hit; on 32 samples they matched, but did not beat, no tie.
-2. Inspect why the selected reranker recovers only `4/32` while the candidate
-   oracle contains `9/32`; focus on candidate generation, pairing coverage, and
-   constant handling before adding another tie-break heuristic.
-3. Keep drift/diffusion pairing enabled and tune candidate pool size carefully
+2. For the immediate `4/32` selected versus `9/32` oracle gap, focus on rerank
+   score calibration and constant handling; the miss cases usually prefer a
+   non-oracle with lower active/weak distance.
+3. Preserve and inspect drift/diffusion pairing, but treat it as coverage
+   support rather than the main selector fix: only 2/9 best oracles came from
+   pairs and one miss was pair-only.
+4. After the selected/oracle gap is reduced, improve candidate generation for
+   the 23/32 samples where no oracle candidate exists.
+5. Keep drift/diffusion pairing enabled and tune candidate pool size carefully
    because fingerprint recomputation is CPU-expensive.
-4. Reuse the saved 2000-step checkpoint for decoding experiments instead of
+6. Reuse the saved 2000-step checkpoint for decoding experiments instead of
    retraining.
-5. Compare greedy, constrained beam, reranked, and oracle candidate metrics on the same
+7. Compare greedy, constrained beam, reranked, and oracle candidate metrics on the same
    held-out evaluation setup.
-6. Only revisit fingerprint design after candidate diversity and scoring have
+8. Only revisit fingerprint design after candidate diversity and scoring have
    been tested more thoroughly.
 
 ## Open Questions
@@ -158,6 +173,11 @@ and constant handling rather than making a tie-break the default.
 - Tie-breaking selected the paired oracle in one 16-sample near-tie diagnostic,
   but on the 32-sample validation both tie-break modes matched the no-tie
   baseline instead of improving it.
+- In the 32-sample oracle-miss diagnostics, selected candidates often beat the
+  oracle on the active/weak score even when the oracle template is present. This
+  points to score calibration / constant handling, not a missing tie-break.
+- Candidate generation is still a ceiling: only 9/32 samples had any oracle
+  candidate in the current beam+sampling+pair pool.
 - The 32-sample constant-grid + pairing probe is CPU-expensive, so 64-sample
   expansion should be reserved for settings that first improve the 32-sample
   selected metrics.

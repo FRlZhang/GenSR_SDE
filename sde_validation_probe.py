@@ -1492,6 +1492,91 @@ def oracle_gap_diagnostics(
     }
 
 
+def source_bucket(source: str | None) -> str:
+    if source == "beam":
+        return "beam"
+    if source == "pair":
+        return "pair"
+    if source is not None and source.startswith("sample"):
+        return "sampling"
+    return "unknown"
+
+
+def is_oracle_record(record: dict) -> bool:
+    return bool(record["exact"] or record["relaxed"])
+
+
+def same_template(left: list[str], right: list[str]) -> bool:
+    return template_tokens(left) == template_tokens(right)
+
+
+def classify_oracle_miss(selected: dict | None, oracle: dict, oracle_sources: set[str]) -> dict:
+    if selected is None:
+        return {
+            "shares_drift": False,
+            "shares_diffusion": False,
+            "constant_mismatch": False,
+            "miss_side": "no_selected_candidate",
+            "oracle_lower_model_score": False,
+            "oracle_only_pair": oracle_sources == {"pair"},
+            "oracle_from_beam_or_sampling": bool(oracle_sources & {"beam", "sampling"}),
+        }
+
+    shares_drift = same_template(selected["drift_tokens"], oracle["drift_tokens"])
+    shares_diffusion = same_template(
+        selected["diffusion_tokens"],
+        oracle["diffusion_tokens"],
+    )
+    exact_drift = selected["drift_tokens"] == oracle["drift_tokens"]
+    exact_diffusion = selected["diffusion_tokens"] == oracle["diffusion_tokens"]
+    constant_mismatch = (
+        shares_drift
+        and shares_diffusion
+        and not (exact_drift and exact_diffusion)
+    )
+    if constant_mismatch:
+        miss_side = "constant_mismatch"
+    elif shares_diffusion and not shares_drift:
+        miss_side = "drift"
+    elif shares_drift and not shares_diffusion:
+        miss_side = "diffusion"
+    elif not shares_drift and not shares_diffusion:
+        miss_side = "both"
+    else:
+        miss_side = "unknown"
+    return {
+        "shares_drift": shares_drift,
+        "shares_diffusion": shares_diffusion,
+        "constant_mismatch": constant_mismatch,
+        "miss_side": miss_side,
+        "oracle_lower_model_score": (
+            oracle["normalized_model_score"] < selected["normalized_model_score"]
+        ),
+        "oracle_only_pair": oracle_sources == {"pair"},
+        "oracle_from_beam_or_sampling": bool(oracle_sources & {"beam", "sampling"}),
+    }
+
+
+def empty_oracle_diagnostic_counts() -> dict:
+    counts = {
+        "rerank_oracle_samples_any_count": 0,
+        "rerank_oracle_samples_selected_count": 0,
+        "rerank_oracle_samples_missed_count": 0,
+        "rerank_oracle_miss_constant_mismatch_count": 0,
+        "rerank_oracle_miss_same_diffusion_wrong_drift_count": 0,
+        "rerank_oracle_miss_same_drift_wrong_diffusion_count": 0,
+        "rerank_oracle_miss_both_sides_wrong_count": 0,
+        "rerank_oracle_miss_oracle_lower_model_score_count": 0,
+        "rerank_oracle_miss_oracle_only_pair_count": 0,
+        "rerank_oracle_miss_beam_or_sampling_score_miss_count": 0,
+    }
+    for bucket in ("beam", "sampling", "pair", "unknown"):
+        counts[f"rerank_oracle_best_source_{bucket}_count"] = 0
+        counts[f"rerank_oracle_any_source_{bucket}_count"] = 0
+        counts[f"rerank_selected_hit_source_{bucket}_count"] = 0
+    return counts
+
+
 def rerank_candidate_rows(
     env,
     samples: list[dict],
@@ -1508,11 +1593,13 @@ def rerank_candidate_rows(
     base_seed: int,
     max_len: int,
     debug_topk: int,
+    sample_offset: int = 0,
 ) -> tuple[torch.Tensor, dict]:
     pad_id = env.equation_word2id["<PAD>"]
     rows = []
     attempted = 0
     valid = 0
+    parse_failures = 0
     fingerprint_failures = 0
     oracle_exact = 0
     oracle_relaxed = 0
@@ -1525,8 +1612,11 @@ def rerank_candidate_rows(
     unique_diffusion_total = 0
     unique_pair_candidate_total = 0
     debug_rows = []
+    oracle_diagnostic_counts = empty_oracle_diagnostic_counts()
+    oracle_miss_rows = []
 
     for sample_idx, sample in enumerate(samples):
+        global_sample_idx = sample_offset + sample_idx
         records = []
         candidates = candidate_rows[sample_idx] if candidate_rows is not None else []
         unique_candidates = set()
@@ -1565,6 +1655,7 @@ def rerank_candidate_rows(
             system = candidate_tokens_to_system(words)
             if system is None:
                 failure_reason = "parse_failed"
+                parse_failures += 1
                 records.append(
                     {
                         "words": words,
@@ -1684,6 +1775,80 @@ def rerank_candidate_rows(
             rows.append(torch.full((max_len,), pad_id, dtype=torch.long))
         else:
             rows.append(selected_record["tensor"].detach().cpu())
+
+        oracle_records = [record for record in selection_ranked_records if is_oracle_record(record)]
+        best_oracle_record = oracle_records[0] if oracle_records else None
+        oracle_source_buckets = {
+            source_bucket(record["source"])
+            for record in records
+            if is_oracle_record(record)
+        }
+        if best_oracle_record is not None:
+            oracle_diagnostic_counts["rerank_oracle_samples_any_count"] += 1
+            oracle_diagnostic_counts[
+                f"rerank_oracle_best_source_{source_bucket(best_oracle_record['source'])}_count"
+            ] += 1
+            for bucket in oracle_source_buckets:
+                oracle_diagnostic_counts[
+                    f"rerank_oracle_any_source_{bucket}_count"
+                ] += 1
+        selected_is_oracle = selected_record is not None and is_oracle_record(selected_record)
+        if selected_is_oracle:
+            oracle_diagnostic_counts["rerank_oracle_samples_selected_count"] += 1
+            oracle_diagnostic_counts[
+                f"rerank_selected_hit_source_{source_bucket(selected_record['source'])}_count"
+            ] += 1
+        elif best_oracle_record is not None:
+            oracle_diagnostic_counts["rerank_oracle_samples_missed_count"] += 1
+            miss_info = classify_oracle_miss(
+                selected_record,
+                best_oracle_record,
+                oracle_source_buckets,
+            )
+            if miss_info["constant_mismatch"]:
+                oracle_diagnostic_counts[
+                    "rerank_oracle_miss_constant_mismatch_count"
+                ] += 1
+            if miss_info["miss_side"] == "drift":
+                oracle_diagnostic_counts[
+                    "rerank_oracle_miss_same_diffusion_wrong_drift_count"
+                ] += 1
+            elif miss_info["miss_side"] == "diffusion":
+                oracle_diagnostic_counts[
+                    "rerank_oracle_miss_same_drift_wrong_diffusion_count"
+                ] += 1
+            elif miss_info["miss_side"] == "both":
+                oracle_diagnostic_counts[
+                    "rerank_oracle_miss_both_sides_wrong_count"
+                ] += 1
+            if miss_info["oracle_lower_model_score"]:
+                oracle_diagnostic_counts[
+                    "rerank_oracle_miss_oracle_lower_model_score_count"
+                ] += 1
+            if miss_info["oracle_only_pair"]:
+                oracle_diagnostic_counts[
+                    "rerank_oracle_miss_oracle_only_pair_count"
+                ] += 1
+            if miss_info["oracle_from_beam_or_sampling"]:
+                oracle_diagnostic_counts[
+                    "rerank_oracle_miss_beam_or_sampling_score_miss_count"
+                ] += 1
+            oracle_miss_rows.append(
+                {
+                    "sample_index": global_sample_idx,
+                    "truth": truth,
+                    "selected": selected_record,
+                    "oracle": best_oracle_record,
+                    "score_gap": (
+                        best_oracle_record["distance"] - selected_record["distance"]
+                        if selected_record is not None
+                        and _finite_distance(best_oracle_record["distance"])
+                        and _finite_distance(selected_record["distance"])
+                        else None
+                    ),
+                    **miss_info,
+                }
+            )
         if debug_topk > 0:
             ranked_records = selection_ranked_records
             baseline_ranked_records = tie_aware_rank_records(
@@ -1748,7 +1913,7 @@ def rerank_candidate_rows(
             if len(debug_rows) < debug_topk or oracle_record is not None:
                 debug_rows.append(
                     {
-                        "sample_index": sample_idx,
+                        "sample_index": global_sample_idx,
                         "truth": truth,
                         "greedy": greedy_words,
                         "constrained_beam": beam_words,
@@ -1772,6 +1937,7 @@ def rerank_candidate_rows(
     return torch.stack(rows, dim=0), {
         "rerank_candidates_attempted": attempted,
         "rerank_candidates_valid": valid,
+        "rerank_parse_failures": parse_failures,
         "rerank_fingerprint_failures": fingerprint_failures,
         "rerank_pair_candidates_attempted": pair_attempted,
         "rerank_pair_candidates_valid": pair_valid,
@@ -1785,6 +1951,8 @@ def rerank_candidate_rows(
         "rerank_unique_diffusion_total": unique_diffusion_total,
         "rerank_unique_paired_candidate_total": unique_pair_candidate_total,
         "rerank_debug": debug_rows,
+        "rerank_oracle_misses": oracle_miss_rows,
+        **oracle_diagnostic_counts,
     }
 
 
@@ -1969,6 +2137,7 @@ def evaluate(
                     seed + i * 100003,
                     trainer.params.max_generated_output_len,
                     rerank_debug_topk,
+                    i * batch_size,
                 )
                 reranked_seq = sequence_metrics(
                     trainer.env,
@@ -2066,15 +2235,42 @@ def evaluate(
         for key in [
             "rerank_candidates_attempted",
             "rerank_candidates_valid",
+            "rerank_parse_failures",
             "rerank_fingerprint_failures",
             "rerank_pair_candidates_attempted",
             "rerank_pair_candidates_valid",
         ]:
             result[key] = float(np.sum([row[key] for row in rerank_stat_rows]))
-        oracle_total = max(
-            1.0,
-            float(np.sum([row["rerank_oracle_total"] for row in rerank_stat_rows])),
+        for key in [
+            "rerank_oracle_samples_any_count",
+            "rerank_oracle_samples_selected_count",
+            "rerank_oracle_samples_missed_count",
+            "rerank_oracle_miss_constant_mismatch_count",
+            "rerank_oracle_miss_same_diffusion_wrong_drift_count",
+            "rerank_oracle_miss_same_drift_wrong_diffusion_count",
+            "rerank_oracle_miss_both_sides_wrong_count",
+            "rerank_oracle_miss_oracle_lower_model_score_count",
+            "rerank_oracle_miss_oracle_only_pair_count",
+            "rerank_oracle_miss_beam_or_sampling_score_miss_count",
+            "rerank_oracle_best_source_beam_count",
+            "rerank_oracle_best_source_sampling_count",
+            "rerank_oracle_best_source_pair_count",
+            "rerank_oracle_best_source_unknown_count",
+            "rerank_oracle_any_source_beam_count",
+            "rerank_oracle_any_source_sampling_count",
+            "rerank_oracle_any_source_pair_count",
+            "rerank_oracle_any_source_unknown_count",
+            "rerank_selected_hit_source_beam_count",
+            "rerank_selected_hit_source_sampling_count",
+            "rerank_selected_hit_source_pair_count",
+            "rerank_selected_hit_source_unknown_count",
+        ]:
+            result[key] = float(np.sum([row[key] for row in rerank_stat_rows]))
+        oracle_total_raw = float(
+            np.sum([row["rerank_oracle_total"] for row in rerank_stat_rows])
         )
+        result["rerank_oracle_total"] = oracle_total_raw
+        oracle_total = max(1.0, oracle_total_raw)
         result["rerank_oracle_sequence_exact"] = float(
             np.sum([row["rerank_oracle_sequence_exact_count"] for row in rerank_stat_rows])
             / oracle_total
@@ -2120,9 +2316,12 @@ def evaluate(
             / oracle_total
         )
         debug_rows = []
+        oracle_miss_rows = []
         for row in rerank_stat_rows:
             debug_rows.extend(row["rerank_debug"])
+            oracle_miss_rows.extend(row["rerank_oracle_misses"])
         result["rerank_debug"] = debug_rows
+        result["rerank_oracle_misses"] = oracle_miss_rows
     result["examples"] = examples[:5]
     return result
 
@@ -2204,21 +2403,155 @@ def main() -> None:
         args.pair_diffusion_topk,
     )
     for key, value in metrics.items():
-        if key in {"examples", "rerank_debug"}:
+        if key in {"examples", "rerank_debug", "rerank_oracle_misses"}:
             continue
         print(f"{key}={value:.6f}")
     print("examples:")
     for ex in metrics["examples"]:
         print(f"truth: {ex['truth']}")
         print(f"pred : {ex['pred']}")
+
+    def _fmt_distance(value):
+        return "nan" if value is None or not np.isfinite(value) else f"{value:.6f}"
+
+    def _fmt_constant(value):
+        return "none" if value is None or not np.isfinite(value) else f"{value:.6g}"
+
+    def _record_words(record):
+        return "" if record is None else " ".join(record["words"])
+
+    def _record_tokens(record, key):
+        return "" if record is None else " ".join(record[key])
+
+    if "rerank_oracle_total" in metrics:
+        print("oracle_case_summary:")
+        print(f"total_samples={int(metrics['rerank_oracle_total'])}")
+        print(
+            "samples_with_any_oracle_candidate="
+            f"{int(metrics['rerank_oracle_samples_any_count'])}"
+        )
+        print(
+            "samples_where_selected_is_oracle="
+            f"{int(metrics['rerank_oracle_samples_selected_count'])}"
+        )
+        print(
+            "samples_where_oracle_exists_but_selected_misses="
+            f"{int(metrics['rerank_oracle_samples_missed_count'])}"
+        )
+        print(
+            "oracle_best_source_counts "
+            f"beam={int(metrics['rerank_oracle_best_source_beam_count'])} "
+            f"sampling={int(metrics['rerank_oracle_best_source_sampling_count'])} "
+            f"pair={int(metrics['rerank_oracle_best_source_pair_count'])} "
+            f"unknown={int(metrics['rerank_oracle_best_source_unknown_count'])}"
+        )
+        print(
+            "oracle_any_source_counts "
+            f"beam={int(metrics['rerank_oracle_any_source_beam_count'])} "
+            f"sampling={int(metrics['rerank_oracle_any_source_sampling_count'])} "
+            f"pair={int(metrics['rerank_oracle_any_source_pair_count'])} "
+            f"unknown={int(metrics['rerank_oracle_any_source_unknown_count'])}"
+        )
+        print(
+            "selected_hit_source_counts "
+            f"beam={int(metrics['rerank_selected_hit_source_beam_count'])} "
+            f"sampling={int(metrics['rerank_selected_hit_source_sampling_count'])} "
+            f"pair={int(metrics['rerank_selected_hit_source_pair_count'])} "
+            f"unknown={int(metrics['rerank_selected_hit_source_unknown_count'])}"
+        )
+        print("oracle_miss_type_summary:")
+        print(
+            "constant_mismatch="
+            f"{int(metrics['rerank_oracle_miss_constant_mismatch_count'])}"
+        )
+        print(
+            "same_diffusion_but_wrong_drift="
+            f"{int(metrics['rerank_oracle_miss_same_diffusion_wrong_drift_count'])}"
+        )
+        print(
+            "same_drift_but_wrong_diffusion="
+            f"{int(metrics['rerank_oracle_miss_same_drift_wrong_diffusion_count'])}"
+        )
+        print(
+            "both_drift_and_diffusion_wrong="
+            f"{int(metrics['rerank_oracle_miss_both_sides_wrong_count'])}"
+        )
+        print(
+            "oracle_lower_model_score_candidate="
+            f"{int(metrics['rerank_oracle_miss_oracle_lower_model_score_count'])}"
+        )
+        print(
+            "oracle_only_appears_from_pair="
+            f"{int(metrics['rerank_oracle_miss_oracle_only_pair_count'])}"
+        )
+        print(
+            "oracle_from_beam_or_sampling_but_score_misses="
+            f"{int(metrics['rerank_oracle_miss_beam_or_sampling_score_miss_count'])}"
+        )
+        print(f"parse_failures={int(metrics['rerank_parse_failures'])}")
+        print(f"fingerprint_failures={int(metrics['rerank_fingerprint_failures'])}")
+    if metrics.get("rerank_oracle_misses") is not None:
+        print("oracle_miss_cases:")
+        for miss in metrics["rerank_oracle_misses"]:
+            selected = miss["selected"]
+            oracle = miss["oracle"]
+            print(f"sample_index={miss['sample_index']}")
+            print(f"truth: {' '.join(miss['truth'])}")
+            print(f"selected_sequence: {_record_words(selected)}")
+            print(f"oracle_sequence: {_record_words(oracle)}")
+            print(
+                "sources "
+                f"selected={selected['source'] if selected is not None else 'none'} "
+                f"oracle={oracle['source']}"
+            )
+            print(
+                "scores "
+                f"selected={_fmt_distance(selected['distance'] if selected is not None else None)} "
+                f"oracle={_fmt_distance(oracle['distance'])} "
+                f"gap={_fmt_distance(miss['score_gap'])}"
+            )
+            print(
+                "best_constants "
+                f"selected="
+                f"{_fmt_constant(selected['best_constant'] if selected is not None else None)} "
+                f"oracle={_fmt_constant(oracle['best_constant'])}"
+            )
+            print(
+                "model_scores "
+                f"selected="
+                f"{selected['normalized_model_score'] if selected is not None else float('nan'):.6f} "
+                f"oracle={oracle['normalized_model_score']:.6f} "
+                f"oracle_lower={int(miss['oracle_lower_model_score'])}"
+            )
+            print(f"selected_drift: {_record_tokens(selected, 'drift_tokens')}")
+            print(f"oracle_drift: {_record_tokens(oracle, 'drift_tokens')}")
+            print(f"selected_diffusion: {_record_tokens(selected, 'diffusion_tokens')}")
+            print(f"oracle_diffusion: {_record_tokens(oracle, 'diffusion_tokens')}")
+            print(
+                "segment_distances_selected "
+                f"multi_u0_moments="
+                f"{_fmt_distance(selected['multi_u0_moments_distance'] if selected is not None else None)} "
+                f"active_kramers_moyal="
+                f"{_fmt_distance(selected['active_kramers_moyal_distance'] if selected is not None else None)} "
+                f"gaussian_weak_kernel="
+                f"{_fmt_distance(selected['gaussian_weak_kernel_distance'] if selected is not None else None)}"
+            )
+            print(
+                "segment_distances_oracle "
+                f"multi_u0_moments={_fmt_distance(oracle['multi_u0_moments_distance'])} "
+                f"active_kramers_moyal={_fmt_distance(oracle['active_kramers_moyal_distance'])} "
+                f"gaussian_weak_kernel={_fmt_distance(oracle['gaussian_weak_kernel_distance'])}"
+            )
+            print(
+                "match_flags "
+                f"shares_drift={int(miss['shares_drift'])} "
+                f"shares_diffusion={int(miss['shares_diffusion'])} "
+                f"constant_mismatch={int(miss['constant_mismatch'])} "
+                f"miss_side={miss['miss_side']} "
+                f"oracle_only_pair={int(miss['oracle_only_pair'])}"
+            )
     if args.rerank_debug_topk > 0 and metrics.get("rerank_debug"):
         print("rerank_debug:")
-
-        def _fmt_distance(value):
-            return "nan" if value is None or not np.isfinite(value) else f"{value:.6f}"
-
-        def _fmt_constant(value):
-            return "none" if value is None or not np.isfinite(value) else f"{value:.6g}"
 
         for debug in metrics["rerank_debug"]:
             print(f"sample_index={debug['sample_index']}")
