@@ -107,6 +107,10 @@ Current best result so far:
   rescues one selected miss and improves selected exact / relaxed recovery to
   `5/32`; active-heavy and weak-downweighted role-wise variants regressed to
   `3/32`.
+- expanded pairing coverage with `pair_drift_topk=5` and
+  `pair_drift_diffusion_candidates=32` raises offline full-oracle candidate
+  coverage from `9/32` to `15/32`; this still needs one formal 32-sample rerank
+  eval before becoming a decoding default.
 
 See [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md)
 and [PROJECT_STATUS.md](/Users/lzhang/Documents/GenSR_SDE/PROJECT_STATUS.md) for

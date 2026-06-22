@@ -2,6 +2,58 @@
 
 ## Last Codex Workflow
 
+Codex ran an expanded-pairing candidate coverage probe:
+
+```text
+candidate_coverage_pair_expanded.md
+candidate_coverage_pair_expanded.json
+pairing_expansion_coverage_report.md
+/private/tmp/gensr_sde_candidate_coverage_pair_expanded.log
+```
+
+Expanded pairing configuration:
+
+```text
+pair_drift_topk=5
+pair_diffusion_topk=6
+pair_drift_diffusion_candidates=32
+```
+
+This was candidate-generation coverage only: no formal rerank eval, no
+64-sample eval, no retraining, no active/weak grid, and no scorer/default
+change.
+
+Result:
+
+```text
+baseline full_oracle_present=9/32
+expanded full_oracle_present=15/32
+baseline oracle_absent=23/32
+expanded oracle_absent=17/32
+```
+
+All six pairing-missing samples were rescued as pair-source full oracle
+candidates:
+
+```text
+5, 8, 11, 23, 30, 31
+```
+
+Interpretation: `pair_drift_diffusion_candidates=32` was enough for the five
+cap-blocked cases; `pair_drift_topk=5` was enough for sample 23, which also
+needed the larger cap because its combined pair rank was 24. One future formal
+32-sample eval with the current strongest scorer and expanded pairing is now
+justified. Remaining oracle-absent samples are all drift-missing.
+
+Validation:
+
+```text
+py_compile scripts/analyze_candidate_coverage.py scripts/analyze_drift_pairing_coverage.py: passed
+git diff --check: passed
+```
+
+## Previous Codex Workflow
+
 Codex restored the checkpoint-backed candidate coverage path and completed the
 full drift/pairing rank diagnostic:
 

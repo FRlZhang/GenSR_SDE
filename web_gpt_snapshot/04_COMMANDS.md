@@ -129,6 +129,31 @@ PYTHONPYCACHEPREFIX=/private/tmp/gensr_pycache \
   scripts/analyze_drift_pairing_coverage.py
 ```
 
+## Expanded Pairing Coverage Diagnostic
+
+This is candidate-generation coverage only. It does not run formal rerank
+scoring.
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/tmp/cache \
+/opt/miniconda3/envs/gensr/bin/python3 scripts/analyze_candidate_coverage.py \
+  --source-log /private/tmp/gensr_sde_32_rolewise_no_multi_u0.log \
+  --report candidate_coverage_pair_expanded.md \
+  --json-output candidate_coverage_pair_expanded.json \
+  --pair-drift-topk 5 \
+  --pair-diffusion-topk 6 \
+  --pair-drift-diffusion-candidates 32 \
+  > /private/tmp/gensr_sde_candidate_coverage_pair_expanded.log 2>&1
+```
+
+Latest expanded-pairing coverage:
+
+```text
+full_oracle_present=15/32
+oracle_absent=17/32
+rescued pairing samples=5,8,11,23,30,31
+```
+
 ## Small Smoke Test
 
 ```bash

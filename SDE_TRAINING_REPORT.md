@@ -2,6 +2,34 @@
 
 Date: 2026-06-11
 
+Update, 2026-06-22 expanded pairing coverage probe: ran candidate-generation
+coverage only with:
+
+```text
+pair_drift_topk=5
+pair_diffusion_topk=6
+pair_drift_diffusion_candidates=32
+```
+
+No formal rerank eval, 64-sample eval, retraining, active/weak grid, or scorer
+change was run. The expanded pairing setup raised full-oracle candidate
+coverage from `9/32` to `15/32`.
+
+| Metric | Baseline | Expanded pairing |
+| --- | ---: | ---: |
+| Full oracle present | 9/32 | 15/32 |
+| Oracle absent | 23/32 | 17/32 |
+| Drift+diffusion separate, not paired | 6 | 0 |
+| Diffusion-only / drift-missing | 17 | 17 |
+
+All six pairing-missing samples (`5`, `8`, `11`, `23`, `30`, `31`) became full
+oracle candidates from the `pair` source. The five cap-blocked cases were
+rescued by `pair_drift_diffusion_candidates=32`; sample 23 was rescued by
+raising `pair_drift_topk` to 5 and also needed the larger cap because its
+combined pair rank was 24. This justifies one future formal 32-sample eval with
+the current strongest role-wise scorer and expanded pairing. Further ceiling
+work after that should prioritize drift span diversity.
+
 Update, 2026-06-22 checkpoint-backed drift/pairing rank diagnostic: restored
 the 2000-step role-token checkpoint path and regenerated
 `candidate_coverage_diagnostics.json`. The full

@@ -12,7 +12,9 @@ selected-versus-oracle gap is mostly rerank score / constant handling, while
 candidate generation remains the larger ceiling for samples with no oracle.
 Role-wise constant-grid scoring rescued one selected-miss case and improved
 selected exact/relaxed from `4/32` to `5/32`; active/weak reweighting variants
-tested so far regressed.
+tested so far regressed. Expanded pairing raises offline full-oracle candidate
+coverage from `9/32` to `15/32`, but selected recovery has not yet been tested
+with that larger candidate pool.
 
 ## Last Updated
 
@@ -138,6 +140,13 @@ tested so far regressed.
   exact drift and diffusion inside the current pair top-k but are blocked by
   `pair_drift_diffusion_candidates`; sample 23 needs `pair_drift_topk` raised
   from 4 to at least 5.
+- Ran an expanded-pairing candidate coverage probe with `pair_drift_topk=5`,
+  `pair_diffusion_topk=6`, and `pair_drift_diffusion_candidates=32`. This was
+  candidate-generation coverage only, not a formal rerank eval. It rescued all
+  6 pairing-missing samples (`5`, `8`, `11`, `23`, `30`, `31`) as full oracle
+  candidates from the `pair` source and raised the full-oracle ceiling from
+  `9/32` to `15/32`. The remaining 17 oracle-absent samples are all still
+  drift-missing with exact diffusion present.
 - Logged validated experiments in
   [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md).
 
@@ -165,13 +174,13 @@ tested so far regressed.
    favor selected non-oracles on aggregate active+weak residuals.
 4. Do not add a robust-scoring rerank mode based on the offline ablation alone:
    mild variants rescued `0/4`, and the only flip required aggressive clipping.
-5. Shift candidate-generation work toward drift span diversity: among the
-   23 oracle-absent samples, 17 already contain the truth diffusion but miss the
-   truth drift.
-6. Also improve pairing coverage/ranking for the 6 samples where exact drift
-   and exact diffusion are both present separately but not paired into a full
-   oracle: first try a modest pair candidate cap increase, plus a small
-   `pair_drift_topk` bump for sample 23-style cases.
+5. Run one future formal 32-sample eval with the current strongest scorer and
+   expanded pairing (`pair_drift_topk=5`,
+   `pair_drift_diffusion_candidates=32`) to see whether the oracle-ceiling
+   gain from `9/32` to `15/32` turns into selected recovery.
+6. Shift candidate-generation work toward drift span diversity: after expanded
+   pairing, the remaining 17 oracle-absent samples all contain the truth
+   diffusion but miss the truth drift.
 7. Keep drift/diffusion pairing enabled and tune candidate pool size carefully
    because fingerprint recomputation is CPU-expensive.
 8. Reuse the saved 2000-step checkpoint for decoding experiments instead of

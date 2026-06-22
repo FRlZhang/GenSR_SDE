@@ -38,20 +38,21 @@ greedy_sequence_exact=0.015625
 - Added targeted residual-vector diagnostics in `scripts/analyze_rolewise_residuals.py` and `rolewise_residual_vector_diagnostics.md`. The helper reproduces only samples 13, 19, 24, and 26 from the eval seed and scores selected/oracle role swaps. All four remaining misses were flagged as feature-scaling/fingerprint-ambiguity cases; sample 13 also has a model-score conflict.
 - Added offline residual score ablation in `scripts/analyze_residual_score_ablation.py` and `rolewise_residual_score_ablation.md`. Mild robust/normalization variants rescued 0/4 remaining misses; only aggressive `clipped_l2_p90` flipped sample 19. No formal eval was run.
 - Added candidate coverage diagnostics in `scripts/analyze_candidate_coverage.py` and `candidate_coverage_diagnostics.md`. The diagnostic reproduced the 9/32 full-oracle ceiling without fingerprint scoring. Among 23 oracle-absent samples, 17 have exact diffusion only and 6 have exact drift+diffusion separately but not paired.
-- Added checkpoint-backed drift/pairing coverage diagnostics in `scripts/analyze_drift_pairing_coverage.py` and `drift_pairing_coverage_diagnostics.md`. Drift-missing templates are mostly linear drift (6), sin drift (6), nested-mul linear drift (3), and polynomial-like drift (2). The full pairing rank diagnostic shows 5/6 pairing misses are blocked by `pair_drift_diffusion_candidates`, while sample 23 needs `pair_drift_topk >= 5`.
+- Added checkpoint-backed drift/pairing coverage diagnostics in `scripts/analyze_drift_pairing_coverage.py` and `drift_pairing_coverage_diagnostics.md`. Drift-missing templates are mostly linear drift (6), sin drift (6), nested-mul linear drift (3), and polynomial-like drift (2). The full pairing rank diagnostic showed 5/6 pairing misses were blocked by `pair_drift_diffusion_candidates`, while sample 23 needed `pair_drift_topk >= 5`.
+- Ran expanded-pairing candidate coverage with `pair_drift_topk=5`, `pair_diffusion_topk=6`, and `pair_drift_diffusion_candidates=32`. This rescued all six pairing-missing samples as pair-source full oracles and raised full-oracle coverage from `9/32` to `15/32`.
 
 ## In Progress
 
 - Transitioning from token recognition to full symbolic sequence recovery.
-- Using candidate coverage diagnostics to raise the 9/32 oracle ceiling; drift span diversity is now the leading blocker, with pairing coverage/ranking secondary.
+- Using candidate coverage diagnostics to raise the oracle ceiling; expanded pairing raises the offline ceiling to `15/32`, and drift span diversity is now the remaining ceiling blocker.
 - Checkpoint-dependent candidate regeneration is unblocked: the 2000-step checkpoint is present in `/private/tmp` and backed up under `checkpoints/`, which is ignored by git.
 
 ## Next Steps
 
 1. Do not make `active_distance` or `state_dependent_drift` the default based on the 16-sample hit; on 32 samples they matched no-tie baseline.
 2. Keep `constant_grid_rolewise_no_multi_u0` active:weak 1:1 as the strongest current eval setting; do not make active-heavy weights the default.
-3. Prioritize drift span diversity: 17/23 oracle-absent samples already contain the truth diffusion but miss the truth drift.
-4. Improve pairing coverage/ranking for 6/23 oracle-absent samples where exact drift and exact diffusion appear separately but not as a full oracle: 5/6 are pair-cap misses and 1/6 needs a small drift-top-k increase.
+3. Run one future formal 32-sample eval with the current strongest scorer and expanded pairing to see whether the oracle-ceiling gain from `9/32` to `15/32` improves selected recovery.
+4. Prioritize drift span diversity after that: the remaining 17 oracle-absent samples contain truth diffusion but miss truth drift.
 5. Do not add a robust-scoring rerank mode from the current offline ablation alone: mild variants rescued 0/4 and the only flip required aggressive clipping.
 6. Keep comparing greedy, constrained beam, reranked, oracle, and oracle-miss metrics on the same held-out setup.
 7. Only revisit fingerprint design after candidate diversity and scoring have been tested more thoroughly.

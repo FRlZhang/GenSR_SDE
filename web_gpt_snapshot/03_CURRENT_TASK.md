@@ -16,6 +16,15 @@ oracle exact/relaxed=9/32
 pair oracle exact/relaxed=2/32
 ```
 
+Latest candidate-coverage-only result:
+
+```text
+expanded pairing: pair_drift_topk=5, pair_diffusion_topk=6, pair_drift_diffusion_candidates=32
+full_oracle_present=15/32
+oracle_absent=17/32
+rescued pairing-missing samples=5,8,11,23,30,31
+```
+
 Role-wise constants rescued one shared-constant miss, sample 17, by allowing
 drift constant `1.0` and diffusion constant `0.5`. The active-heavy `2:1` and
 weak-downweighted `1:0.5` variants both regressed to `3/32`, so do not continue
@@ -90,13 +99,12 @@ sin drift missing=6
 nested-mul linear drift missing=3
 polynomial-like drift missing=2
 pairing-missing samples=5,8,11,23,30,31
-pairing actions=increase_pair_candidate_cap:5,increase_pair_drift_topk:1
+pairing actions after expansion=all six rescued as pair-source full oracles
 ```
 
-Pairing details: samples `5`, `8`, `11`, `30`, and `31` are blocked by the
-pair candidate cap even though exact spans are within top-k. Sample `23` needs
-`pair_drift_topk >= 5`; its combined pair rank would be 24 after top-k
-expansion.
+Pairing details: samples `5`, `8`, `11`, `30`, and `31` were rescued by the
+larger pair cap. Sample `23` was rescued by `pair_drift_topk=5` plus the larger
+cap; its combined pair rank was 24.
 
 ## Primary File To Modify
 
@@ -106,11 +114,11 @@ before modifying `sde_validation_probe.py`.
 
 Likely next additions:
 
-- improve drift span diversity for the 17 oracle-absent samples where diffusion
-  is already exact but drift is missing;
-- improve pairing coverage/ranking for the 6 samples where exact drift and exact
-  diffusion appear separately but not together, starting with a pair candidate
-  cap increase and a small drift-top-k bump;
+- run one future formal 32-sample eval with the current strongest scorer and
+  expanded pairing to test whether the offline ceiling gain improves selected
+  recovery;
+- then improve drift span diversity for the 17 remaining oracle-absent samples
+  where diffusion is already exact but drift is missing;
 - keep role-wise constant diagnostics in every rerank experiment;
 - consider candidate-generation changes only after deciding whether the current
   scorer can reliably choose among existing oracle candidates.
