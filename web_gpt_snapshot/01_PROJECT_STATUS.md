@@ -2,7 +2,7 @@
 
 ## Current Goal
 
-Improve sequence-level SDE recovery after establishing that the current unified fingerprint and role-token target are learnable by GenSR. Candidate generation plus fingerprint-distance reranking is implemented; drift/diffusion pairing and role-wise constant-grid scoring now produce selected hits. The current strongest no-retraining selected-recovery setting remains `constant_grid_rolewise_no_multi_u0` with baseline pairing at selected exact/relaxed `5/32`. Expanded pairing raises oracle exact/relaxed to `15/32`, but selected exact/relaxed regressed to `3/32`, so expanded pairing is diagnostic-only for now.
+Improve sequence-level SDE recovery after establishing that the current unified fingerprint and role-token target are learnable by GenSR. Candidate generation plus fingerprint-distance reranking is implemented; drift/diffusion pairing and role-wise constant-grid scoring now produce selected hits. The current strongest no-retraining selected-recovery setting remains `constant_grid_rolewise_no_multi_u0` with baseline pairing at selected exact/relaxed `5/32`. Expanded pairing raises oracle exact/relaxed to `15/32`, but selected exact/relaxed regressed to `3/32`, so expanded pairing is diagnostic-only for now. Active-residual diagnostics show the expanded-pairing misses are often `active_kramers_moyal` traps dominated by a few KM1/drift-like dimensions, so the next scorer check should be offline only.
 
 ## Completed
 
@@ -43,11 +43,12 @@ greedy_sequence_exact=0.015625
 - The matching formal 32-sample eval reproduced oracle exact/relaxed `15/32` and pair oracle `8/32`, but selected exact/relaxed dropped to `3/32`. There were 15 oracle-present samples, 3 selected hits, and 12 selected misses, including 7 oracle-only-pair misses.
 - Expanded-pairing oracle-miss ranking diagnostics show the misses are not mostly near ties: 2/12 have score gap `<=0.10`, and only 1/7 oracle-only-pair misses is that close. All 7 oracle-only-pair misses lose mainly on `active_kramers_moyal`; wrong pair candidates are selected in 8/12 misses.
 - Wrong-pair pruning diagnostics found no safe oracle-preserving pruning rule. Pair-oracle source ranks extend to 15, wrong pair ranks overlap, and harmful structures such as mean-reverting or constant-drift pairs are also true oracle families in other samples.
+- Active-residual trap diagnostics recomputed residual vectors for the 12 expanded-pairing selected misses only. Active distance favored the selected non-oracle in 12/12; 7/12 traps were outlier-dominated, 2/12 broad, and 3/12 mixed. Misleading active advantages leaned KM1/drift-like in 10/12 cases, and weak-kernel distance disagreed in 4/12.
 
 ## In Progress
 
 - Transitioning from token recognition to full symbolic sequence recovery.
-- Using existing expanded-pairing diagnostics to understand active-kramers-moyal traps before testing pruning or targeted pair-aware ranking.
+- Using existing expanded-pairing diagnostics to decide whether one offline robust/clipped active-residual ablation is worth running before any scorer change.
 - Checkpoint-dependent candidate regeneration is unblocked: the 2000-step checkpoint is present in `/private/tmp` and backed up under `checkpoints/`, which is ignored by git.
 
 ## Next Steps
@@ -57,7 +58,7 @@ greedy_sequence_exact=0.015625
 3. Do not make expanded pairing the default and do not run 64-sample expansion: selected recovery regressed to `3/32`.
 4. Do not add a simple pair-aware tie-break from the current evidence alone: most paired oracles lose by active+weak distance, not epsilon-scale ties.
 5. Do not add pair pruning from current evidence: no oracle-preserving pruning rule was found.
-6. Next perform targeted residual analysis of `active_kramers_moyal` traps for wrong pair candidates versus pair oracles.
+6. If scorer analysis continues, run one offline robust/clipped active-residual ablation on existing expanded-pairing miss candidates only; do not add a rerank mode or formal eval yet.
 7. Do not add a robust-scoring rerank mode from the current offline ablation alone: mild variants rescued 0/4 and the only flip required aggressive clipping.
 8. Keep comparing greedy, constrained beam, reranked, oracle, and oracle-miss metrics on the same held-out setup.
 9. Only revisit fingerprint design after candidate diversity and scoring have been tested more thoroughly.

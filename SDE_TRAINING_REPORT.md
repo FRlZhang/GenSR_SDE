@@ -2,6 +2,38 @@
 
 Date: 2026-06-11
 
+Update, 2026-06-22 active-residual trap diagnostic: added
+`scripts/analyze_expanded_pair_active_residuals.py` and wrote
+`expanded_pairing_active_residual_trap_diagnostics.md` /
+`expanded_pairing_active_residual_trap_diagnostics.json`. This was a targeted
+residual-vector recomputation for existing expanded-pairing miss cases only: no
+formal eval, candidate regeneration, model decoding, retraining, scorer change,
+or grid search was run.
+
+Key findings:
+
+| Diagnostic | Result |
+| --- | ---: |
+| Selected misses analyzed | 12 |
+| Wrong selected pair cases | 8 |
+| Oracle-only-pair misses | 7 |
+| Active favors selected non-oracle | 12/12 |
+| Weak favors oracle while active favors selected | 4/12 |
+| Outlier-dominated active traps | 7/12 |
+| Broad active traps | 2/12 |
+| Mixed active traps | 3/12 |
+| KM1/drift-leaning active advantages | 10/12 |
+
+Interpretation: the expanded-pairing ranking failure is often an active
+short-time residual trap, usually concentrated in a few KM1/drift-like active
+dimensions rather than a clean pair-pruning issue. Weak-kernel distance
+disagrees in some cases, but not enough to justify a formal active/weak
+reweighting eval. Role-wise constants are already fitted, so constant handling
+does not look like the primary blocker. The next scorer-side step, if any,
+should be one offline robust/clipped active-residual ablation on existing
+expanded-pairing candidates only. A formal eval or new rerank mode is not
+justified yet.
+
 Update, 2026-06-22 wrong-pair pruning diagnostic: added
 `scripts/analyze_expanded_pair_pruning.py` and wrote
 `expanded_pairing_wrong_pair_pruning_diagnostics.md` /

@@ -2,9 +2,11 @@
 
 ## Next Engineering Task
 
-Analyze active-kramers-moyal residual traps for wrong pair candidates versus
-pair oracles. Expanded-pairing pruning diagnostics found no safe
-oracle-preserving pruning rule.
+Use the expanded-pairing active-residual trap diagnostics to decide whether any
+offline scorer-side check is still worthwhile. Expanded-pairing pruning
+diagnostics found no safe oracle-preserving pruning rule, and the new residual
+diagnostic shows active traps are often outlier-dominated KM1/drift-like
+residual effects.
 
 Current strongest no-retraining decoding setting:
 
@@ -52,6 +54,20 @@ pair-oracle source ranks=2..15
 approx wrong-pair source ranks=1..14
 active-distance traps among wrong selected pairs=5/8
 safe_pruning_rule_found=0
+```
+
+Expanded-pairing active residual trap diagnostic:
+
+```text
+selected misses analyzed=12
+wrong selected pair cases=8
+oracle-only-pair misses=7
+active favors selected=12/12
+weak favors oracle while active favors selected=4/12
+outlier-dominated active traps=7/12
+broad active traps=2/12
+mixed active traps=3/12
+KM1/drift-leaning active advantages=10/12
 ```
 
 Candidate-coverage-only result:
@@ -152,12 +168,10 @@ before modifying `sde_validation_probe.py`.
 
 Likely next additions:
 
-- perform targeted residual analysis of `active_kramers_moyal` traps for wrong
-  selected pair candidates versus pair oracles;
-- inspect whether active residual features are dominated by a few outliers or
-  broad segment agreement;
-- only after that decide whether a targeted pair-aware ranking heuristic or
-  residual normalization is worth testing;
+- if continuing scorer analysis, run one offline robust/clipped
+  active-residual ablation on existing expanded-pairing miss candidates only;
+- do not add a rerank mode or formal eval unless the offline ablation gives a
+  clear oracle-preserving signal;
 - defer drift span diversity work until the expanded-pairing ranking failure is
   understood;
 - keep role-wise constant diagnostics in every rerank experiment;
@@ -204,5 +218,6 @@ Likely next additions:
 
 ## Success Standard
 
-The next useful step should explain why `active_kramers_moyal` favors harmful
-pair recombinations and whether this is a feature-scaling/residual issue.
+The next useful step should test, offline only, whether clipping/normalizing the
+active residual dimensions would rescue expanded-pairing misses without harming
+known selected hits or pair oracles.

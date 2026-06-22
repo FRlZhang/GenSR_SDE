@@ -222,6 +222,34 @@ approx wrong-pair source ranks=1..14
 safe_pruning_rule_found=0
 ```
 
+## Expanded Pairing Active-Residual Trap Diagnostic
+
+This recomputes residual vectors for existing expanded-pairing miss cases only.
+It does not run model decoding, candidate regeneration, formal eval, or a grid.
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/tmp/cache \
+/opt/miniconda3/envs/gensr/bin/python3 scripts/analyze_expanded_pair_active_residuals.py \
+  --miss-json expanded_pairing_oracle_miss_ranking_diagnostics.json \
+  --pruning-json expanded_pairing_wrong_pair_pruning_diagnostics.json \
+  --coverage-json candidate_coverage_pair_expanded.json \
+  --report expanded_pairing_active_residual_trap_diagnostics.md \
+  --json-output expanded_pairing_active_residual_trap_diagnostics.json \
+  > /private/tmp/gensr_sde_expanded_pair_active_residuals.log 2>&1
+```
+
+Latest result:
+
+```text
+selected misses analyzed=12
+wrong selected pair cases=8
+oracle-only-pair misses=7
+active favors selected=12/12
+weak favors oracle while active favors selected=4/12
+outlier-dominated active traps=7/12
+KM1/drift-leaning active advantages=10/12
+```
+
 ## Small Smoke Test
 
 ```bash

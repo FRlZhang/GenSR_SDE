@@ -2,6 +2,49 @@
 
 ## Last Codex Workflow
 
+Codex added targeted expanded-pairing active-residual trap diagnostics:
+
+```text
+scripts/analyze_expanded_pair_active_residuals.py
+expanded_pairing_active_residual_trap_diagnostics.md
+expanded_pairing_active_residual_trap_diagnostics.json
+/private/tmp/gensr_sde_expanded_pair_active_residuals.log
+```
+
+The helper did not run model decoding, candidate regeneration, formal eval,
+64-sample eval, retraining, active/weak grids, or scorer/default changes. It
+recomputed residual vectors only for the 12 existing expanded-pairing selected
+misses.
+
+Summary:
+
+```text
+selected misses analyzed=12
+wrong selected pair cases=8
+oracle-only-pair misses=7
+active favors selected=12/12
+weak favors oracle while active favors selected=4/12
+outlier-dominated active traps=7/12
+broad active traps=2/12
+mixed active traps=3/12
+KM1/drift-leaning active advantages=10/12
+```
+
+Interpretation: the active trap is often caused by a few active residual
+dimensions, mostly KM1/drift-like. This supports one future offline
+robust/clipped active-residual ablation on existing expanded-pairing candidates
+only. It does not justify a formal eval, new rerank mode, pair pruning, or
+expanded-pairing default.
+
+Validation:
+
+```text
+py_compile scripts/analyze_expanded_pair_active_residuals.py: passed
+helper run: completed in about 16 seconds
+```
+
+## Previous Codex Workflow
+
 Codex added a log/JSON-only wrong-pair pruning diagnostic:
 
 ```text

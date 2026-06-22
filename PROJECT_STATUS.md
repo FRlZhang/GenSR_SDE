@@ -16,7 +16,11 @@ tested so far regressed. Expanded pairing raises offline full-oracle candidate
 coverage from `9/32` to `15/32`, and a formal 32-sample eval reproduced that
 oracle ceiling, but selected recovery dropped to `3/32`. Expanded pairing is
 therefore useful diagnostically but should not become the default until
-ranking/scoring of paired oracles improves.
+ranking/scoring of paired oracles improves. Targeted active-residual diagnostics
+show the expanded-pairing misses are often `active_kramers_moyal` traps
+dominated by a few KM1/drift-like residual dimensions, so the next scorer check
+should be offline robust/clipped active-residual ablation on existing candidates
+only, not a formal eval.
 
 ## Last Updated
 
@@ -176,6 +180,18 @@ ranking/scoring of paired oracles improves.
   because preserving all 8 pair-oracle samples requires keeping pair source
   ranks up to 15, which also keeps the observed wrong pair selections. No safe
   pruning criterion was found from existing logs/JSON.
+- Added active-kramers-moyal residual trap diagnostics in
+  [scripts/analyze_expanded_pair_active_residuals.py](/Users/lzhang/Documents/GenSR_SDE/scripts/analyze_expanded_pair_active_residuals.py)
+  and
+  [expanded_pairing_active_residual_trap_diagnostics.md](/Users/lzhang/Documents/GenSR_SDE/expanded_pairing_active_residual_trap_diagnostics.md).
+  The helper did not run model decoding, candidate regeneration, formal eval,
+  retraining, or scorer changes; it recomputed residual vectors for the 12
+  expanded-pairing selected misses only. Active distance favored the selected
+  non-oracle in all 12 misses; 7/12 traps were outlier-dominated, 2/12 broad,
+  and 3/12 mixed. Misleading active residual advantages leaned KM1/drift-like in
+  10/12 cases. Weak-kernel distance disagreed in 4/12 cases. This supports one
+  future offline robust/clipped active-residual ablation on existing expanded
+  candidates, but does not justify a formal eval or new rerank mode yet.
 - Logged validated experiments in
   [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md).
 
@@ -183,8 +199,8 @@ ranking/scoring of paired oracles improves.
 
 - Transitioning from "can the model learn the fingerprint?" to "can we decode
   the right symbolic sequence?".
-- Using expanded-pairing diagnostics to understand active-kramers-moyal traps
-  before testing pruning or pair-aware ranking.
+- Using expanded-pairing diagnostics to decide whether an offline robust/clipped
+  active-residual ablation is worth testing before any formal scorer change.
 - The 2000-step role-token checkpoint has been restored in `/private/tmp` and
   backed up under `checkpoints/`; model weights remain ignored by git.
 
@@ -209,9 +225,9 @@ ranking/scoring of paired oracles improves.
    most paired oracles lose by active+weak distance, not epsilon-scale ties.
 7. Do not add pair pruning from the current evidence: no oracle-preserving
    pruning rule was found from existing logs/JSON.
-8. Next perform targeted residual analysis of `active_kramers_moyal` traps for
-   wrong pair candidates versus pair oracles, preferably reusing existing
-   residual-vector tooling.
+8. Next, if scorer analysis continues, run only an offline robust/clipped
+   active-residual ablation on the existing expanded-pairing miss candidates;
+   do not add a rerank mode or formal eval from this diagnostic alone.
 9. Shift candidate-generation work toward drift span diversity: after expanded
    pairing, the remaining 17 oracle-absent samples all contain the truth
    diffusion but miss the truth drift.

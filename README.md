@@ -122,6 +122,11 @@ Current best result so far:
   pair-oracle source ranks extend to 15 and harmful pair structures overlap
   with true pair-oracle families, so the next step is active-kramers-moyal
   residual analysis rather than pruning or a pair bonus.
+- targeted active-residual diagnostics show active distance favors selected
+  non-oracles in all 12 expanded-pairing misses; 7/12 are outlier-dominated and
+  10/12 lean KM1/drift-like. This supports only an offline robust/clipped
+  active-residual ablation on existing candidates, not a formal eval or new
+  default rerank mode.
 
 See [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md)
 and [PROJECT_STATUS.md](/Users/lzhang/Documents/GenSR_SDE/PROJECT_STATUS.md) for
