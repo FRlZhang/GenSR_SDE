@@ -2,9 +2,9 @@
 
 ## Next Engineering Task
 
-Analyze high-ranking wrong pair candidates and pruning criteria from existing
-logs. Expanded-pairing oracle-miss ranking showed paired oracles usually lose
-by active+weak distance, not by tiny tie-break margins.
+Analyze active-kramers-moyal residual traps for wrong pair candidates versus
+pair oracles. Expanded-pairing pruning diagnostics found no safe
+oracle-preserving pruning rule.
 
 Current strongest no-retraining decoding setting:
 
@@ -41,6 +41,17 @@ near score gaps <=0.10=2/12
 oracle-only-pair near gaps <=0.10=1/7
 selected source is pair=8/12
 oracle-only-pair misses dominated by active_kramers_moyal=7/7
+```
+
+Wrong-pair pruning diagnostic:
+
+```text
+wrong selected pair cases=8
+pair-oracle samples to preserve=8
+pair-oracle source ranks=2..15
+approx wrong-pair source ranks=1..14
+active-distance traps among wrong selected pairs=5/8
+safe_pruning_rule_found=0
 ```
 
 Candidate-coverage-only result:
@@ -141,12 +152,12 @@ before modifying `sde_validation_probe.py`.
 
 Likely next additions:
 
-- inspect the top wrong pair candidates that beat paired oracles in
-  `/private/tmp/gensr_sde_32_expanded_pairing_rolewise.log`;
-- look for pruning criteria that remove harmful pair candidates without
-  removing the 8 pair-oracle samples;
-- only after that decide whether a targeted pair-aware ranking heuristic,
-  pair source penalty/bonus, or model-score tie-break is worth testing;
+- perform targeted residual analysis of `active_kramers_moyal` traps for wrong
+  selected pair candidates versus pair oracles;
+- inspect whether active residual features are dominated by a few outliers or
+  broad segment agreement;
+- only after that decide whether a targeted pair-aware ranking heuristic or
+  residual normalization is worth testing;
 - defer drift span diversity work until the expanded-pairing ranking failure is
   understood;
 - keep role-wise constant diagnostics in every rerank experiment;
@@ -174,6 +185,9 @@ Likely next additions:
   regressed to `3/32` even though oracle rose to `15/32`.
 - Do not add a simple pair-aware tie-break from current evidence: only 1/7
   oracle-only-pair misses is near-tie.
+- Do not add pair pruning from current evidence: preserving all pair oracles
+  requires keeping ranks up to 15 and harmful structures overlap with true
+  oracle families.
 
 ## Verification Order
 
@@ -190,5 +204,5 @@ Likely next additions:
 
 ## Success Standard
 
-The next useful step should explain whether harmful high-ranking pair candidates
-can be pruned or down-ranked without losing the paired oracle coverage gain.
+The next useful step should explain why `active_kramers_moyal` favors harmful
+pair recombinations and whether this is a feature-scaling/residual issue.

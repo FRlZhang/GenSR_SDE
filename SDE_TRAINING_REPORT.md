@@ -2,6 +2,33 @@
 
 Date: 2026-06-11
 
+Update, 2026-06-22 wrong-pair pruning diagnostic: added
+`scripts/analyze_expanded_pair_pruning.py` and wrote
+`expanded_pairing_wrong_pair_pruning_diagnostics.md` /
+`expanded_pairing_wrong_pair_pruning_diagnostics.json`. This used only existing
+logs/JSON; no eval, candidate regeneration, or model code was run.
+
+Key findings:
+
+| Diagnostic | Result |
+| --- | ---: |
+| Selected misses analyzed | 12 |
+| Wrong selected pair cases | 8 |
+| Pair-oracle samples to preserve | 8 |
+| Pair-oracle source-rank span | 2 to 15 |
+| Approx wrong-pair source-rank span | 1 to 14 |
+| Active-distance traps among wrong selected pairs | 5/8 |
+
+No safe pruning criterion was visible. Pair source-rank pruning would remove
+real pair-oracle samples unless the threshold is at least 15, which also keeps
+the observed wrong selected pairs. Structural pruning is unsafe too:
+mean-reverting and constant-drift pair candidates are harmful in some misses but
+are true pair-oracle families in others. The wrong pairs are parse-valid and
+plausible; the main problem remains that active+weak scoring, especially
+`active_kramers_moyal`, prefers them over the oracle. Next step should be
+targeted residual analysis of active-kramers-moyal traps, not pair pruning or a
+blanket pair bonus.
+
 Update, 2026-06-22 expanded pairing oracle-miss ranking: added
 `scripts/analyze_expanded_pairing_misses.py` and wrote
 `expanded_pairing_oracle_miss_ranking_diagnostics.md` /

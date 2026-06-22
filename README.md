@@ -118,6 +118,10 @@ Current best result so far:
   near-tie losses and only `1/7` oracle-only-pair misses is near-tie; wrong
   pair candidates are selected often enough that pruning/ranking diagnostics are
   safer than a blanket pair bonus.
+- wrong-pair pruning diagnostics did not find an oracle-preserving pruning rule:
+  pair-oracle source ranks extend to 15 and harmful pair structures overlap
+  with true pair-oracle families, so the next step is active-kramers-moyal
+  residual analysis rather than pruning or a pair bonus.
 
 See [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md)
 and [PROJECT_STATUS.md](/Users/lzhang/Documents/GenSR_SDE/PROJECT_STATUS.md) for

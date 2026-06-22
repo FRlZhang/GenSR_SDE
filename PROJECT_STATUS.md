@@ -167,6 +167,15 @@ ranking/scoring of paired oracles improves.
   `active_kramers_moyal`. Wrong pair candidates were selected in 8/12 misses,
   so expanded pairing adds useful oracles and harmful high-ranking pair
   candidates at the same time.
+- Added wrong-pair pruning diagnostics in
+  [scripts/analyze_expanded_pair_pruning.py](/Users/lzhang/Documents/GenSR_SDE/scripts/analyze_expanded_pair_pruning.py)
+  and
+  [expanded_pairing_wrong_pair_pruning_diagnostics.md](/Users/lzhang/Documents/GenSR_SDE/expanded_pairing_wrong_pair_pruning_diagnostics.md).
+  The 8 wrong selected pair cases are parse-valid, structurally plausible, and
+  overlap with true pair-oracle families. Pair source-rank pruning is unsafe
+  because preserving all 8 pair-oracle samples requires keeping pair source
+  ranks up to 15, which also keeps the observed wrong pair selections. No safe
+  pruning criterion was found from existing logs/JSON.
 - Logged validated experiments in
   [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md).
 
@@ -174,9 +183,8 @@ ranking/scoring of paired oracles improves.
 
 - Transitioning from "can the model learn the fingerprint?" to "can we decode
   the right symbolic sequence?".
-- Using expanded-pairing miss diagnostics to decide whether paired candidate
-  pruning or pair-aware ranking should be tested before any further candidate
-  generation changes.
+- Using expanded-pairing diagnostics to understand active-kramers-moyal traps
+  before testing pruning or pair-aware ranking.
 - The 2000-step role-token checkpoint has been restored in `/private/tmp` and
   backed up under `checkpoints/`; model weights remain ignored by git.
 
@@ -199,19 +207,21 @@ ranking/scoring of paired oracles improves.
    `15/32`.
 6. Do not add a simple pair-aware tie-break from the current evidence alone:
    most paired oracles lose by active+weak distance, not epsilon-scale ties.
-7. Next run a log-only/top-candidate diagnostic for expanded pairing that
-   inspects high-ranking wrong pair candidates and candidate pruning criteria
-   before testing any scoring heuristic.
-8. Shift candidate-generation work toward drift span diversity: after expanded
+7. Do not add pair pruning from the current evidence: no oracle-preserving
+   pruning rule was found from existing logs/JSON.
+8. Next perform targeted residual analysis of `active_kramers_moyal` traps for
+   wrong pair candidates versus pair oracles, preferably reusing existing
+   residual-vector tooling.
+9. Shift candidate-generation work toward drift span diversity: after expanded
    pairing, the remaining 17 oracle-absent samples all contain the truth
    diffusion but miss the truth drift.
-9. Keep drift/diffusion pairing enabled and tune candidate pool size carefully
+10. Keep drift/diffusion pairing enabled and tune candidate pool size carefully
    because fingerprint recomputation is CPU-expensive.
-10. Reuse the saved 2000-step checkpoint for decoding experiments instead of
+11. Reuse the saved 2000-step checkpoint for decoding experiments instead of
    retraining.
-11. Compare greedy, constrained beam, reranked, and oracle candidate metrics on the same
+12. Compare greedy, constrained beam, reranked, and oracle candidate metrics on the same
    held-out evaluation setup.
-12. Only revisit fingerprint design after candidate diversity and scoring have
+13. Only revisit fingerprint design after candidate diversity and scoring have
    been tested more thoroughly.
 
 ## Open Questions

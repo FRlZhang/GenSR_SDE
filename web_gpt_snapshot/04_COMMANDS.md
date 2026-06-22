@@ -199,6 +199,29 @@ oracle-only-pair near gaps <=0.10=1/7
 selected source is pair=8/12
 ```
 
+## Expanded Pairing Wrong-Pair Pruning Diagnostic
+
+This parses existing JSON/log-derived reports only.
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 \
+/opt/miniconda3/envs/gensr/bin/python3 scripts/analyze_expanded_pair_pruning.py \
+  --miss-json expanded_pairing_oracle_miss_ranking_diagnostics.json \
+  --coverage-json candidate_coverage_pair_expanded.json \
+  --report expanded_pairing_wrong_pair_pruning_diagnostics.md \
+  --json-output expanded_pairing_wrong_pair_pruning_diagnostics.json \
+  > /private/tmp/gensr_sde_expanded_pair_pruning.log 2>&1
+```
+
+Latest result:
+
+```text
+wrong selected pair cases=8
+pair-oracle source ranks=2..15
+approx wrong-pair source ranks=1..14
+safe_pruning_rule_found=0
+```
+
 ## Small Smoke Test
 
 ```bash

@@ -2,6 +2,49 @@
 
 ## Last Codex Workflow
 
+Codex added a log/JSON-only wrong-pair pruning diagnostic:
+
+```text
+scripts/analyze_expanded_pair_pruning.py
+expanded_pairing_wrong_pair_pruning_diagnostics.md
+expanded_pairing_wrong_pair_pruning_diagnostics.json
+/private/tmp/gensr_sde_expanded_pair_pruning.log
+```
+
+No eval, candidate regeneration, formal rerank run, 64-sample run, retraining,
+or scorer change was launched.
+
+Summary:
+
+```text
+selected misses analyzed=12
+wrong selected pair cases=8
+pair-oracle samples to preserve=8
+pair-oracle source ranks=2..15
+approx wrong-pair source ranks=1..14
+active-distance traps among wrong selected pairs=5/8
+safe_pruning_rule_found=0
+```
+
+Interpretation: no safe oracle-preserving pruning criterion is visible from the
+existing logs/JSON. Pair source-rank pruning would remove real pair oracles
+unless the threshold is at least 15, which also keeps observed wrong pair
+selections. Structural pruning is unsafe because harmful mean-reverting or
+constant-drift pair candidates overlap with true pair-oracle families.
+
+Recommendation: do not add pair pruning or a blanket pair bonus. Next perform
+targeted residual analysis of `active_kramers_moyal` traps for wrong pair
+candidates versus pair oracles.
+
+Validation:
+
+```text
+py_compile scripts/analyze_expanded_pair_pruning.py: passed
+git diff --check: passed
+```
+
+## Previous Codex Workflow
+
 Codex added a log-only expanded-pairing oracle-miss ranking diagnostic:
 
 ```text
