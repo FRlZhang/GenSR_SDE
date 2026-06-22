@@ -226,7 +226,7 @@ def write_report(path: Path, payload: dict) -> dict:
             "",
             "Minimal candidate-generation patch to try next: add a drift-focused span expansion path before reranking. The most direct low-risk version is to increase drift span extraction diversity from beam/sampling outputs and allow more drift spans into pairing, while keeping diffusion settings mostly unchanged.",
             "",
-            "Pairing should be the secondary patch: for the 6 pairing-missing samples, most require larger `pair_drift_topk`; a candidate-cap increase only matters after the exact drift enters the pairing top-k.",
+            "Pairing should be the secondary patch: for the 6 pairing-missing samples, 5 already have exact drift and diffusion spans inside the current pair top-k but are blocked by the pair candidate cap, while 1 needs `pair_drift_topk` raised to include the exact drift span.",
             "",
             "A future formal 32-sample eval is justified only after a candidate-generation patch increases offline full-oracle coverage above `9/32` in this diagnostic.",
             "",

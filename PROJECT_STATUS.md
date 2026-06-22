@@ -131,11 +131,13 @@ tested so far regressed.
   [scripts/analyze_drift_pairing_coverage.py](/Users/lzhang/Documents/GenSR_SDE/scripts/analyze_drift_pairing_coverage.py)
   and wrote
   [drift_pairing_coverage_diagnostics.md](/Users/lzhang/Documents/GenSR_SDE/drift_pairing_coverage_diagnostics.md).
-  Existing coverage markdown was enough to classify the 17 drift-missing cases:
-  missing drift families were linear drift 6, sin drift 6, nested linear drift 3,
-  and polynomial-like drift 2. Exact candidate span ranks for the 6 pairing
-  cases are blocked until the checkpoint is restored and
-  `candidate_coverage_diagnostics.json` can be regenerated.
+  After restoring the 2000-step checkpoint, candidate coverage was regenerated
+  with a JSON sidecar and the full rank diagnostic completed. The 17
+  drift-missing cases are linear drift 6, sin drift 6, nested linear drift 3,
+  and polynomial-like drift 2. For the 6 pairing-missing cases, 5 already have
+  exact drift and diffusion inside the current pair top-k but are blocked by
+  `pair_drift_diffusion_candidates`; sample 23 needs `pair_drift_topk` raised
+  from 4 to at least 5.
 - Logged validated experiments in
   [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md).
 
@@ -146,9 +148,8 @@ tested so far regressed.
 - Using candidate coverage diagnostics to raise the `9/32` oracle ceiling,
   with drift span diversity as the leading blocker and pairing as a secondary
   blocker.
-- The `/private/tmp/gensr_sde_role_token_2000/role_token_2000.pth` checkpoint
-  is currently missing, so any diagnostic requiring regenerated candidate pools
-  is blocked until that checkpoint is restored or regenerated.
+- The 2000-step role-token checkpoint has been restored in `/private/tmp` and
+  backed up under `checkpoints/`; model weights remain ignored by git.
 
 ## Next Steps
 
@@ -169,7 +170,8 @@ tested so far regressed.
    truth drift.
 6. Also improve pairing coverage/ranking for the 6 samples where exact drift
    and exact diffusion are both present separately but not paired into a full
-   oracle.
+   oracle: first try a modest pair candidate cap increase, plus a small
+   `pair_drift_topk` bump for sample 23-style cases.
 7. Keep drift/diffusion pairing enabled and tune candidate pool size carefully
    because fingerprint recomputation is CPU-expensive.
 8. Reuse the saved 2000-step checkpoint for decoding experiments instead of
@@ -239,9 +241,10 @@ tested so far regressed.
 - The 32-sample constant-grid + pairing probe is CPU-expensive, so 64-sample
   expansion should be reserved for settings that first improve the 32-sample
   selected metrics.
-- The main checkpoint currently lives outside the repo in `/private/tmp`, so it
-  may disappear. As of 2026-06-22,
-  `/private/tmp/gensr_sde_role_token_2000/role_token_2000.pth` is missing.
+- The main checkpoint is expected at
+  `/private/tmp/gensr_sde_role_token_2000/role_token_2000.pth` and is backed up
+  at `checkpoints/gensr_sde_role_token_2000/role_token_2000.pth`; `checkpoints/`
+  is ignored by git.
 - `environment.yml` is upstream and Linux-oriented; the recent local experiments
   were run from the existing `gensr` conda environment on macOS.
 - Keep future git changes grouped by experiment stage so decoding changes can
@@ -260,6 +263,8 @@ Read these files first:
 Current best checkpoint:
 
 - `/private/tmp/gensr_sde_role_token_2000/role_token_2000.pth`
+- persistent backup:
+  `/Users/lzhang/Documents/GenSR_SDE/checkpoints/gensr_sde_role_token_2000/role_token_2000.pth`
 
 If that checkpoint still exists, start from eval-only decoding work:
 

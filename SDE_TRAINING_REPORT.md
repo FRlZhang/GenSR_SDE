@@ -2,6 +2,30 @@
 
 Date: 2026-06-11
 
+Update, 2026-06-22 checkpoint-backed drift/pairing rank diagnostic: restored
+the 2000-step role-token checkpoint path and regenerated
+`candidate_coverage_diagnostics.json`. The full
+`scripts/analyze_drift_pairing_coverage.py` report now includes span ranks,
+top-k membership, and pair-cap checks for the 6 pairing-missing samples.
+
+Pairing-missing samples:
+
+| Sample | Exact drift rank | Exact diffusion rank | Main blocker | Suggested minimal change |
+| ---: | ---: | ---: | --- | --- |
+| 5 | 4 | 4 | pair candidate cap | `pair_drift_diffusion_candidates >= 19` |
+| 8 | 4 | 4 | pair candidate cap | `pair_drift_diffusion_candidates >= 19` |
+| 11 | 3 | 4 | pair candidate cap | `pair_drift_diffusion_candidates >= 17` |
+| 23 | 5 | 4 | drift top-k | `pair_drift_topk >= 5`; combined rank would be 24 |
+| 30 | 4 | 5 | pair candidate cap | `pair_drift_diffusion_candidates >= 20` |
+| 31 | 4 | 4 | pair candidate cap | `pair_drift_diffusion_candidates >= 19` |
+
+Interpretation: the main oracle-ceiling blocker is still drift span diversity
+for 17/23 oracle-absent samples. Pairing is a smaller but actionable secondary
+blocker: 5/6 pairing misses already have both exact spans inside the current
+top-k and look recoverable by increasing the pair candidate cap; 1/6 needs a
+small drift-top-k expansion. A future formal eval is only justified after an
+offline candidate-generation change raises full-oracle coverage above `9/32`.
+
 Update, 2026-06-22 drift/pairing coverage diagnostic: added
 `scripts/analyze_drift_pairing_coverage.py` and wrote
 `drift_pairing_coverage_diagnostics.md`.

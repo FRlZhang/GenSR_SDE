@@ -79,10 +79,10 @@ Drift/pairing taxonomy exists:
 ```text
 scripts/analyze_drift_pairing_coverage.py
 drift_pairing_coverage_diagnostics.md
-/private/tmp/gensr_sde_drift_pairing_coverage.log
+/private/tmp/gensr_sde_drift_pairing_coverage_full.log
 ```
 
-Available taxonomy:
+Available taxonomy and rank diagnosis:
 
 ```text
 linear drift missing=6
@@ -90,11 +90,13 @@ sin drift missing=6
 nested-mul linear drift missing=3
 polynomial-like drift missing=2
 pairing-missing samples=5,8,11,23,30,31
+pairing actions=increase_pair_candidate_cap:5,increase_pair_drift_topk:1
 ```
 
-Blocked detail: exact pairing ranks require `candidate_coverage_diagnostics.json`,
-but regenerating candidate coverage is currently blocked because
-`/private/tmp/gensr_sde_role_token_2000/role_token_2000.pth` is missing.
+Pairing details: samples `5`, `8`, `11`, `30`, and `31` are blocked by the
+pair candidate cap even though exact spans are within top-k. Sample `23` needs
+`pair_drift_topk >= 5`; its combined pair rank would be 24 after top-k
+expansion.
 
 ## Primary File To Modify
 
@@ -107,9 +109,8 @@ Likely next additions:
 - improve drift span diversity for the 17 oracle-absent samples where diffusion
   is already exact but drift is missing;
 - improve pairing coverage/ranking for the 6 samples where exact drift and exact
-  diffusion appear separately but not together;
-- restore or regenerate the 2000-step checkpoint before attempting rank-level
-  pairing diagnostics;
+  diffusion appear separately but not together, starting with a pair candidate
+  cap increase and a small drift-top-k bump;
 - keep role-wise constant diagnostics in every rerank experiment;
 - consider candidate-generation changes only after deciding whether the current
   scorer can reliably choose among existing oracle candidates.

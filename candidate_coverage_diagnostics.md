@@ -18,8 +18,8 @@ Scope: candidate identity coverage for the existing 32-sample setup. This is not
 | Category | Count |
 | --- | ---: |
 | Full oracle present | 9 |
-| Scorer selected oracle | 5 |
-| Oracle present but selected missed | 4 |
+| Scorer selected oracle | unknown |
+| Oracle present but selected missed | unknown |
 | Drift-only present | 0 |
 | Diffusion-only present | 17 |
 | Drift+diffusion both present separately but not paired | 6 |

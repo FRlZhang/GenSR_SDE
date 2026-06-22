@@ -660,9 +660,9 @@ def write_report(path: Path, analyses: list[dict], log_metrics: dict, args: argp
 
 def json_ready(value):
     if isinstance(value, Counter):
-        return dict(value)
+        return {str(key): json_ready(item) for key, item in value.items()}
     if isinstance(value, defaultdict):
-        return dict(value)
+        return {str(key): json_ready(item) for key, item in value.items()}
     if isinstance(value, set):
         return sorted(value)
     if isinstance(value, tuple):

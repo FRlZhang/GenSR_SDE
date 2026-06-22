@@ -93,7 +93,7 @@ PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/
   --source-log /private/tmp/gensr_sde_32_rolewise_no_multi_u0.log \
   --report candidate_coverage_diagnostics.md \
   --json-output candidate_coverage_diagnostics.json \
-  > /private/tmp/gensr_sde_candidate_coverage.log 2>&1
+  > /private/tmp/gensr_sde_candidate_coverage_json.log 2>&1
 ```
 
 Compile check:
@@ -114,10 +114,10 @@ blocked.
 ```bash
 PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/tmp/cache \
 /opt/miniconda3/envs/gensr/bin/python3 scripts/analyze_drift_pairing_coverage.py \
-  --source-log /private/tmp/gensr_sde_candidate_coverage.log \
+  --source-log /private/tmp/gensr_sde_candidate_coverage_json.log \
   --coverage-json candidate_coverage_diagnostics.json \
   --report drift_pairing_coverage_diagnostics.md \
-  > /private/tmp/gensr_sde_drift_pairing_coverage.log 2>&1
+  > /private/tmp/gensr_sde_drift_pairing_coverage_full.log 2>&1
 ```
 
 Compile check:
@@ -228,6 +228,25 @@ weak-downweighted `1:0.5` role-wise variants regressed to `3/32`. Do not run
 32-sample role-wise baseline.
 
 ## Regenerate 2000-Step Checkpoint
+
+Preferred checkpoint paths:
+
+```text
+/private/tmp/gensr_sde_role_token_2000/role_token_2000.pth
+checkpoints/gensr_sde_role_token_2000/role_token_2000.pth
+```
+
+`checkpoints/` is ignored by git. Do not commit model weights. If the
+persistent checkpoint exists but `/private/tmp` is missing, recreate the tmp
+path with a symlink:
+
+```bash
+mkdir -p /private/tmp/gensr_sde_role_token_2000
+ln -sf /Users/lzhang/Documents/GenSR_SDE/checkpoints/gensr_sde_role_token_2000/role_token_2000.pth \
+  /private/tmp/gensr_sde_role_token_2000/role_token_2000.pth
+```
+
+If both checkpoint paths are missing, regenerate only when explicitly requested:
 
 ```bash
 PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/tmp/cache \

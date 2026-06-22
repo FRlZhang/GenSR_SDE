@@ -2,6 +2,54 @@
 
 ## Last Codex Workflow
 
+Codex restored the checkpoint-backed candidate coverage path and completed the
+full drift/pairing rank diagnostic:
+
+```text
+candidate_coverage_diagnostics.json
+drift_pairing_coverage_diagnostics.md
+/private/tmp/gensr_sde_candidate_coverage_json.log
+/private/tmp/gensr_sde_drift_pairing_coverage_full.log
+```
+
+Checkpoint status:
+
+```text
+/private/tmp/gensr_sde_role_token_2000/role_token_2000.pth: present, real file
+checkpoints/gensr_sde_role_token_2000/role_token_2000.pth: present backup
+checkpoints/: ignored by git
+```
+
+Candidate coverage JSON generation passed and reproduced:
+
+```text
+full_oracle_present=9/32
+oracle_absent_missing_sides=drift:17,pairing:6
+```
+
+Full pairing rank diagnostic:
+
+```text
+drift_missing=17
+pairing_missing=6
+top_missing_drift_family=linear drift:6
+pairing_actions=increase_pair_candidate_cap:5,increase_pair_drift_topk:1
+```
+
+Pairing-missing samples `5`, `8`, `11`, `30`, and `31` have exact drift and
+diffusion within current top-k but are blocked by pair candidate cap. Sample
+`23` needs the exact drift admitted by raising `pair_drift_topk` to at least
+5; its combined pair rank would be 24 after top-k expansion.
+
+Validation:
+
+```text
+py_compile scripts/analyze_candidate_coverage.py scripts/analyze_drift_pairing_coverage.py: passed
+git diff --check: passed
+```
+
+## Previous Codex Workflow
+
 Codex added drift/pairing coverage diagnostics:
 
 ```text

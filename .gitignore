@@ -28,6 +28,9 @@ venv/
 *.npz
 *.pkl
 
+# Local model checkpoints
+checkpoints/
+
 # Experiment outputs
 dump/
 wandb/
