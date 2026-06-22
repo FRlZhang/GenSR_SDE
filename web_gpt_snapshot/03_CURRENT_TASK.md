@@ -2,9 +2,9 @@
 
 ## Next Engineering Task
 
-Use candidate coverage diagnostics to raise the current `9/32` oracle ceiling.
-Scorer-only work is no longer the priority because mild robust residual
-ablation rescued `0/4` remaining oracle-present misses.
+Analyze expanded-pairing oracle-miss ranking from existing logs. Expanded
+pairing raised oracle coverage, but selected recovery regressed, so the next
+question is why the scorer/ranker misses newly introduced paired oracles.
 
 Current strongest no-retraining decoding setting:
 
@@ -16,7 +16,23 @@ oracle exact/relaxed=9/32
 pair oracle exact/relaxed=2/32
 ```
 
-Latest candidate-coverage-only result:
+Expanded-pairing formal eval:
+
+```text
+pair_drift_topk=5
+pair_diffusion_topk=6
+pair_drift_diffusion_candidates=32
+selected exact/relaxed=3/32
+oracle exact/relaxed=15/32
+pair oracle exact/relaxed=8/32
+oracle-present samples=15
+selected oracle hits=3
+selected oracle misses=12
+oracle-only-pair misses=7
+beam/sampling score misses=5
+```
+
+Candidate-coverage-only result:
 
 ```text
 expanded pairing: pair_drift_topk=5, pair_diffusion_topk=6, pair_drift_diffusion_candidates=32
@@ -109,16 +125,19 @@ cap; its combined pair rank was 24.
 ## Primary File To Modify
 
 No primary source file needs to change unless the next task explicitly adds a
-new diagnostic. If adding diagnostics, prefer a narrow helper under `scripts/`
+new log parser. Prefer a narrow helper under `scripts/` and existing log data
 before modifying `sde_validation_probe.py`.
 
 Likely next additions:
 
-- run one future formal 32-sample eval with the current strongest scorer and
-  expanded pairing to test whether the offline ceiling gain improves selected
-  recovery;
-- then improve drift span diversity for the 17 remaining oracle-absent samples
-  where diffusion is already exact but drift is missing;
+- parse expanded-pairing miss cases from
+  `/private/tmp/gensr_sde_32_expanded_pairing_rolewise.log`;
+- compare selected non-oracle vs best paired oracle score, source, drift,
+  diffusion, constants, and model score for the 7 oracle-only-pair misses;
+- decide whether a pair-aware ranking heuristic, pair source penalty/bonus,
+  model-score tie-break, or candidate pruning is worth testing;
+- defer drift span diversity work until the expanded-pairing ranking failure is
+  understood;
 - keep role-wise constant diagnostics in every rerank experiment;
 - consider candidate-generation changes only after deciding whether the current
   scorer can reliably choose among existing oracle candidates.
@@ -140,6 +159,8 @@ Likely next additions:
 - Do not overwrite data pickles or checkpoints.
 - Do not run 64-sample expansion until a 32-sample setting improves selected
   recovery again.
+- Do not make expanded pairing the default: formal selected exact/relaxed
+  regressed to `3/32` even though oracle rose to `15/32`.
 
 ## Verification Order
 
@@ -156,7 +177,6 @@ Likely next additions:
 
 ## Success Standard
 
-The next useful decoding change should exceed the current role-wise baseline of
-`5/32` selected exact/relaxed on the same 32-sample setup, or clearly explain
-why feature normalization/fingerprint ambiguity prevents scorer-only progress
-and candidate generation must be improved before scoring can move further.
+The next useful step should explain the 12 expanded-pairing selected misses,
+especially the 7 oracle-only-pair misses, using existing logs before launching
+new experiments.

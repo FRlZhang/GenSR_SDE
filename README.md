@@ -109,8 +109,11 @@ Current best result so far:
   `3/32`.
 - expanded pairing coverage with `pair_drift_topk=5` and
   `pair_drift_diffusion_candidates=32` raises offline full-oracle candidate
-  coverage from `9/32` to `15/32`; this still needs one formal 32-sample rerank
-  eval before becoming a decoding default.
+  coverage from `9/32` to `15/32`;
+- the matching formal 32-sample eval reproduced oracle exact / relaxed
+  `15/32` and pair oracle `8/32`, but selected exact / relaxed dropped to
+  `3/32`, so expanded pairing is diagnostic-only for now and should not become
+  the default before paired-oracle ranking is understood.
 
 See [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md)
 and [PROJECT_STATUS.md](/Users/lzhang/Documents/GenSR_SDE/PROJECT_STATUS.md) for

@@ -2,6 +2,43 @@
 
 Date: 2026-06-11
 
+Update, 2026-06-22 expanded pairing formal eval: the user ran the one formal
+32-sample eval from `/private/tmp/gensr_sde_32_expanded_pairing_rolewise.log`
+using `constant_grid_rolewise_no_multi_u0` and expanded pairing:
+
+```text
+pair_drift_topk=5
+pair_diffusion_topk=6
+pair_drift_diffusion_candidates=32
+```
+
+No retraining, 64-sample eval, active/weak grid, or scorer/default change was
+run. Results:
+
+| Metric | Baseline role-wise | Expanded formal eval |
+| --- | ---: | ---: |
+| Selected exact/relaxed | 5/32 | 3/32 |
+| Oracle exact/relaxed | 9/32 | 15/32 |
+| Pair oracle exact/relaxed | 2/32 | 8/32 |
+| Valid candidates | 405 | 715 |
+| Unique candidate avg | 12.656250 | 22.343750 |
+| Unique paired candidate avg | 3.218750 | 12.906250 |
+
+The expanded eval confirms the coverage finding: oracle ceiling rose to
+`15/32`, and pair oracle rose to `8/32`. Selected recovery regressed to `3/32`.
+The oracle case summary found 15 oracle-present samples, 3 selected hits, and
+12 selected misses. The misses include 7 oracle-only-pair misses and 5
+beam/sampling score misses; role-wise constant grid rescued 0 listed misses in
+this run.
+
+Interpretation: expanded pairing is useful diagnostically but should not become
+the default yet. The current active+weak role-wise constant scorer cannot
+reliably choose the newly introduced paired oracles. Do not run 64-sample
+expanded pairing. Next diagnostic should analyze expanded-pairing oracle-miss
+ranking from the existing log, especially the 7 oracle-only-pair misses, before
+deciding whether to test pair-aware ranking, pair source penalty/bonus,
+model-score tie-break, or candidate pruning.
+
 Update, 2026-06-22 expanded pairing coverage probe: ran candidate-generation
 coverage only with:
 

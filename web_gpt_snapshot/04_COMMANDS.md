@@ -154,6 +154,27 @@ oracle_absent=17/32
 rescued pairing samples=5,8,11,23,30,31
 ```
 
+## Expanded Pairing Formal Eval Result
+
+The formal eval log is:
+
+```text
+/private/tmp/gensr_sde_32_expanded_pairing_rolewise.log
+```
+
+Result:
+
+```text
+selected exact/relaxed=3/32
+oracle exact/relaxed=15/32
+pair oracle exact/relaxed=8/32
+rerank_candidates_valid=715
+```
+
+Do not make this expanded pairing setting the default yet, and do not run
+64-sample expansion from it. Next use the existing log for oracle-miss ranking
+diagnostics.
+
 ## Small Smoke Test
 
 ```bash

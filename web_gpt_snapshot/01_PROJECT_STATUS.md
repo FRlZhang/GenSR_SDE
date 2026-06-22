@@ -2,7 +2,7 @@
 
 ## Current Goal
 
-Improve sequence-level SDE recovery after establishing that the current unified fingerprint and role-token target are learnable by GenSR. Candidate generation plus fingerprint-distance reranking is implemented; drift/diffusion pairing and role-wise constant-grid scoring now produce selected hits. The current strongest no-retraining decoding setting is `constant_grid_rolewise_no_multi_u0` at selected exact/relaxed `5/32`, with oracle exact/relaxed still `9/32`.
+Improve sequence-level SDE recovery after establishing that the current unified fingerprint and role-token target are learnable by GenSR. Candidate generation plus fingerprint-distance reranking is implemented; drift/diffusion pairing and role-wise constant-grid scoring now produce selected hits. The current strongest no-retraining selected-recovery setting remains `constant_grid_rolewise_no_multi_u0` with baseline pairing at selected exact/relaxed `5/32`. Expanded pairing raises oracle exact/relaxed to `15/32`, but selected exact/relaxed regressed to `3/32`, so expanded pairing is diagnostic-only for now.
 
 ## Completed
 
@@ -40,22 +40,24 @@ greedy_sequence_exact=0.015625
 - Added candidate coverage diagnostics in `scripts/analyze_candidate_coverage.py` and `candidate_coverage_diagnostics.md`. The diagnostic reproduced the 9/32 full-oracle ceiling without fingerprint scoring. Among 23 oracle-absent samples, 17 have exact diffusion only and 6 have exact drift+diffusion separately but not paired.
 - Added checkpoint-backed drift/pairing coverage diagnostics in `scripts/analyze_drift_pairing_coverage.py` and `drift_pairing_coverage_diagnostics.md`. Drift-missing templates are mostly linear drift (6), sin drift (6), nested-mul linear drift (3), and polynomial-like drift (2). The full pairing rank diagnostic showed 5/6 pairing misses were blocked by `pair_drift_diffusion_candidates`, while sample 23 needed `pair_drift_topk >= 5`.
 - Ran expanded-pairing candidate coverage with `pair_drift_topk=5`, `pair_diffusion_topk=6`, and `pair_drift_diffusion_candidates=32`. This rescued all six pairing-missing samples as pair-source full oracles and raised full-oracle coverage from `9/32` to `15/32`.
+- The matching formal 32-sample eval reproduced oracle exact/relaxed `15/32` and pair oracle `8/32`, but selected exact/relaxed dropped to `3/32`. There were 15 oracle-present samples, 3 selected hits, and 12 selected misses, including 7 oracle-only-pair misses.
 
 ## In Progress
 
 - Transitioning from token recognition to full symbolic sequence recovery.
-- Using candidate coverage diagnostics to raise the oracle ceiling; expanded pairing raises the offline ceiling to `15/32`, and drift span diversity is now the remaining ceiling blocker.
+- Using existing expanded-pairing eval logs to understand why the higher `15/32` oracle ceiling does not improve selected recovery.
 - Checkpoint-dependent candidate regeneration is unblocked: the 2000-step checkpoint is present in `/private/tmp` and backed up under `checkpoints/`, which is ignored by git.
 
 ## Next Steps
 
 1. Do not make `active_distance` or `state_dependent_drift` the default based on the 16-sample hit; on 32 samples they matched no-tie baseline.
 2. Keep `constant_grid_rolewise_no_multi_u0` active:weak 1:1 as the strongest current eval setting; do not make active-heavy weights the default.
-3. Run one future formal 32-sample eval with the current strongest scorer and expanded pairing to see whether the oracle-ceiling gain from `9/32` to `15/32` improves selected recovery.
-4. Prioritize drift span diversity after that: the remaining 17 oracle-absent samples contain truth diffusion but miss truth drift.
-5. Do not add a robust-scoring rerank mode from the current offline ablation alone: mild variants rescued 0/4 and the only flip required aggressive clipping.
-6. Keep comparing greedy, constrained beam, reranked, oracle, and oracle-miss metrics on the same held-out setup.
-7. Only revisit fingerprint design after candidate diversity and scoring have been tested more thoroughly.
+3. Do not make expanded pairing the default and do not run 64-sample expansion: selected recovery regressed to `3/32`.
+4. Analyze expanded-pairing oracle-miss ranking from the existing log, especially the 7 oracle-only-pair misses, before changing candidate generation again.
+5. After rank diagnosis, decide whether to test pair-aware ranking, pair source penalty/bonus, model-score tie-break, or candidate pruning.
+6. Do not add a robust-scoring rerank mode from the current offline ablation alone: mild variants rescued 0/4 and the only flip required aggressive clipping.
+7. Keep comparing greedy, constrained beam, reranked, oracle, and oracle-miss metrics on the same held-out setup.
+8. Only revisit fingerprint design after candidate diversity and scoring have been tested more thoroughly.
 
 ## Open Questions
 
@@ -78,6 +80,7 @@ greedy_sequence_exact=0.015625
 - In the 32-sample oracle-miss diagnostics, selected non-oracles often beat oracle templates on active/weak distance. This points to score calibration / constant handling rather than a missing tie-break.
 - Role-wise constants rescued one miss, but active/weak reweighting was brittle: 2:1 and 1:0.5 both dropped selected exact/relaxed to 3/32.
 - Candidate generation remains a ceiling: only 9/32 samples had any oracle candidate.
+- Expanded pairing raises oracle coverage to `15/32`, but current scoring selected only `3/32`, so ranking of paired oracles is an immediate blocker.
 - Constant-grid + pairing rerank is CPU-expensive; reserve 64-sample expansion for settings that first improve the 32-sample selected metrics.
 - The best checkpoint is available at `/private/tmp/gensr_sde_role_token_2000/role_token_2000.pth` and backed up at `checkpoints/gensr_sde_role_token_2000/role_token_2000.pth`.
 - `environment.yml` is upstream/Linux-oriented; recent work used the local macOS `gensr` conda env.

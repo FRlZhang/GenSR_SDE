@@ -13,8 +13,10 @@ candidate generation remains the larger ceiling for samples with no oracle.
 Role-wise constant-grid scoring rescued one selected-miss case and improved
 selected exact/relaxed from `4/32` to `5/32`; active/weak reweighting variants
 tested so far regressed. Expanded pairing raises offline full-oracle candidate
-coverage from `9/32` to `15/32`, but selected recovery has not yet been tested
-with that larger candidate pool.
+coverage from `9/32` to `15/32`, and a formal 32-sample eval reproduced that
+oracle ceiling, but selected recovery dropped to `3/32`. Expanded pairing is
+therefore useful diagnostically but should not become the default until
+ranking/scoring of paired oracles improves.
 
 ## Last Updated
 
@@ -147,6 +149,14 @@ with that larger candidate pool.
   candidates from the `pair` source and raised the full-oracle ceiling from
   `9/32` to `15/32`. The remaining 17 oracle-absent samples are all still
   drift-missing with exact diffusion present.
+- Ran one formal 32-sample eval-only probe with the current strongest scorer
+  (`constant_grid_rolewise_no_multi_u0`) and expanded pairing. Oracle
+  exact/relaxed rose from `9/32` to `15/32`, and pair oracle rose from `2/32`
+  to `8/32`, matching the coverage diagnostic. Selected exact/relaxed fell
+  from the role-wise baseline `5/32` to `3/32`, with 15 oracle-present samples,
+  3 selected oracle hits, and 12 selected misses. Of the misses, 7 were
+  oracle-only-pair cases and 5 were beam/sampling score misses; role-wise
+  constants rescued 0 listed misses in this expanded run.
 - Logged validated experiments in
   [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md).
 
@@ -154,9 +164,8 @@ with that larger candidate pool.
 
 - Transitioning from "can the model learn the fingerprint?" to "can we decode
   the right symbolic sequence?".
-- Using candidate coverage diagnostics to raise the `9/32` oracle ceiling,
-  with drift span diversity as the leading blocker and pairing as a secondary
-  blocker.
+- Using expanded-pairing diagnostics to understand why a higher `15/32` oracle
+  ceiling does not translate into selected recovery.
 - The 2000-step role-token checkpoint has been restored in `/private/tmp` and
   backed up under `checkpoints/`; model weights remain ignored by git.
 
@@ -174,20 +183,25 @@ with that larger candidate pool.
    favor selected non-oracles on aggregate active+weak residuals.
 4. Do not add a robust-scoring rerank mode based on the offline ablation alone:
    mild variants rescued `0/4`, and the only flip required aggressive clipping.
-5. Run one future formal 32-sample eval with the current strongest scorer and
-   expanded pairing (`pair_drift_topk=5`,
-   `pair_drift_diffusion_candidates=32`) to see whether the oracle-ceiling
-   gain from `9/32` to `15/32` turns into selected recovery.
-6. Shift candidate-generation work toward drift span diversity: after expanded
+5. Do not make expanded pairing the default and do not run 64-sample expansion:
+   formal selected exact/relaxed regressed to `3/32` despite oracle rising to
+   `15/32`.
+6. Analyze expanded-pairing oracle-miss ranking, especially the 7
+   oracle-only-pair misses, using the existing formal eval log before changing
+   candidate generation again.
+7. After scorer/rank diagnosis, decide whether to test a pair-aware ranking
+   heuristic, pair source penalty/bonus, model-score tie-break, or candidate
+   pruning.
+8. Shift candidate-generation work toward drift span diversity: after expanded
    pairing, the remaining 17 oracle-absent samples all contain the truth
    diffusion but miss the truth drift.
-7. Keep drift/diffusion pairing enabled and tune candidate pool size carefully
+9. Keep drift/diffusion pairing enabled and tune candidate pool size carefully
    because fingerprint recomputation is CPU-expensive.
-8. Reuse the saved 2000-step checkpoint for decoding experiments instead of
+10. Reuse the saved 2000-step checkpoint for decoding experiments instead of
    retraining.
-9. Compare greedy, constrained beam, reranked, and oracle candidate metrics on the same
+11. Compare greedy, constrained beam, reranked, and oracle candidate metrics on the same
    held-out evaluation setup.
-10. Only revisit fingerprint design after candidate diversity and scoring have
+12. Only revisit fingerprint design after candidate diversity and scoring have
    been tested more thoroughly.
 
 ## Open Questions
@@ -245,8 +259,9 @@ with that larger candidate pool.
 - Role-wise constants can rescue near misses, but only one of the five shared
   selected misses was rescued. The remaining misses still favor non-oracles in
   active/weak distance even after oracle scores improve.
-- Candidate generation is still a ceiling: only 9/32 samples had any oracle
-  candidate in the current beam+sampling+pair pool.
+- Expanded pairing raises the oracle ceiling to `15/32`, but current scoring
+  selected only `3/32`, so scorer/ranking is the immediate blocker for the
+  expanded pool.
 - The 32-sample constant-grid + pairing probe is CPU-expensive, so 64-sample
   expansion should be reserved for settings that first improve the 32-sample
   selected metrics.

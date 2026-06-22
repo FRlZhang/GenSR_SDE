@@ -2,6 +2,47 @@
 
 ## Last Codex Workflow
 
+Codex parsed the user-run expanded-pairing formal 32-sample eval log:
+
+```text
+/private/tmp/gensr_sde_32_expanded_pairing_rolewise.log
+expanded_pairing_32_eval_report.md
+```
+
+No new experiment was launched. Key formal eval metrics:
+
+```text
+selected exact/relaxed=3/32
+oracle exact/relaxed=15/32
+pair oracle exact/relaxed=8/32
+valid candidates=715
+unique candidate avg=22.343750
+unique paired candidate avg=12.906250
+```
+
+Comparison to the previous strongest baseline:
+
+```text
+baseline selected exact/relaxed=5/32
+baseline oracle exact/relaxed=9/32
+baseline pair oracle exact/relaxed=2/32
+```
+
+Interpretation: expanded pairing successfully raises oracle coverage in formal
+eval, but selected recovery regresses. It should not become the default and no
+64-sample expansion is justified yet. The next task is to analyze
+expanded-pairing oracle-miss ranking from existing logs, especially the 7
+oracle-only-pair misses.
+
+Validation:
+
+```text
+py_compile sde_validation_probe.py: passed
+git diff --check: passed
+```
+
+## Previous Codex Workflow
+
 Codex ran an expanded-pairing candidate coverage probe:
 
 ```text
