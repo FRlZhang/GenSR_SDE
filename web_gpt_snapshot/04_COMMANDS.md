@@ -175,6 +175,30 @@ Do not make this expanded pairing setting the default yet, and do not run
 64-sample expansion from it. Next use the existing log for oracle-miss ranking
 diagnostics.
 
+## Expanded Pairing Oracle-Miss Ranking Diagnostic
+
+This parses existing logs only; it does not run the model or regenerate
+candidates.
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 \
+/opt/miniconda3/envs/gensr/bin/python3 scripts/analyze_expanded_pairing_misses.py \
+  --source-log /private/tmp/gensr_sde_32_expanded_pairing_rolewise.log \
+  --report expanded_pairing_oracle_miss_ranking_diagnostics.md \
+  --json-output expanded_pairing_oracle_miss_ranking_diagnostics.json \
+  > /private/tmp/gensr_sde_expanded_pairing_miss_ranking.log 2>&1
+```
+
+Latest result:
+
+```text
+selected misses analyzed=12
+oracle-only-pair misses=7
+near score gaps <=0.10=2/12
+oracle-only-pair near gaps <=0.10=1/7
+selected source is pair=8/12
+```
+
 ## Small Smoke Test
 
 ```bash

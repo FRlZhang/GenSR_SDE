@@ -2,6 +2,38 @@
 
 Date: 2026-06-11
 
+Update, 2026-06-22 expanded pairing oracle-miss ranking: added
+`scripts/analyze_expanded_pairing_misses.py` and wrote
+`expanded_pairing_oracle_miss_ranking_diagnostics.md` /
+`expanded_pairing_oracle_miss_ranking_diagnostics.json`. This was log parsing
+only from `/private/tmp/gensr_sde_32_expanded_pairing_rolewise.log`; no eval or
+candidate generation was run.
+
+Summary over the 12 expanded-pairing selected misses:
+
+| Diagnostic | Count |
+| --- | ---: |
+| Oracle only appears from pair | 7 |
+| Oracle from beam/sampling but score loses | 5 |
+| Same diffusion, wrong drift | 4 |
+| Same drift, wrong diffusion | 4 |
+| Both drift and diffusion wrong | 4 |
+| Oracle has lower model score | 5 |
+| Selected source is pair | 8 |
+| Selected source is beam | 4 |
+
+Only 2/12 misses had score gap `<=0.10`; among oracle-only-pair misses, only
+1/7 was that close. For all 7 oracle-only-pair misses, the selected
+non-oracle's advantage was dominated by `active_kramers_moyal`. Model score
+conflict was not systematic for paired oracles: only 1/7 oracle-only-pair
+misses had a lower oracle model score, though 4/5 beam/sampling score misses
+did.
+
+Interpretation: a simple pair-aware tie-break is not justified from this log
+alone. Expanded pairing adds useful oracles but also high-ranking wrong pair
+candidates; candidate pruning or a more targeted pair-aware ranking diagnostic
+is safer than a blanket pair bonus.
+
 Update, 2026-06-22 expanded pairing formal eval: the user ran the one formal
 32-sample eval from `/private/tmp/gensr_sde_32_expanded_pairing_rolewise.log`
 using `constant_grid_rolewise_no_multi_u0` and expanded pairing:

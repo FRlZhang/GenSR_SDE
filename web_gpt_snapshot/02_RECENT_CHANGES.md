@@ -2,6 +2,51 @@
 
 ## Last Codex Workflow
 
+Codex added a log-only expanded-pairing oracle-miss ranking diagnostic:
+
+```text
+scripts/analyze_expanded_pairing_misses.py
+expanded_pairing_oracle_miss_ranking_diagnostics.md
+expanded_pairing_oracle_miss_ranking_diagnostics.json
+/private/tmp/gensr_sde_expanded_pairing_miss_ranking.log
+```
+
+No eval, candidate regeneration, retraining, scorer change, or 64-sample run
+was launched.
+
+Summary over the 12 expanded-pairing selected misses:
+
+```text
+oracle-only-pair misses=7
+beam/sampling oracle score misses=5
+same diffusion but wrong drift=4
+same drift but wrong diffusion=4
+both sides wrong=4
+selected source is pair=8
+selected source is beam=4
+near score gaps <=0.10=2/12
+oracle-only-pair near score gaps <=0.10=1/7
+```
+
+Main interpretation: expanded pairing's new oracle candidates usually lose on
+the active+weak role-wise score, not by tiny tie-break margins. For all 7
+oracle-only-pair misses, the selected non-oracle's advantage is dominated by
+`active_kramers_moyal`. Model score conflict is not systematic for pair-only
+misses (`1/7`), though it appears in most beam/sampling score misses (`4/5`).
+
+Recommendation: do not add a blanket pair bonus or simple pair-aware tie-break
+from this log alone. Next inspect high-ranking wrong pair candidates and
+candidate pruning criteria using existing logs.
+
+Validation:
+
+```text
+py_compile scripts/analyze_expanded_pairing_misses.py: passed
+git diff --check: passed
+```
+
+## Previous Codex Workflow
+
 Codex parsed the user-run expanded-pairing formal 32-sample eval log:
 
 ```text

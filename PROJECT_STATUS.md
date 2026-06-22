@@ -157,6 +157,16 @@ ranking/scoring of paired oracles improves.
   3 selected oracle hits, and 12 selected misses. Of the misses, 7 were
   oracle-only-pair cases and 5 were beam/sampling score misses; role-wise
   constants rescued 0 listed misses in this expanded run.
+- Added expanded-pairing oracle-miss ranking diagnostics in
+  [scripts/analyze_expanded_pairing_misses.py](/Users/lzhang/Documents/GenSR_SDE/scripts/analyze_expanded_pairing_misses.py)
+  and
+  [expanded_pairing_oracle_miss_ranking_diagnostics.md](/Users/lzhang/Documents/GenSR_SDE/expanded_pairing_oracle_miss_ranking_diagnostics.md).
+  The 12 selected misses were not mostly near ties: only 2/12 had score gap
+  `<=0.10`, and only 1/7 oracle-only-pair misses was that close. For all 7
+  oracle-only-pair misses, the selected non-oracle's advantage was dominated by
+  `active_kramers_moyal`. Wrong pair candidates were selected in 8/12 misses,
+  so expanded pairing adds useful oracles and harmful high-ranking pair
+  candidates at the same time.
 - Logged validated experiments in
   [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md).
 
@@ -164,8 +174,9 @@ ranking/scoring of paired oracles improves.
 
 - Transitioning from "can the model learn the fingerprint?" to "can we decode
   the right symbolic sequence?".
-- Using expanded-pairing diagnostics to understand why a higher `15/32` oracle
-  ceiling does not translate into selected recovery.
+- Using expanded-pairing miss diagnostics to decide whether paired candidate
+  pruning or pair-aware ranking should be tested before any further candidate
+  generation changes.
 - The 2000-step role-token checkpoint has been restored in `/private/tmp` and
   backed up under `checkpoints/`; model weights remain ignored by git.
 
@@ -186,12 +197,11 @@ ranking/scoring of paired oracles improves.
 5. Do not make expanded pairing the default and do not run 64-sample expansion:
    formal selected exact/relaxed regressed to `3/32` despite oracle rising to
    `15/32`.
-6. Analyze expanded-pairing oracle-miss ranking, especially the 7
-   oracle-only-pair misses, using the existing formal eval log before changing
-   candidate generation again.
-7. After scorer/rank diagnosis, decide whether to test a pair-aware ranking
-   heuristic, pair source penalty/bonus, model-score tie-break, or candidate
-   pruning.
+6. Do not add a simple pair-aware tie-break from the current evidence alone:
+   most paired oracles lose by active+weak distance, not epsilon-scale ties.
+7. Next run a log-only/top-candidate diagnostic for expanded pairing that
+   inspects high-ranking wrong pair candidates and candidate pruning criteria
+   before testing any scoring heuristic.
 8. Shift candidate-generation work toward drift span diversity: after expanded
    pairing, the remaining 17 oracle-absent samples all contain the truth
    diffusion but miss the truth drift.

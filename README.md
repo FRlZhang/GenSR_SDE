@@ -114,6 +114,10 @@ Current best result so far:
   `15/32` and pair oracle `8/32`, but selected exact / relaxed dropped to
   `3/32`, so expanded pairing is diagnostic-only for now and should not become
   the default before paired-oracle ranking is understood.
+- expanded-pairing miss diagnostics show only `2/12` selected misses are
+  near-tie losses and only `1/7` oracle-only-pair misses is near-tie; wrong
+  pair candidates are selected often enough that pruning/ranking diagnostics are
+  safer than a blanket pair bonus.
 
 See [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md)
 and [PROJECT_STATUS.md](/Users/lzhang/Documents/GenSR_SDE/PROJECT_STATUS.md) for

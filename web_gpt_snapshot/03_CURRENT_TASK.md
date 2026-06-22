@@ -2,9 +2,9 @@
 
 ## Next Engineering Task
 
-Analyze expanded-pairing oracle-miss ranking from existing logs. Expanded
-pairing raised oracle coverage, but selected recovery regressed, so the next
-question is why the scorer/ranker misses newly introduced paired oracles.
+Analyze high-ranking wrong pair candidates and pruning criteria from existing
+logs. Expanded-pairing oracle-miss ranking showed paired oracles usually lose
+by active+weak distance, not by tiny tie-break margins.
 
 Current strongest no-retraining decoding setting:
 
@@ -30,6 +30,17 @@ selected oracle hits=3
 selected oracle misses=12
 oracle-only-pair misses=7
 beam/sampling score misses=5
+```
+
+Expanded-pairing miss ranking:
+
+```text
+selected misses analyzed=12
+oracle-only-pair misses=7
+near score gaps <=0.10=2/12
+oracle-only-pair near gaps <=0.10=1/7
+selected source is pair=8/12
+oracle-only-pair misses dominated by active_kramers_moyal=7/7
 ```
 
 Candidate-coverage-only result:
@@ -130,12 +141,12 @@ before modifying `sde_validation_probe.py`.
 
 Likely next additions:
 
-- parse expanded-pairing miss cases from
+- inspect the top wrong pair candidates that beat paired oracles in
   `/private/tmp/gensr_sde_32_expanded_pairing_rolewise.log`;
-- compare selected non-oracle vs best paired oracle score, source, drift,
-  diffusion, constants, and model score for the 7 oracle-only-pair misses;
-- decide whether a pair-aware ranking heuristic, pair source penalty/bonus,
-  model-score tie-break, or candidate pruning is worth testing;
+- look for pruning criteria that remove harmful pair candidates without
+  removing the 8 pair-oracle samples;
+- only after that decide whether a targeted pair-aware ranking heuristic,
+  pair source penalty/bonus, or model-score tie-break is worth testing;
 - defer drift span diversity work until the expanded-pairing ranking failure is
   understood;
 - keep role-wise constant diagnostics in every rerank experiment;
@@ -161,6 +172,8 @@ Likely next additions:
   recovery again.
 - Do not make expanded pairing the default: formal selected exact/relaxed
   regressed to `3/32` even though oracle rose to `15/32`.
+- Do not add a simple pair-aware tie-break from current evidence: only 1/7
+  oracle-only-pair misses is near-tie.
 
 ## Verification Order
 
@@ -177,6 +190,5 @@ Likely next additions:
 
 ## Success Standard
 
-The next useful step should explain the 12 expanded-pairing selected misses,
-especially the 7 oracle-only-pair misses, using existing logs before launching
-new experiments.
+The next useful step should explain whether harmful high-ranking pair candidates
+can be pruned or down-ranked without losing the paired oracle coverage gain.
