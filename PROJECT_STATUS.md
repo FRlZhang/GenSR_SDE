@@ -16,7 +16,7 @@ tested so far regressed.
 
 ## Last Updated
 
-2026-06-18
+2026-06-22
 
 ## Completed
 
@@ -127,6 +127,15 @@ tested so far regressed.
   found the 23 oracle-absent samples split into 17 diffusion-only coverage cases
   and 6 exact-drift/exact-diffusion separate-but-unpaired cases. No sample had
   drift-only or neither-side coverage.
+- Added a drift/pairing coverage helper in
+  [scripts/analyze_drift_pairing_coverage.py](/Users/lzhang/Documents/GenSR_SDE/scripts/analyze_drift_pairing_coverage.py)
+  and wrote
+  [drift_pairing_coverage_diagnostics.md](/Users/lzhang/Documents/GenSR_SDE/drift_pairing_coverage_diagnostics.md).
+  Existing coverage markdown was enough to classify the 17 drift-missing cases:
+  missing drift families were linear drift 6, sin drift 6, nested linear drift 3,
+  and polynomial-like drift 2. Exact candidate span ranks for the 6 pairing
+  cases are blocked until the checkpoint is restored and
+  `candidate_coverage_diagnostics.json` can be regenerated.
 - Logged validated experiments in
   [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md).
 
@@ -137,6 +146,9 @@ tested so far regressed.
 - Using candidate coverage diagnostics to raise the `9/32` oracle ceiling,
   with drift span diversity as the leading blocker and pairing as a secondary
   blocker.
+- The `/private/tmp/gensr_sde_role_token_2000/role_token_2000.pth` checkpoint
+  is currently missing, so any diagnostic requiring regenerated candidate pools
+  is blocked until that checkpoint is restored or regenerated.
 
 ## Next Steps
 
@@ -228,7 +240,8 @@ tested so far regressed.
   expansion should be reserved for settings that first improve the 32-sample
   selected metrics.
 - The main checkpoint currently lives outside the repo in `/private/tmp`, so it
-  may disappear.
+  may disappear. As of 2026-06-22,
+  `/private/tmp/gensr_sde_role_token_2000/role_token_2000.pth` is missing.
 - `environment.yml` is upstream and Linux-oriented; the recent local experiments
   were run from the existing `gensr` conda environment on macOS.
 - Keep future git changes grouped by experiment stage so decoding changes can

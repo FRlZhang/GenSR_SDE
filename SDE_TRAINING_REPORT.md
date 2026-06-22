@@ -2,6 +2,34 @@
 
 Date: 2026-06-11
 
+Update, 2026-06-22 drift/pairing coverage diagnostic: added
+`scripts/analyze_drift_pairing_coverage.py` and wrote
+`drift_pairing_coverage_diagnostics.md`.
+
+The existing `candidate_coverage_diagnostics.md` was enough to classify the
+17 oracle-absent samples where exact diffusion is present but exact drift is
+absent:
+
+| Missing drift family | Count |
+| --- | ---: |
+| Linear drift | 6 |
+| Sin drift | 6 |
+| Nested-mul linear drift | 3 |
+| Polynomial-like drift | 2 |
+
+The 6 pairing-missing samples are `5`, `8`, `11`, `23`, `30`, and `31`; each
+has exact drift and exact diffusion separately, but not as a full paired oracle.
+Exact drift/diffusion candidate ranks, top-k membership, pair-cap checks, and
+dedup/filtering diagnosis require a machine-readable candidate coverage sidecar.
+`scripts/analyze_candidate_coverage.py` was extended to emit that sidecar, but
+the rerun is currently blocked because the checkpoint
+`/private/tmp/gensr_sde_role_token_2000/role_token_2000.pth` is missing.
+
+Interpretation from available evidence is unchanged: prioritize drift span
+diversity first, then pairing/recombination coverage. A formal 32-sample eval is
+not justified until an offline candidate-generation diagnostic raises the
+full-oracle coverage above `9/32`.
+
 Update, 2026-06-18 candidate coverage diagnostic: added
 `scripts/analyze_candidate_coverage.py` and wrote
 `candidate_coverage_diagnostics.md`. This was a candidate-generation diagnostic

@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import copy
+import json
 import random
 import re
 import sys
@@ -41,6 +42,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--source-log", type=Path, required=True)
     parser.add_argument("--report", type=Path, default=Path("candidate_coverage_diagnostics.md"))
+    parser.add_argument("--json-output", type=Path, default=None)
     parser.add_argument(
         "--load-checkpoint",
         type=Path,
@@ -185,7 +187,33 @@ def source_set_string(sources: set[str]) -> str:
     return ",".join(sorted(sources))
 
 
-def analyze_sample(env, sample_idx: int, truth: list[str], rows: list[dict]) -> dict:
+def drift_family(tokens: list[str]) -> str:
+    templ = template_tokens(tokens)
+    templ_tuple = tuple(templ)
+    if templ_tuple == ("mul", "x_0"):
+        return "linear drift"
+    if templ_tuple == ("mul",):
+        return "constant drift"
+    if "sub" in templ and "x_0" in templ:
+        return "mean-reverting / affine drift"
+    if "sin" in templ:
+        return "sin drift"
+    if "pow2" in templ or "pow3" in templ or "pow" in templ:
+        return "polynomial-like drift"
+    if templ and templ[0] == "mul" and templ.count("mul") >= 2:
+        return "nested mul structural variant"
+    return "other"
+
+
+def analyze_sample(
+    env,
+    sample_idx: int,
+    truth: list[str],
+    rows: list[dict],
+    pair_drift_topk: int,
+    pair_diffusion_topk: int,
+    pair_candidate_cap: int,
+) -> dict:
     truth_split = split_sde_tokens(truth)
     if truth_split is None:
         raise ValueError(f"sample {sample_idx} truth is not an SDE sequence")
@@ -204,13 +232,22 @@ def analyze_sample(env, sample_idx: int, truth: list[str], rows: list[dict]) -> 
     generated_drifts = set()
     generated_diffusions = set()
     decoded_candidates = []
+    source_ranks = Counter()
+    exact_drift_occurrences = []
+    exact_diffusion_occurrences = []
+    exact_full_occurrences = []
+    drift_span_scores = {}
+    diffusion_span_scores = {}
 
-    for candidate in rows:
+    for candidate_rank, candidate in enumerate(rows, start=1):
         words = decode_generation(env, candidate["tensor"])
         split = split_sde_tokens(words)
         if split is None:
             continue
         source = source_bucket(candidate.get("source", "beam"))
+        source_ranks[source] += 1
+        source_rank = source_ranks[source]
+        model_score = float(candidate.get("normalized_model_score", float("-inf")))
         source_counts[source] += 1
         drift_tokens, diffusion_tokens = split
         drift_key = tuple(template_tokens(drift_tokens))
@@ -221,13 +258,58 @@ def analyze_sample(env, sample_idx: int, truth: list[str], rows: list[dict]) -> 
         drift_by_source[source].add(drift_key)
         diffusion_by_source[source].add(diffusion_key)
         full_by_source[source].add(full_key)
-        decoded_candidates.append((source, words, drift_tokens, diffusion_tokens))
+        decoded_candidates.append(
+            (source, source_rank, candidate_rank, words, drift_tokens, diffusion_tokens)
+        )
+        if source != "pair":
+            drift_record = drift_span_scores.get(drift_key)
+            if drift_record is None or model_score > drift_record["score"]:
+                drift_span_scores[drift_key] = {
+                    "tokens": drift_tokens,
+                    "score": model_score,
+                    "source": source,
+                    "source_rank": source_rank,
+                    "candidate_rank": candidate_rank,
+                }
+            diffusion_record = diffusion_span_scores.get(diffusion_key)
+            if diffusion_record is None or model_score > diffusion_record["score"]:
+                diffusion_span_scores[diffusion_key] = {
+                    "tokens": diffusion_tokens,
+                    "score": model_score,
+                    "source": source,
+                    "source_rank": source_rank,
+                    "candidate_rank": candidate_rank,
+                }
         if full_key == truth_full_key:
             full_sources.add(source)
+            exact_full_occurrences.append(
+                {
+                    "source": source,
+                    "source_rank": source_rank,
+                    "candidate_rank": candidate_rank,
+                    "score": model_score,
+                }
+            )
         if drift_key == truth_drift_key:
             drift_sources.add(source)
+            exact_drift_occurrences.append(
+                {
+                    "source": source,
+                    "source_rank": source_rank,
+                    "candidate_rank": candidate_rank,
+                    "score": model_score,
+                }
+            )
         if diffusion_key == truth_diffusion_key:
             diffusion_sources.add(source)
+            exact_diffusion_occurrences.append(
+                {
+                    "source": source,
+                    "source_rank": source_rank,
+                    "candidate_rank": candidate_rank,
+                    "score": model_score,
+                }
+            )
 
     has_full = bool(full_sources)
     has_drift = bool(drift_sources)
@@ -245,6 +327,39 @@ def analyze_sample(env, sample_idx: int, truth: list[str], rows: list[dict]) -> 
 
     drift_nearest = nearest_templates(generated_drifts, truth_drift)
     diffusion_nearest = nearest_templates(generated_diffusions, truth_diffusion)
+    drift_nearest_detailed = nearest_templates_detailed(
+        generated_drifts,
+        truth_drift,
+        decoded_candidates,
+    )
+    diffusion_nearest_detailed = nearest_templates_detailed(
+        generated_diffusions,
+        truth_diffusion,
+        decoded_candidates,
+        role="diffusion",
+    )
+    drift_span_rank = rank_span(drift_span_scores, truth_drift_key)
+    diffusion_span_rank = rank_span(diffusion_span_scores, truth_diffusion_key)
+    pair_cross_rank = None
+    if drift_span_rank is not None and diffusion_span_rank is not None:
+        pair_cross_rank = rank_pair_cross_product(
+            drift_span_scores,
+            diffusion_span_scores,
+            truth_drift_key,
+            truth_diffusion_key,
+            drift_topk=0,
+            diffusion_topk=0,
+        )
+    limited_pair_cross_rank = None
+    if drift_span_rank is not None and diffusion_span_rank is not None:
+        limited_pair_cross_rank = rank_pair_cross_product(
+            drift_span_scores,
+            diffusion_span_scores,
+            truth_drift_key,
+            truth_diffusion_key,
+            drift_topk=pair_drift_topk,
+            diffusion_topk=pair_diffusion_topk,
+        )
     missing_side = (
         "none"
         if has_full
@@ -275,6 +390,7 @@ def analyze_sample(env, sample_idx: int, truth: list[str], rows: list[dict]) -> 
         "truth": truth,
         "truth_drift": truth_drift,
         "truth_diffusion": truth_diffusion,
+        "truth_drift_family": drift_family(truth_drift),
         "coverage": coverage,
         "has_full": has_full,
         "has_drift": has_drift,
@@ -283,6 +399,29 @@ def analyze_sample(env, sample_idx: int, truth: list[str], rows: list[dict]) -> 
         "full_sources": full_sources,
         "drift_sources": drift_sources,
         "diffusion_sources": diffusion_sources,
+        "exact_full_occurrences": exact_full_occurrences,
+        "exact_drift_occurrences": exact_drift_occurrences,
+        "exact_diffusion_occurrences": exact_diffusion_occurrences,
+        "drift_span_rank": drift_span_rank,
+        "diffusion_span_rank": diffusion_span_rank,
+        "pair_cross_rank": pair_cross_rank,
+        "limited_pair_cross_rank": limited_pair_cross_rank,
+        "exact_drift_outside_pair_topk": (
+            drift_span_rank is None or drift_span_rank > pair_drift_topk
+        ),
+        "exact_diffusion_outside_pair_topk": (
+            diffusion_span_rank is None or diffusion_span_rank > pair_diffusion_topk
+        ),
+        "pair_cap_prevents": (
+            drift_span_rank is not None
+            and diffusion_span_rank is not None
+            and drift_span_rank <= pair_drift_topk
+            and diffusion_span_rank <= pair_diffusion_topk
+            and (
+                limited_pair_cross_rank is None
+                or limited_pair_cross_rank > pair_candidate_cap
+            )
+        ),
         "source_counts": source_counts,
         "drift_by_source": drift_by_source,
         "diffusion_by_source": diffusion_by_source,
@@ -291,9 +430,106 @@ def analyze_sample(env, sample_idx: int, truth: list[str], rows: list[dict]) -> 
         "unique_diffusions": len({tuple(template_tokens(list(item))) for item in generated_diffusions}),
         "drift_nearest": drift_nearest,
         "diffusion_nearest": diffusion_nearest,
+        "drift_nearest_detailed": drift_nearest_detailed,
+        "diffusion_nearest_detailed": diffusion_nearest_detailed,
         "missing_side": missing_side,
         "recommendation": recommendation,
     }
+
+
+def nearest_templates_detailed(
+    candidates: set[tuple[str, ...]],
+    truth: list[str],
+    decoded_candidates: list[tuple],
+    role: str = "drift",
+    limit: int = 5,
+) -> list[dict]:
+    truth_template = template_tokens(truth)
+    rows = []
+    for candidate in candidates:
+        candidate_tokens = list(candidate)
+        distance = edit_distance(template_tokens(candidate_tokens), truth_template)
+        occurrences = []
+        for source, source_rank, candidate_rank, _words, drift_tokens, diffusion_tokens in decoded_candidates:
+            role_tokens = drift_tokens if role == "drift" else diffusion_tokens
+            if tuple(role_tokens) == tuple(candidate_tokens):
+                occurrences.append(
+                    {
+                        "source": source,
+                        "source_rank": source_rank,
+                        "candidate_rank": candidate_rank,
+                    }
+                )
+        rows.append(
+            {
+                "distance": distance,
+                "tokens": candidate_tokens,
+                "occurrences": sorted(
+                    occurrences,
+                    key=lambda item: (item["source"], item["source_rank"]),
+                ),
+                "sources": sorted({item["source"] for item in occurrences}),
+                "family": drift_family(candidate_tokens) if role == "drift" else None,
+                "right_family": (
+                    drift_family(candidate_tokens) == drift_family(truth)
+                    if role == "drift"
+                    else None
+                ),
+            }
+        )
+    rows.sort(key=lambda item: (item["distance"], " ".join(item["tokens"])))
+    return rows[:limit]
+
+
+def rank_span(span_scores: dict, target_key: tuple[str, ...]) -> int | None:
+    ranked = sorted(
+        span_scores.items(),
+        key=lambda item: item[1]["score"],
+        reverse=True,
+    )
+    for rank, (key, _record) in enumerate(ranked, start=1):
+        if key == target_key:
+            return rank
+    return None
+
+
+def rank_pair_cross_product(
+    drift_span_scores: dict,
+    diffusion_span_scores: dict,
+    truth_drift_key: tuple[str, ...],
+    truth_diffusion_key: tuple[str, ...],
+    drift_topk: int,
+    diffusion_topk: int,
+) -> int | None:
+    ranked_drifts = sorted(
+        drift_span_scores.items(),
+        key=lambda item: item[1]["score"],
+        reverse=True,
+    )
+    ranked_diffusions = sorted(
+        diffusion_span_scores.items(),
+        key=lambda item: item[1]["score"],
+        reverse=True,
+    )
+    if drift_topk > 0:
+        ranked_drifts = ranked_drifts[:drift_topk]
+    if diffusion_topk > 0:
+        ranked_diffusions = ranked_diffusions[:diffusion_topk]
+    pairs = []
+    for drift_key, drift_record in ranked_drifts:
+        for diffusion_key, diffusion_record in ranked_diffusions:
+            pairs.append(
+                (
+                    drift_record["score"] + diffusion_record["score"],
+                    drift_key,
+                    diffusion_key,
+                )
+            )
+    pairs.sort(key=lambda item: item[0], reverse=True)
+    for rank, (_score, drift_key, diffusion_key) in enumerate(pairs, start=1):
+        if drift_key == truth_drift_key and diffusion_key == truth_diffusion_key:
+            return rank
+    return None
 
 
 def write_report(path: Path, analyses: list[dict], log_metrics: dict, args: argparse.Namespace) -> None:
@@ -422,6 +658,47 @@ def write_report(path: Path, analyses: list[dict], log_metrics: dict, args: argp
     path.write_text("\n".join(lines))
 
 
+def json_ready(value):
+    if isinstance(value, Counter):
+        return dict(value)
+    if isinstance(value, defaultdict):
+        return dict(value)
+    if isinstance(value, set):
+        return sorted(value)
+    if isinstance(value, tuple):
+        return [json_ready(item) for item in value]
+    if isinstance(value, list):
+        return [json_ready(item) for item in value]
+    if isinstance(value, dict):
+        return {str(key): json_ready(item) for key, item in value.items()}
+    if isinstance(value, np.integer):
+        return int(value)
+    if isinstance(value, np.floating):
+        return float(value)
+    return value
+
+
+def write_json_sidecar(
+    path: Path,
+    analyses: list[dict],
+    log_metrics: dict,
+    args: argparse.Namespace,
+) -> None:
+    payload = {
+        "metadata": {
+            "source_log": str(args.source_log),
+            "checkpoint": str(args.load_checkpoint),
+            "eval_samples": args.eval_samples,
+            "pair_drift_topk": args.pair_drift_topk,
+            "pair_diffusion_topk": args.pair_diffusion_topk,
+            "pair_drift_diffusion_candidates": args.pair_drift_diffusion_candidates,
+        },
+        "log_metrics": log_metrics,
+        "samples": analyses,
+    }
+    path.write_text(json.dumps(json_ready(payload), indent=2, sort_keys=True))
+
+
 def main() -> None:
     args = parse_args()
     log_metrics = parse_source_log(args.source_log, args.eval_samples)
@@ -442,12 +719,18 @@ def main() -> None:
                 sample_idx,
                 normalized["tree_encoded"],
                 rows,
+                args.pair_drift_topk,
+                args.pair_diffusion_topk,
+                args.pair_drift_diffusion_candidates,
             )
         )
     write_report(args.report, analyses, log_metrics, args)
+    json_output = args.json_output or args.report.with_suffix(".json")
+    write_json_sidecar(json_output, analyses, log_metrics, args)
     full_count = sum(item["has_full"] for item in analyses)
     missing_counts = Counter(item["missing_side"] for item in analyses if not item["has_full"])
     print(f"wrote_report={args.report}")
+    print(f"wrote_json={json_output}")
     print(f"full_oracle_present={full_count}/{len(analyses)}")
     print(
         "oracle_absent_missing_sides="

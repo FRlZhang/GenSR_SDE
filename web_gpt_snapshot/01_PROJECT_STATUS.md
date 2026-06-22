@@ -38,11 +38,13 @@ greedy_sequence_exact=0.015625
 - Added targeted residual-vector diagnostics in `scripts/analyze_rolewise_residuals.py` and `rolewise_residual_vector_diagnostics.md`. The helper reproduces only samples 13, 19, 24, and 26 from the eval seed and scores selected/oracle role swaps. All four remaining misses were flagged as feature-scaling/fingerprint-ambiguity cases; sample 13 also has a model-score conflict.
 - Added offline residual score ablation in `scripts/analyze_residual_score_ablation.py` and `rolewise_residual_score_ablation.md`. Mild robust/normalization variants rescued 0/4 remaining misses; only aggressive `clipped_l2_p90` flipped sample 19. No formal eval was run.
 - Added candidate coverage diagnostics in `scripts/analyze_candidate_coverage.py` and `candidate_coverage_diagnostics.md`. The diagnostic reproduced the 9/32 full-oracle ceiling without fingerprint scoring. Among 23 oracle-absent samples, 17 have exact diffusion only and 6 have exact drift+diffusion separately but not paired.
+- Added partial drift/pairing coverage diagnostics in `scripts/analyze_drift_pairing_coverage.py` and `drift_pairing_coverage_diagnostics.md`. Drift-missing templates are mostly linear drift (6), sin drift (6), nested-mul linear drift (3), and polynomial-like drift (2). Exact pairing rank diagnostics are blocked until the missing `/private/tmp/gensr_sde_role_token_2000/role_token_2000.pth` checkpoint is restored or regenerated.
 
 ## In Progress
 
 - Transitioning from token recognition to full symbolic sequence recovery.
 - Using candidate coverage diagnostics to raise the 9/32 oracle ceiling; drift span diversity is now the leading blocker, with pairing coverage/ranking secondary.
+- Checkpoint-dependent candidate regeneration is currently blocked because `/private/tmp/gensr_sde_role_token_2000/role_token_2000.pth` is missing.
 
 ## Next Steps
 
@@ -84,6 +86,8 @@ greedy_sequence_exact=0.015625
 ```text
 /private/tmp/gensr_sde_role_token_2000/role_token_2000.pth
 ```
+
+Status: missing as of 2026-06-22; restore or regenerate before running candidate-generation diagnostics that need model outputs.
 
 ## How To Resume
 

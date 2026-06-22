@@ -74,6 +74,28 @@ neither_side_present=0
 Interpretation: prioritize drift span diversity first, then pairing
 coverage/ranking. Diffusion coverage is already broad in this candidate pool.
 
+Drift/pairing taxonomy exists:
+
+```text
+scripts/analyze_drift_pairing_coverage.py
+drift_pairing_coverage_diagnostics.md
+/private/tmp/gensr_sde_drift_pairing_coverage.log
+```
+
+Available taxonomy:
+
+```text
+linear drift missing=6
+sin drift missing=6
+nested-mul linear drift missing=3
+polynomial-like drift missing=2
+pairing-missing samples=5,8,11,23,30,31
+```
+
+Blocked detail: exact pairing ranks require `candidate_coverage_diagnostics.json`,
+but regenerating candidate coverage is currently blocked because
+`/private/tmp/gensr_sde_role_token_2000/role_token_2000.pth` is missing.
+
 ## Primary File To Modify
 
 No primary source file needs to change unless the next task explicitly adds a
@@ -86,6 +108,8 @@ Likely next additions:
   is already exact but drift is missing;
 - improve pairing coverage/ranking for the 6 samples where exact drift and exact
   diffusion appear separately but not together;
+- restore or regenerate the 2000-step checkpoint before attempting rank-level
+  pairing diagnostics;
 - keep role-wise constant diagnostics in every rerank experiment;
 - consider candidate-generation changes only after deciding whether the current
   scorer can reliably choose among existing oracle candidates.

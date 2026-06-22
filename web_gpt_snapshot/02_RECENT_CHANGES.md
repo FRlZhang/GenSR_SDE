@@ -2,6 +2,56 @@
 
 ## Last Codex Workflow
 
+Codex added drift/pairing coverage diagnostics:
+
+```text
+scripts/analyze_drift_pairing_coverage.py
+drift_pairing_coverage_diagnostics.md
+/private/tmp/gensr_sde_drift_pairing_coverage.log
+```
+
+`scripts/analyze_candidate_coverage.py` was also extended to emit a JSON sidecar
+with span ranks for future pairing analysis.
+
+The exact rank diagnostic is currently blocked because:
+
+```text
+/private/tmp/gensr_sde_role_token_2000/role_token_2000.pth
+```
+
+is missing. The helper therefore wrote a partial report from the existing
+candidate coverage markdown.
+
+Available drift-missing taxonomy:
+
+```text
+diffusion_only_present samples = 17
+linear drift missing = 6
+sin drift missing = 6
+nested-mul linear drift missing = 3
+polynomial-like drift missing = 2
+```
+
+Pairing-missing samples:
+
+```text
+5, 8, 11, 23, 30, 31
+```
+
+Exact drift/diffusion ranks, top-k membership, pair-cap checks, and
+dedup/filtering diagnosis require regenerating `candidate_coverage_diagnostics.json`
+after restoring/regenerating the checkpoint.
+
+Validation:
+
+```text
+py_compile scripts/analyze_candidate_coverage.py scripts/analyze_drift_pairing_coverage.py: passed
+drift/pairing helper partial run: passed
+git diff --check: passed
+```
+
+## Previous Codex Workflow
+
 Codex added candidate coverage diagnostics:
 
 ```text
@@ -49,7 +99,7 @@ candidate coverage diagnostic run: passed
 git diff --check: passed
 ```
 
-## Previous Codex Workflow
+## Earlier Codex Workflow
 
 Codex added offline residual score ablation:
 

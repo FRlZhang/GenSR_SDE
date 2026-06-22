@@ -92,6 +92,7 @@ PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/
 /opt/miniconda3/envs/gensr/bin/python3 scripts/analyze_candidate_coverage.py \
   --source-log /private/tmp/gensr_sde_32_rolewise_no_multi_u0.log \
   --report candidate_coverage_diagnostics.md \
+  --json-output candidate_coverage_diagnostics.json \
   > /private/tmp/gensr_sde_candidate_coverage.log 2>&1
 ```
 
@@ -101,6 +102,31 @@ Compile check:
 PYTHONPYCACHEPREFIX=/private/tmp/gensr_pycache \
 /opt/miniconda3/envs/gensr/bin/python3 -m py_compile \
   scripts/analyze_candidate_coverage.py
+```
+
+## Drift / Pairing Coverage Diagnostic
+
+This uses `candidate_coverage_diagnostics.json` when available. If the JSON
+sidecar is missing, it can still write a partial report from
+`candidate_coverage_diagnostics.md`, but exact span-rank analysis will be
+blocked.
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/tmp/cache \
+/opt/miniconda3/envs/gensr/bin/python3 scripts/analyze_drift_pairing_coverage.py \
+  --source-log /private/tmp/gensr_sde_candidate_coverage.log \
+  --coverage-json candidate_coverage_diagnostics.json \
+  --report drift_pairing_coverage_diagnostics.md \
+  > /private/tmp/gensr_sde_drift_pairing_coverage.log 2>&1
+```
+
+Compile check:
+
+```bash
+PYTHONPYCACHEPREFIX=/private/tmp/gensr_pycache \
+/opt/miniconda3/envs/gensr/bin/python3 -m py_compile \
+  scripts/analyze_candidate_coverage.py \
+  scripts/analyze_drift_pairing_coverage.py
 ```
 
 ## Small Smoke Test
