@@ -1,0 +1,1595 @@
+{
+  "hit_harm_rows": [
+    {
+      "challenger_source": "pair",
+      "oracle_is_pair": false,
+      "oracle_source": "beam",
+      "sample_index": 18,
+      "variants": [
+        {
+          "challenger": 1.118127,
+          "hit_harmed": false,
+          "margin": -0.47038400000000014,
+          "name": "current_logged_rolewise",
+          "note": "formal log role-wise score for debug top-2 candidates",
+          "oracle": 0.647743
+        },
+        {
+          "challenger": 1.2442334653723366,
+          "hit_harmed": true,
+          "margin": 0.01517892336088389,
+          "name": "current_recomputed",
+          "note": "recomputed active L2 + weak L2",
+          "oracle": 1.2594123887332205
+        },
+        {
+          "challenger": 1.2442334653723366,
+          "hit_harmed": false,
+          "margin": -0.0873059213650973,
+          "name": "active_clipped_l2_p95_plus_weak",
+          "note": "active residuals capped at per-case p95=0.2741; weak unchanged",
+          "oracle": 1.1569275440072393
+        },
+        {
+          "challenger": 1.218741032469485,
+          "hit_harmed": false,
+          "margin": -0.13192923375582088,
+          "name": "active_clipped_l2_p90_plus_weak",
+          "note": "active residuals capped at per-case p90=0.2116; weak unchanged",
+          "oracle": 1.086811798713664
+        },
+        {
+          "challenger": 1.242470085931238,
+          "hit_harmed": false,
+          "margin": -0.022122809677503907,
+          "name": "active_huber_p90_plus_weak",
+          "note": "active Huber norm with delta=p90=0.2116; weak unchanged",
+          "oracle": 1.2203472762537342
+        },
+        {
+          "challenger": 1.1873364336168524,
+          "hit_harmed": false,
+          "margin": -0.05995402502427449,
+          "name": "active_top1_removed_plus_weak",
+          "note": "remove largest active residual dimension; weak unchanged",
+          "oracle": 1.1273824085925779
+        },
+        {
+          "challenger": 1.129176623034518,
+          "hit_harmed": false,
+          "margin": -0.1782032521713226,
+          "name": "active_top2_removed_plus_weak",
+          "note": "remove largest 2 active residual dimensions; weak unchanged",
+          "oracle": 0.9509733708631953
+        },
+        {
+          "challenger": 8.051645968348533,
+          "hit_harmed": false,
+          "margin": -4.10072392454267,
+          "name": "per_active_dim_norm_plus_weak",
+          "note": "normalize active dimensions by std over selected/oracle miss residuals; weak unchanged",
+          "oracle": 3.9509220438058623
+        },
+        {
+          "challenger": 0.6740567617527256,
+          "hit_harmed": true,
+          "margin": 0.015227817222859263,
+          "name": "weak_only_diagnostic",
+          "note": "weak segment only; diagnostic, not a proposed scorer",
+          "oracle": 0.6892845789755848
+        }
+      ]
+    },
+    {
+      "challenger_source": "pair",
+      "oracle_is_pair": true,
+      "oracle_source": "pair",
+      "sample_index": 23,
+      "variants": [
+        {
+          "challenger": 1.008566,
+          "hit_harmed": false,
+          "margin": -0.041610000000000036,
+          "name": "current_logged_rolewise",
+          "note": "formal log role-wise score for debug top-2 candidates",
+          "oracle": 0.966956
+        },
+        {
+          "challenger": 0.7764618596072658,
+          "hit_harmed": false,
+          "margin": -0.15221730243297826,
+          "name": "current_recomputed",
+          "note": "recomputed active L2 + weak L2",
+          "oracle": 0.6242445571742875
+        },
+        {
+          "challenger": 0.7755528687769377,
+          "hit_harmed": false,
+          "margin": -0.15202660575692628,
+          "name": "active_clipped_l2_p95_plus_weak",
+          "note": "active residuals capped at per-case p95=0.2138; weak unchanged",
+          "oracle": 0.6235262630200115
+        },
+        {
+          "challenger": 0.7622150415879678,
+          "hit_harmed": false,
+          "margin": -0.1470378287923194,
+          "name": "active_clipped_l2_p90_plus_weak",
+          "note": "active residuals capped at per-case p90=0.198; weak unchanged",
+          "oracle": 0.6151772127956484
+        },
+        {
+          "challenger": 0.7758939827924809,
+          "hit_harmed": false,
+          "margin": -0.15200859152808355,
+          "name": "active_huber_p90_plus_weak",
+          "note": "active Huber norm with delta=p90=0.198; weak unchanged",
+          "oracle": 0.6238853912643973
+        },
+        {
+          "challenger": 0.7260873039995104,
+          "hit_harmed": false,
+          "margin": -0.16268722485706544,
+          "name": "active_top1_removed_plus_weak",
+          "note": "remove largest active residual dimension; weak unchanged",
+          "oracle": 0.5634000791424449
+        },
+        {
+          "challenger": 0.670518017336704,
+          "hit_harmed": false,
+          "margin": -0.16898461810652132,
+          "name": "active_top2_removed_plus_weak",
+          "note": "remove largest 2 active residual dimensions; weak unchanged",
+          "oracle": 0.5015333992301827
+        },
+        {
+          "challenger": 5.0255994112955085,
+          "hit_harmed": false,
+          "margin": -1.673338491115501,
+          "name": "per_active_dim_norm_plus_weak",
+          "note": "normalize active dimensions by std over selected/oracle miss residuals; weak unchanged",
+          "oracle": 3.3522609201800075
+        },
+        {
+          "challenger": 0.28872993331695734,
+          "hit_harmed": false,
+          "margin": -0.07542643520453671,
+          "name": "weak_only_diagnostic",
+          "note": "weak segment only; diagnostic, not a proposed scorer",
+          "oracle": 0.21330349811242064
+        }
+      ]
+    },
+    {
+      "challenger_source": "pair",
+      "oracle_is_pair": false,
+      "oracle_source": "beam",
+      "sample_index": 27,
+      "variants": [
+        {
+          "challenger": 1.07361,
+          "hit_harmed": false,
+          "margin": -0.07098000000000004,
+          "name": "current_logged_rolewise",
+          "note": "formal log role-wise score for debug top-2 candidates",
+          "oracle": 1.00263
+        },
+        {
+          "challenger": 0.9594088863099138,
+          "hit_harmed": true,
+          "margin": 0.3303241614273066,
+          "name": "current_recomputed",
+          "note": "recomputed active L2 + weak L2",
+          "oracle": 1.2897330477372204
+        },
+        {
+          "challenger": 0.9594088863099138,
+          "hit_harmed": true,
+          "margin": 0.29726529875385765,
+          "name": "active_clipped_l2_p95_plus_weak",
+          "note": "active residuals capped at per-case p95=0.2889; weak unchanged",
+          "oracle": 1.2566741850637715
+        },
+        {
+          "challenger": 0.9594088863099138,
+          "hit_harmed": true,
+          "margin": 0.21798465831437397,
+          "name": "active_clipped_l2_p90_plus_weak",
+          "note": "active residuals capped at per-case p90=0.2224; weak unchanged",
+          "oracle": 1.1773935446242878
+        },
+        {
+          "challenger": 0.9594088863099138,
+          "hit_harmed": true,
+          "margin": 0.31191180565520893,
+          "name": "active_huber_p90_plus_weak",
+          "note": "active Huber norm with delta=p90=0.2224; weak unchanged",
+          "oracle": 1.2713206919651228
+        },
+        {
+          "challenger": 0.9103159183443552,
+          "hit_harmed": true,
+          "margin": 0.28956163281443303,
+          "name": "active_top1_removed_plus_weak",
+          "note": "remove largest active residual dimension; weak unchanged",
+          "oracle": 1.1998775511587882
+        },
+        {
+          "challenger": 0.8674244473239113,
+          "hit_harmed": true,
+          "margin": 0.2492198230098689,
+          "name": "active_top2_removed_plus_weak",
+          "note": "remove largest 2 active residual dimensions; weak unchanged",
+          "oracle": 1.1166442703337802
+        },
+        {
+          "challenger": 5.569154063171144,
+          "hit_harmed": false,
+          "margin": -0.5441572258562948,
+          "name": "per_active_dim_norm_plus_weak",
+          "note": "normalize active dimensions by std over selected/oracle miss residuals; weak unchanged",
+          "oracle": 5.024996837314849
+        },
+        {
+          "challenger": 0.542265135869557,
+          "hit_harmed": true,
+          "margin": 0.048237495564566246,
+          "name": "weak_only_diagnostic",
+          "note": "weak segment only; diagnostic, not a proposed scorer",
+          "oracle": 0.5905026314341233
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "active_paths": 800,
+    "coverage_json": "candidate_coverage_pair_expanded.json",
+    "eval_seed": 20260712,
+    "miss_json": "expanded_pairing_oracle_miss_ranking_diagnostics.json",
+    "n_paths": 800,
+    "n_steps": 60,
+    "pruning_json": "expanded_pairing_wrong_pair_pruning_diagnostics.json",
+    "residual_json": "expanded_pairing_active_residual_trap_diagnostics.json",
+    "source_log": "/private/tmp/gensr_sde_32_expanded_pairing_rolewise.log"
+  },
+  "miss_rows": [
+    {
+      "oracle_only_pair": true,
+      "oracle_source": "pair",
+      "sample_index": 5,
+      "score_gap": 0.209579,
+      "selected_source": "beam",
+      "trap_shape": "outlier-dominated",
+      "variants": [
+        {
+          "margin": -0.20957899999999996,
+          "name": "current_logged_rolewise",
+          "note": "formal log role-wise score; baseline selected wins by construction for these misses",
+          "oracle": 1.267602,
+          "oracle_wins": false,
+          "selected": 1.058023
+        },
+        {
+          "margin": -0.15200560859741352,
+          "name": "current_recomputed",
+          "note": "recomputed active L2 + weak L2",
+          "oracle": 1.2065249474653923,
+          "oracle_wins": false,
+          "selected": 1.0545193388679788
+        },
+        {
+          "margin": -0.048959124845543656,
+          "name": "active_clipped_l2_p95_plus_weak",
+          "note": "active residuals capped at per-case p95=0.4203; weak unchanged",
+          "oracle": 1.1034784637135222,
+          "oracle_wins": false,
+          "selected": 1.0545193388679786
+        },
+        {
+          "margin": 0.012481838082900598,
+          "name": "active_clipped_l2_p90_plus_weak",
+          "note": "active residuals capped at per-case p90=0.3014; weak unchanged",
+          "oracle": 0.9794122710489126,
+          "oracle_wins": true,
+          "selected": 0.9918941091318132
+        },
+        {
+          "margin": -0.10673177208649642,
+          "name": "active_huber_p90_plus_weak",
+          "note": "active Huber norm with delta=p90=0.3014; weak unchanged",
+          "oracle": 1.1520480560763067,
+          "oracle_wins": false,
+          "selected": 1.0453162839898102
+        },
+        {
+          "margin": -0.08747659315315737,
+          "name": "active_top1_removed_plus_weak",
+          "note": "remove largest active residual dimension; weak unchanged",
+          "oracle": 0.9964089786450143,
+          "oracle_wins": false,
+          "selected": 0.908932385491857
+        },
+        {
+          "margin": -0.005713944931377779,
+          "name": "active_top2_removed_plus_weak",
+          "note": "remove largest 2 active residual dimensions; weak unchanged",
+          "oracle": 0.817022390317769,
+          "oracle_wins": false,
+          "selected": 0.8113084453863912
+        },
+        {
+          "margin": -0.7412644510286936,
+          "name": "per_active_dim_norm_plus_weak",
+          "note": "normalize active dimensions by std over selected/oracle miss residuals; weak unchanged",
+          "oracle": 5.795935946267379,
+          "oracle_wins": false,
+          "selected": 5.0546714952386855
+        },
+        {
+          "margin": 0.059238279071600064,
+          "name": "weak_only_diagnostic",
+          "note": "weak segment only; diagnostic, not a proposed scorer",
+          "oracle": 0.3435103328208636,
+          "oracle_wins": true,
+          "selected": 0.40274861189246364
+        }
+      ],
+      "weak_favors_oracle": false,
+      "wrong_selected_pair": false
+    },
+    {
+      "oracle_only_pair": true,
+      "oracle_source": "pair",
+      "sample_index": 8,
+      "score_gap": 0.08894,
+      "selected_source": "beam",
+      "trap_shape": "mixed",
+      "variants": [
+        {
+          "margin": -0.08894000000000002,
+          "name": "current_logged_rolewise",
+          "note": "formal log role-wise score; baseline selected wins by construction for these misses",
+          "oracle": 0.495915,
+          "oracle_wins": false,
+          "selected": 0.406975
+        },
+        {
+          "margin": -0.03913968933571632,
+          "name": "current_recomputed",
+          "note": "recomputed active L2 + weak L2",
+          "oracle": 0.4843552827303271,
+          "oracle_wins": false,
+          "selected": 0.44521559339461075
+        },
+        {
+          "margin": -0.01570959237102687,
+          "name": "active_clipped_l2_p95_plus_weak",
+          "note": "active residuals capped at per-case p95=0.101; weak unchanged",
+          "oracle": 0.46043647623890116,
+          "oracle_wins": false,
+          "selected": 0.4447268838678743
+        },
+        {
+          "margin": -0.007553614323139501,
+          "name": "active_clipped_l2_p90_plus_weak",
+          "note": "active residuals capped at per-case p90=0.08308; weak unchanged",
+          "oracle": 0.44246319756601593,
+          "oracle_wins": false,
+          "selected": 0.43490958324287643
+        },
+        {
+          "margin": -0.03138486208462887,
+          "name": "active_huber_p90_plus_weak",
+          "note": "active Huber norm with delta=p90=0.08308; weak unchanged",
+          "oracle": 0.4755839717129957,
+          "oracle_wins": false,
+          "selected": 0.44419910962836684
+        },
+        {
+          "margin": -0.020543506674326528,
+          "name": "active_top1_removed_plus_weak",
+          "note": "remove largest active residual dimension; weak unchanged",
+          "oracle": 0.432684835741358,
+          "oracle_wins": false,
+          "selected": 0.4121413290670315
+        },
+        {
+          "margin": -0.013680165053363003,
+          "name": "active_top2_removed_plus_weak",
+          "note": "remove largest 2 active residual dimensions; weak unchanged",
+          "oracle": 0.3996120296618183,
+          "oracle_wins": false,
+          "selected": 0.3859318646084553
+        },
+        {
+          "margin": 0.13447095627987826,
+          "name": "per_active_dim_norm_plus_weak",
+          "note": "normalize active dimensions by std over selected/oracle miss residuals; weak unchanged",
+          "oracle": 2.0143156777072964,
+          "oracle_wins": true,
+          "selected": 2.1487866339871746
+        },
+        {
+          "margin": 0.009132472024692806,
+          "name": "weak_only_diagnostic",
+          "note": "weak segment only; diagnostic, not a proposed scorer",
+          "oracle": 0.2628068108210425,
+          "oracle_wins": true,
+          "selected": 0.2719392828457353
+        }
+      ],
+      "weak_favors_oracle": true,
+      "wrong_selected_pair": false
+    },
+    {
+      "oracle_only_pair": true,
+      "oracle_source": "pair",
+      "sample_index": 11,
+      "score_gap": 0.14266,
+      "selected_source": "pair",
+      "trap_shape": "outlier-dominated",
+      "variants": [
+        {
+          "margin": -0.1426599999999999,
+          "name": "current_logged_rolewise",
+          "note": "formal log role-wise score; baseline selected wins by construction for these misses",
+          "oracle": 0.841837,
+          "oracle_wins": false,
+          "selected": 0.699177
+        },
+        {
+          "margin": -0.34439334446110437,
+          "name": "current_recomputed",
+          "note": "recomputed active L2 + weak L2",
+          "oracle": 1.0755913529309713,
+          "oracle_wins": false,
+          "selected": 0.7311980084698669
+        },
+        {
+          "margin": -0.030187167620503885,
+          "name": "active_clipped_l2_p95_plus_weak",
+          "note": "active residuals capped at per-case p95=0.1883; weak unchanged",
+          "oracle": 0.7588550038876267,
+          "oracle_wins": false,
+          "selected": 0.7286678362671228
+        },
+        {
+          "margin": -0.022331734731416142,
+          "name": "active_clipped_l2_p90_plus_weak",
+          "note": "active residuals capped at per-case p90=0.1622; weak unchanged",
+          "oracle": 0.7313273192386047,
+          "oracle_wins": false,
+          "selected": 0.7089955845071886
+        },
+        {
+          "margin": -0.18532078653857098,
+          "name": "active_huber_p90_plus_weak",
+          "note": "active Huber norm with delta=p90=0.1622; weak unchanged",
+          "oracle": 0.9149601381797831,
+          "oracle_wins": false,
+          "selected": 0.7296393516412121
+        },
+        {
+          "margin": -0.03249215693910612,
+          "name": "active_top1_removed_plus_weak",
+          "note": "remove largest active residual dimension; weak unchanged",
+          "oracle": 0.7010499606469506,
+          "oracle_wins": false,
+          "selected": 0.6685578037078445
+        },
+        {
+          "margin": -0.023726699116802474,
+          "name": "active_top2_removed_plus_weak",
+          "note": "remove largest 2 active residual dimensions; weak unchanged",
+          "oracle": 0.6288061308017218,
+          "oracle_wins": false,
+          "selected": 0.6050794316849193
+        },
+        {
+          "margin": -0.7475670074998342,
+          "name": "per_active_dim_norm_plus_weak",
+          "note": "normalize active dimensions by std over selected/oracle miss residuals; weak unchanged",
+          "oracle": 3.802968502439525,
+          "oracle_wins": false,
+          "selected": 3.055401494939691
+        },
+        {
+          "margin": -0.0195833003837792,
+          "name": "weak_only_diagnostic",
+          "note": "weak segment only; diagnostic, not a proposed scorer",
+          "oracle": 0.4233674188808405,
+          "oracle_wins": false,
+          "selected": 0.4037841184970613
+        }
+      ],
+      "weak_favors_oracle": false,
+      "wrong_selected_pair": true
+    },
+    {
+      "oracle_only_pair": true,
+      "oracle_source": "pair",
+      "sample_index": 12,
+      "score_gap": 0.14034,
+      "selected_source": "pair",
+      "trap_shape": "outlier-dominated",
+      "variants": [
+        {
+          "margin": -0.14033899999999988,
+          "name": "current_logged_rolewise",
+          "note": "formal log role-wise score; baseline selected wins by construction for these misses",
+          "oracle": 1.128645,
+          "oracle_wins": false,
+          "selected": 0.988306
+        },
+        {
+          "margin": 0.10361024492980331,
+          "name": "current_recomputed",
+          "note": "recomputed active L2 + weak L2",
+          "oracle": 1.0953146695604203,
+          "oracle_wins": true,
+          "selected": 1.1989249144902236
+        },
+        {
+          "margin": 0.09803231239846966,
+          "name": "active_clipped_l2_p95_plus_weak",
+          "note": "active residuals capped at per-case p95=0.3166; weak unchanged",
+          "oracle": 1.0460419968604806,
+          "oracle_wins": true,
+          "selected": 1.1440743092589503
+        },
+        {
+          "margin": 0.06626780777614338,
+          "name": "active_clipped_l2_p90_plus_weak",
+          "note": "active residuals capped at per-case p90=0.2075; weak unchanged",
+          "oracle": 0.990283182818531,
+          "oracle_wins": true,
+          "selected": 1.0565509905946744
+        },
+        {
+          "margin": 0.09623582328445823,
+          "name": "active_huber_p90_plus_weak",
+          "note": "active Huber norm with delta=p90=0.2075; weak unchanged",
+          "oracle": 1.0647557783114743,
+          "oracle_wins": true,
+          "selected": 1.1609916015959325
+        },
+        {
+          "margin": 0.11117364667405172,
+          "name": "active_top1_removed_plus_weak",
+          "note": "remove largest active residual dimension; weak unchanged",
+          "oracle": 0.9437277942308199,
+          "oracle_wins": true,
+          "selected": 1.0549014409048716
+        },
+        {
+          "margin": 0.07414897697114031,
+          "name": "active_top2_removed_plus_weak",
+          "note": "remove largest 2 active residual dimensions; weak unchanged",
+          "oracle": 0.8915232931331787,
+          "oracle_wins": true,
+          "selected": 0.965672270104319
+        },
+        {
+          "margin": 0.29454980361447447,
+          "name": "per_active_dim_norm_plus_weak",
+          "note": "normalize active dimensions by std over selected/oracle miss residuals; weak unchanged",
+          "oracle": 4.242805098457813,
+          "oracle_wins": true,
+          "selected": 4.537354902072288
+        },
+        {
+          "margin": 0.03240181825748012,
+          "name": "weak_only_diagnostic",
+          "note": "weak segment only; diagnostic, not a proposed scorer",
+          "oracle": 0.5049510338306011,
+          "oracle_wins": true,
+          "selected": 0.5373528520880813
+        }
+      ],
+      "weak_favors_oracle": true,
+      "wrong_selected_pair": true
+    },
+    {
+      "oracle_only_pair": false,
+      "oracle_source": "sample_t=1.2",
+      "sample_index": 13,
+      "score_gap": 0.490017,
+      "selected_source": "pair",
+      "trap_shape": "broad",
+      "variants": [
+        {
+          "margin": -0.4900169999999999,
+          "name": "current_logged_rolewise",
+          "note": "formal log role-wise score; baseline selected wins by construction for these misses",
+          "oracle": 1.674129,
+          "oracle_wins": false,
+          "selected": 1.184112
+        },
+        {
+          "margin": 0.1391252240220009,
+          "name": "current_recomputed",
+          "note": "recomputed active L2 + weak L2",
+          "oracle": 1.7490750286029773,
+          "oracle_wins": true,
+          "selected": 1.8882002526249781
+        },
+        {
+          "margin": 0.006754050989163485,
+          "name": "active_clipped_l2_p95_plus_weak",
+          "note": "active residuals capped at per-case p95=0.287; weak unchanged",
+          "oracle": 1.7292179105745484,
+          "oracle_wins": true,
+          "selected": 1.735971961563712
+        },
+        {
+          "margin": 0.008043336527466804,
+          "name": "active_clipped_l2_p90_plus_weak",
+          "note": "active residuals capped at per-case p90=0.2397; weak unchanged",
+          "oracle": 1.6982741026827668,
+          "oracle_wins": true,
+          "selected": 1.7063174392102336
+        },
+        {
+          "margin": 0.08653741587986374,
+          "name": "active_huber_p90_plus_weak",
+          "note": "active Huber norm with delta=p90=0.2397; weak unchanged",
+          "oracle": 1.7423119711065742,
+          "oracle_wins": true,
+          "selected": 1.828849386986438
+        },
+        {
+          "margin": -0.01219167931468923,
+          "name": "active_top1_removed_plus_weak",
+          "note": "remove largest active residual dimension; weak unchanged",
+          "oracle": 1.6662494262712997,
+          "oracle_wins": false,
+          "selected": 1.6540577469566105
+        },
+        {
+          "margin": -0.024963294168131478,
+          "name": "active_top2_removed_plus_weak",
+          "note": "remove largest 2 active residual dimensions; weak unchanged",
+          "oracle": 1.6036283014356956,
+          "oracle_wins": false,
+          "selected": 1.578665007267564
+        },
+        {
+          "margin": -2.821691568762981,
+          "name": "per_active_dim_norm_plus_weak",
+          "note": "normalize active dimensions by std over selected/oracle miss residuals; weak unchanged",
+          "oracle": 8.780331538921708,
+          "oracle_wins": false,
+          "selected": 5.9586399701587265
+        },
+        {
+          "margin": 0.14851863484701755,
+          "name": "weak_only_diagnostic",
+          "note": "weak segment only; diagnostic, not a proposed scorer",
+          "oracle": 1.0438398012491366,
+          "oracle_wins": true,
+          "selected": 1.192358436096154
+        }
+      ],
+      "weak_favors_oracle": false,
+      "wrong_selected_pair": true
+    },
+    {
+      "oracle_only_pair": false,
+      "oracle_source": "beam",
+      "sample_index": 17,
+      "score_gap": 0.061494,
+      "selected_source": "pair",
+      "trap_shape": "mixed",
+      "variants": [
+        {
+          "margin": -0.06149300000000002,
+          "name": "current_logged_rolewise",
+          "note": "formal log role-wise score; baseline selected wins by construction for these misses",
+          "oracle": 0.818141,
+          "oracle_wins": false,
+          "selected": 0.756648
+        },
+        {
+          "margin": 0.0015904280349657851,
+          "name": "current_recomputed",
+          "note": "recomputed active L2 + weak L2",
+          "oracle": 0.963784510004908,
+          "oracle_wins": true,
+          "selected": 0.9653749380398737
+        },
+        {
+          "margin": -0.003387531254555043,
+          "name": "active_clipped_l2_p95_plus_weak",
+          "note": "active residuals capped at per-case p95=0.3186; weak unchanged",
+          "oracle": 0.9453430116488204,
+          "oracle_wins": false,
+          "selected": 0.9419554803942654
+        },
+        {
+          "margin": -0.022330608025895593,
+          "name": "active_clipped_l2_p90_plus_weak",
+          "note": "active residuals capped at per-case p90=0.2349; weak unchanged",
+          "oracle": 0.8899024640973896,
+          "oracle_wins": false,
+          "selected": 0.867571856071494
+        },
+        {
+          "margin": -0.0032677123726672086,
+          "name": "active_huber_p90_plus_weak",
+          "note": "active Huber norm with delta=p90=0.2349; weak unchanged",
+          "oracle": 0.951621729427029,
+          "oracle_wins": false,
+          "selected": 0.9483540170543618
+        },
+        {
+          "margin": 0.010481039753986066,
+          "name": "active_top1_removed_plus_weak",
+          "note": "remove largest active residual dimension; weak unchanged",
+          "oracle": 0.8427982425403713,
+          "oracle_wins": true,
+          "selected": 0.8532792822943573
+        },
+        {
+          "margin": -0.006457943378244679,
+          "name": "active_top2_removed_plus_weak",
+          "note": "remove largest 2 active residual dimensions; weak unchanged",
+          "oracle": 0.7603218583061099,
+          "oracle_wins": false,
+          "selected": 0.7538639149278652
+        },
+        {
+          "margin": 0.7835118440596891,
+          "name": "per_active_dim_norm_plus_weak",
+          "note": "normalize active dimensions by std over selected/oracle miss residuals; weak unchanged",
+          "oracle": 3.865607493930916,
+          "oracle_wins": true,
+          "selected": 4.649119337990605
+        },
+        {
+          "margin": -0.07384091873416687,
+          "name": "weak_only_diagnostic",
+          "note": "weak segment only; diagnostic, not a proposed scorer",
+          "oracle": 0.39925074869591964,
+          "oracle_wins": false,
+          "selected": 0.3254098299617528
+        }
+      ],
+      "weak_favors_oracle": true,
+      "wrong_selected_pair": true
+    },
+    {
+      "oracle_only_pair": false,
+      "oracle_source": "beam",
+      "sample_index": 19,
+      "score_gap": 0.324574,
+      "selected_source": "beam",
+      "trap_shape": "outlier-dominated",
+      "variants": [
+        {
+          "margin": -0.3245739999999999,
+          "name": "current_logged_rolewise",
+          "note": "formal log role-wise score; baseline selected wins by construction for these misses",
+          "oracle": 1.90322,
+          "oracle_wins": false,
+          "selected": 1.578646
+        },
+        {
+          "margin": -0.28984552451677725,
+          "name": "current_recomputed",
+          "note": "recomputed active L2 + weak L2",
+          "oracle": 1.9032200714339456,
+          "oracle_wins": false,
+          "selected": 1.6133745469171683
+        },
+        {
+          "margin": -0.20925221242019232,
+          "name": "active_clipped_l2_p95_plus_weak",
+          "note": "active residuals capped at per-case p95=0.3825; weak unchanged",
+          "oracle": 1.8091165566477097,
+          "oracle_wins": false,
+          "selected": 1.5998643442275173
+        },
+        {
+          "margin": -0.19701608100224854,
+          "name": "active_clipped_l2_p90_plus_weak",
+          "note": "active residuals capped at per-case p90=0.3273; weak unchanged",
+          "oracle": 1.7653891862920008,
+          "oracle_wins": false,
+          "selected": 1.5683731052897523
+        },
+        {
+          "margin": -0.2636171193037349,
+          "name": "active_huber_p90_plus_weak",
+          "note": "active Huber norm with delta=p90=0.3273; weak unchanged",
+          "oracle": 1.872548826834299,
+          "oracle_wins": false,
+          "selected": 1.608931707530564
+        },
+        {
+          "margin": -0.23000217449378013,
+          "name": "active_top1_removed_plus_weak",
+          "note": "remove largest active residual dimension; weak unchanged",
+          "oracle": 1.717897356296624,
+          "oracle_wins": false,
+          "selected": 1.4878951818028439
+        },
+        {
+          "margin": -0.23301346587979688,
+          "name": "active_top2_removed_plus_weak",
+          "note": "remove largest 2 active residual dimensions; weak unchanged",
+          "oracle": 1.6187713252579103,
+          "oracle_wins": false,
+          "selected": 1.3857578593781135
+        },
+        {
+          "margin": -0.030358005011795086,
+          "name": "per_active_dim_norm_plus_weak",
+          "note": "normalize active dimensions by std over selected/oracle miss residuals; weak unchanged",
+          "oracle": 7.169650623590542,
+          "oracle_wins": false,
+          "selected": 7.139292618578747
+        },
+        {
+          "margin": -0.07098017416684,
+          "name": "weak_only_diagnostic",
+          "note": "weak segment only; diagnostic, not a proposed scorer",
+          "oracle": 0.9613906833042456,
+          "oracle_wins": false,
+          "selected": 0.8904105091374056
+        }
+      ],
+      "weak_favors_oracle": false,
+      "wrong_selected_pair": false
+    },
+    {
+      "oracle_only_pair": false,
+      "oracle_source": "beam",
+      "sample_index": 21,
+      "score_gap": 0.287712,
+      "selected_source": "pair",
+      "trap_shape": "outlier-dominated",
+      "variants": [
+        {
+          "margin": -0.28771199999999997,
+          "name": "current_logged_rolewise",
+          "note": "formal log role-wise score; baseline selected wins by construction for these misses",
+          "oracle": 0.802121,
+          "oracle_wins": false,
+          "selected": 0.514409
+        },
+        {
+          "margin": 0.1934293870798005,
+          "name": "current_recomputed",
+          "note": "recomputed active L2 + weak L2",
+          "oracle": 0.4952592670908591,
+          "oracle_wins": true,
+          "selected": 0.6886886541706596
+        },
+        {
+          "margin": 0.1305949983375837,
+          "name": "active_clipped_l2_p95_plus_weak",
+          "note": "active residuals capped at per-case p95=0.1411; weak unchanged",
+          "oracle": 0.4952592670908592,
+          "oracle_wins": true,
+          "selected": 0.6258542654284429
+        },
+        {
+          "margin": 0.10771128721699674,
+          "name": "active_clipped_l2_p90_plus_weak",
+          "note": "active residuals capped at per-case p90=0.09755; weak unchanged",
+          "oracle": 0.4762092112760249,
+          "oracle_wins": true,
+          "selected": 0.5839204984930216
+        },
+        {
+          "margin": 0.16352796132792663,
+          "name": "active_huber_p90_plus_weak",
+          "note": "active Huber norm with delta=p90=0.09755; weak unchanged",
+          "oracle": 0.49242533402234684,
+          "oracle_wins": true,
+          "selected": 0.6559532953502735
+        },
+        {
+          "margin": 0.14983281327525277,
+          "name": "active_top1_removed_plus_weak",
+          "note": "remove largest active residual dimension; weak unchanged",
+          "oracle": 0.45166392088260154,
+          "oracle_wins": true,
+          "selected": 0.6014967341578543
+        },
+        {
+          "margin": 0.11438567909816189,
+          "name": "active_top2_removed_plus_weak",
+          "note": "remove largest 2 active residual dimensions; weak unchanged",
+          "oracle": 0.42376952148891167,
+          "oracle_wins": true,
+          "selected": 0.5381552005870736
+        },
+        {
+          "margin": 0.7917562415201735,
+          "name": "per_active_dim_norm_plus_weak",
+          "note": "normalize active dimensions by std over selected/oracle miss residuals; weak unchanged",
+          "oracle": 1.6391660138080622,
+          "oracle_wins": true,
+          "selected": 2.4309222553282357
+        },
+        {
+          "margin": 0.08482745766319638,
+          "name": "weak_only_diagnostic",
+          "note": "weak segment only; diagnostic, not a proposed scorer",
+          "oracle": 0.2700885218805061,
+          "oracle_wins": true,
+          "selected": 0.35491597954370246
+        }
+      ],
+      "weak_favors_oracle": false,
+      "wrong_selected_pair": true
+    },
+    {
+      "oracle_only_pair": true,
+      "oracle_source": "pair",
+      "sample_index": 24,
+      "score_gap": 0.553748,
+      "selected_source": "pair",
+      "trap_shape": "outlier-dominated",
+      "variants": [
+        {
+          "margin": -0.553747,
+          "name": "current_logged_rolewise",
+          "note": "formal log role-wise score; baseline selected wins by construction for these misses",
+          "oracle": 2.019098,
+          "oracle_wins": false,
+          "selected": 1.465351
+        },
+        {
+          "margin": -0.29167232464552795,
+          "name": "current_recomputed",
+          "note": "recomputed active L2 + weak L2",
+          "oracle": 1.7249716112179365,
+          "oracle_wins": false,
+          "selected": 1.4332992865724086
+        },
+        {
+          "margin": -0.22286879493731715,
+          "name": "active_clipped_l2_p95_plus_weak",
+          "note": "active residuals capped at per-case p95=0.3123; weak unchanged",
+          "oracle": 1.6561680815097257,
+          "oracle_wins": false,
+          "selected": 1.4332992865724086
+        },
+        {
+          "margin": -0.19905218289210325,
+          "name": "active_clipped_l2_p90_plus_weak",
+          "note": "active residuals capped at per-case p90=0.27; weak unchanged",
+          "oracle": 1.6164607471341168,
+          "oracle_wins": false,
+          "selected": 1.4174085642420136
+        },
+        {
+          "margin": -0.271741923570584,
+          "name": "active_huber_p90_plus_weak",
+          "note": "active Huber norm with delta=p90=0.27; weak unchanged",
+          "oracle": 1.7039769382521328,
+          "oracle_wins": false,
+          "selected": 1.4322350146815488
+        },
+        {
+          "margin": -0.22729053305347957,
+          "name": "active_top1_removed_plus_weak",
+          "note": "remove largest active residual dimension; weak unchanged",
+          "oracle": 1.5910584243390726,
+          "oracle_wins": false,
+          "selected": 1.363767891285593
+        },
+        {
+          "margin": -0.19109181172505862,
+          "name": "active_top2_removed_plus_weak",
+          "note": "remove largest 2 active residual dimensions; weak unchanged",
+          "oracle": 1.5092295839797123,
+          "oracle_wins": false,
+          "selected": 1.3181377722546537
+        },
+        {
+          "margin": 2.55798133980975,
+          "name": "per_active_dim_norm_plus_weak",
+          "note": "normalize active dimensions by std over selected/oracle miss residuals; weak unchanged",
+          "oracle": 7.0748823211219225,
+          "oracle_wins": true,
+          "selected": 9.632863660931672
+        },
+        {
+          "margin": -0.20819043670587423,
+          "name": "weak_only_diagnostic",
+          "note": "weak segment only; diagnostic, not a proposed scorer",
+          "oracle": 0.9190141387093611,
+          "oracle_wins": false,
+          "selected": 0.7108237020034869
+        }
+      ],
+      "weak_favors_oracle": false,
+      "wrong_selected_pair": true
+    },
+    {
+      "oracle_only_pair": false,
+      "oracle_source": "beam",
+      "sample_index": 26,
+      "score_gap": 0.315351,
+      "selected_source": "pair",
+      "trap_shape": "broad",
+      "variants": [
+        {
+          "margin": -0.31535099999999994,
+          "name": "current_logged_rolewise",
+          "note": "formal log role-wise score; baseline selected wins by construction for these misses",
+          "oracle": 1.445924,
+          "oracle_wins": false,
+          "selected": 1.130573
+        },
+        {
+          "margin": -0.5141549654993771,
+          "name": "current_recomputed",
+          "note": "recomputed active L2 + weak L2",
+          "oracle": 1.4459241323649223,
+          "oracle_wins": false,
+          "selected": 0.9317691668655452
+        },
+        {
+          "margin": -0.5322977709031659,
+          "name": "active_clipped_l2_p95_plus_weak",
+          "note": "active residuals capped at per-case p95=0.2561; weak unchanged",
+          "oracle": 1.4459241323649223,
+          "oracle_wins": false,
+          "selected": 0.9136263614617565
+        },
+        {
+          "margin": -0.5476390484112472,
+          "name": "active_clipped_l2_p90_plus_weak",
+          "note": "active residuals capped at per-case p90=0.2319; weak unchanged",
+          "oracle": 1.4367302809430305,
+          "oracle_wins": false,
+          "selected": 0.8890912325317832
+        },
+        {
+          "margin": -0.5174152053747099,
+          "name": "active_huber_p90_plus_weak",
+          "note": "active Huber norm with delta=p90=0.2319; weak unchanged",
+          "oracle": 1.4455282884259746,
+          "oracle_wins": false,
+          "selected": 0.9281130830512647
+        },
+        {
+          "margin": -0.5516622059055534,
+          "name": "active_top1_removed_plus_weak",
+          "note": "remove largest active residual dimension; weak unchanged",
+          "oracle": 1.3958765769466446,
+          "oracle_wins": false,
+          "selected": 0.8442143710410912
+        },
+        {
+          "margin": -0.5948654221077908,
+          "name": "active_top2_removed_plus_weak",
+          "note": "remove largest 2 active residual dimensions; weak unchanged",
+          "oracle": 1.350206711311723,
+          "oracle_wins": false,
+          "selected": 0.7553412892039323
+        },
+        {
+          "margin": -2.5577170819442747,
+          "name": "per_active_dim_norm_plus_weak",
+          "note": "normalize active dimensions by std over selected/oracle miss residuals; weak unchanged",
+          "oracle": 6.9684239600814,
+          "oracle_wins": false,
+          "selected": 4.410706878137125
+        },
+        {
+          "margin": -0.351758944054056,
+          "name": "weak_only_diagnostic",
+          "note": "weak segment only; diagnostic, not a proposed scorer",
+          "oracle": 0.7718409401305752,
+          "oracle_wins": false,
+          "selected": 0.42008199607651925
+        }
+      ],
+      "weak_favors_oracle": false,
+      "wrong_selected_pair": true
+    },
+    {
+      "oracle_only_pair": true,
+      "oracle_source": "pair",
+      "sample_index": 30,
+      "score_gap": 0.186184,
+      "selected_source": "pair",
+      "trap_shape": "outlier-dominated",
+      "variants": [
+        {
+          "margin": -0.18618399999999996,
+          "name": "current_logged_rolewise",
+          "note": "formal log role-wise score; baseline selected wins by construction for these misses",
+          "oracle": 0.589872,
+          "oracle_wins": false,
+          "selected": 0.403688
+        },
+        {
+          "margin": 0.36101390928453786,
+          "name": "current_recomputed",
+          "note": "recomputed active L2 + weak L2",
+          "oracle": 0.4860246413783878,
+          "oracle_wins": true,
+          "selected": 0.8470385506629257
+        },
+        {
+          "margin": 0.2866684300658434,
+          "name": "active_clipped_l2_p95_plus_weak",
+          "note": "active residuals capped at per-case p95=0.142; weak unchanged",
+          "oracle": 0.4671525205183561,
+          "oracle_wins": true,
+          "selected": 0.7538209505841995
+        },
+        {
+          "margin": 0.2840912989895249,
+          "name": "active_clipped_l2_p90_plus_weak",
+          "note": "active residuals capped at per-case p90=0.1209; weak unchanged",
+          "oracle": 0.45482354569559513,
+          "oracle_wins": true,
+          "selected": 0.73891484468512
+        },
+        {
+          "margin": 0.32627556904382593,
+          "name": "active_huber_p90_plus_weak",
+          "note": "active Huber norm with delta=p90=0.1209; weak unchanged",
+          "oracle": 0.48095405508315314,
+          "oracle_wins": true,
+          "selected": 0.8072296241269791
+        },
+        {
+          "margin": 0.3021728408964053,
+          "name": "active_top1_removed_plus_weak",
+          "note": "remove largest active residual dimension; weak unchanged",
+          "oracle": 0.41835840560969206,
+          "oracle_wins": true,
+          "selected": 0.7205312465060973
+        },
+        {
+          "margin": 0.3125818159357609,
+          "name": "active_top2_removed_plus_weak",
+          "note": "remove largest 2 active residual dimensions; weak unchanged",
+          "oracle": 0.3755199939554506,
+          "oracle_wins": true,
+          "selected": 0.6881018098912115
+        },
+        {
+          "margin": 1.8679960919100775,
+          "name": "per_active_dim_norm_plus_weak",
+          "note": "normalize active dimensions by std over selected/oracle miss residuals; weak unchanged",
+          "oracle": 1.5837351668066262,
+          "oracle_wins": true,
+          "selected": 3.4517312587167037
+        },
+        {
+          "margin": 0.19814909821669266,
+          "name": "weak_only_diagnostic",
+          "note": "weak segment only; diagnostic, not a proposed scorer",
+          "oracle": 0.23604970547666718,
+          "oracle_wins": true,
+          "selected": 0.43419880369335984
+        }
+      ],
+      "weak_favors_oracle": true,
+      "wrong_selected_pair": true
+    },
+    {
+      "oracle_only_pair": true,
+      "oracle_source": "pair",
+      "sample_index": 31,
+      "score_gap": 0.360978,
+      "selected_source": "beam",
+      "trap_shape": "mixed",
+      "variants": [
+        {
+          "margin": -0.360978,
+          "name": "current_logged_rolewise",
+          "note": "formal log role-wise score; baseline selected wins by construction for these misses",
+          "oracle": 0.957709,
+          "oracle_wins": false,
+          "selected": 0.596731
+        },
+        {
+          "margin": -0.023495545177068644,
+          "name": "current_recomputed",
+          "note": "recomputed active L2 + weak L2",
+          "oracle": 0.6036243480881001,
+          "oracle_wins": false,
+          "selected": 0.5801288029110314
+        },
+        {
+          "margin": 0.021247639684751074,
+          "name": "active_clipped_l2_p95_plus_weak",
+          "note": "active residuals capped at per-case p95=0.1688; weak unchanged",
+          "oracle": 0.5552225993209728,
+          "oracle_wins": true,
+          "selected": 0.5764702390057239
+        },
+        {
+          "margin": -0.0019817505028263405,
+          "name": "active_clipped_l2_p90_plus_weak",
+          "note": "active residuals capped at per-case p90=0.1131; weak unchanged",
+          "oracle": 0.5282410130171218,
+          "oracle_wins": false,
+          "selected": 0.5262592625142954
+        },
+        {
+          "margin": -0.007951593324441952,
+          "name": "active_huber_p90_plus_weak",
+          "note": "active Huber norm with delta=p90=0.1131; weak unchanged",
+          "oracle": 0.5778113601666325,
+          "oracle_wins": false,
+          "selected": 0.5698597668421905
+        },
+        {
+          "margin": 0.026206624019829317,
+          "name": "active_top1_removed_plus_weak",
+          "note": "remove largest active residual dimension; weak unchanged",
+          "oracle": 0.5041447867377911,
+          "oracle_wins": true,
+          "selected": 0.5303514107576204
+        },
+        {
+          "margin": -0.00380957671533233,
+          "name": "active_top2_removed_plus_weak",
+          "note": "remove largest 2 active residual dimensions; weak unchanged",
+          "oracle": 0.48070537901781785,
+          "oracle_wins": false,
+          "selected": 0.4768958023024855
+        },
+        {
+          "margin": -0.07320118570763912,
+          "name": "per_active_dim_norm_plus_weak",
+          "note": "normalize active dimensions by std over selected/oracle miss residuals; weak unchanged",
+          "oracle": 3.219457289490115,
+          "oracle_wins": false,
+          "selected": 3.1462561037824757
+        },
+        {
+          "margin": -0.0062535482055268155,
+          "name": "weak_only_diagnostic",
+          "note": "weak segment only; diagnostic, not a proposed scorer",
+          "oracle": 0.25086171237354243,
+          "oracle_wins": false,
+          "selected": 0.24460816416801562
+        }
+      ],
+      "weak_favors_oracle": false,
+      "wrong_selected_pair": false
+    }
+  ],
+  "summary": {
+    "best_robust_hit_harms": 0,
+    "best_robust_oracle_only_wins": 4,
+    "best_robust_oracle_wins": 6,
+    "best_robust_variant": "per_active_dim_norm_plus_weak",
+    "decision_code": "C",
+    "decision_text": "Per-dimension normalization rescues multiple misses, but it is calibrated only from miss residuals; recommend richer residual logging in a future 8- or 16-sample smoke before any scorer change.",
+    "expanded_full_oracle_present": 15,
+    "known_hit_checks": 3,
+    "miss_cases": 12,
+    "oracle_only_pair_misses": 7,
+    "pair_oracle_hit_checks": 1,
+    "pair_oracle_samples": 8,
+    "variants_tested": [
+      "current_logged_rolewise",
+      "current_recomputed",
+      "active_clipped_l2_p95_plus_weak",
+      "active_clipped_l2_p90_plus_weak",
+      "active_huber_p90_plus_weak",
+      "active_top1_removed_plus_weak",
+      "active_top2_removed_plus_weak",
+      "per_active_dim_norm_plus_weak",
+      "weak_only_diagnostic"
+    ],
+    "weak_favors_oracle_count": 4,
+    "wrong_selected_pair_cases": 8
+  },
+  "variant_summary": [
+    {
+      "flipped_samples": [],
+      "known_hit_harmed_samples_top2": [],
+      "known_hit_harms_top2": 0,
+      "name": "current_logged_rolewise",
+      "oracle_only_pair_flipped_samples": [],
+      "oracle_wins_12": 0,
+      "oracle_wins_oracle_only_pair_7": 0,
+      "oracle_wins_wrong_selected_pair_8": 0,
+      "pair_oracle_hit_harmed_samples_top2": [],
+      "pair_oracle_hit_harms_top2": 0,
+      "pair_oracle_miss_rescued_samples": [],
+      "pair_oracle_miss_rescues": 0,
+      "wrong_pair_flipped_samples": []
+    },
+    {
+      "flipped_samples": [
+        12,
+        13,
+        17,
+        21,
+        30
+      ],
+      "known_hit_harmed_samples_top2": [
+        18,
+        27
+      ],
+      "known_hit_harms_top2": 2,
+      "name": "current_recomputed",
+      "oracle_only_pair_flipped_samples": [
+        12,
+        30
+      ],
+      "oracle_wins_12": 5,
+      "oracle_wins_oracle_only_pair_7": 2,
+      "oracle_wins_wrong_selected_pair_8": 5,
+      "pair_oracle_hit_harmed_samples_top2": [],
+      "pair_oracle_hit_harms_top2": 0,
+      "pair_oracle_miss_rescued_samples": [
+        12,
+        30
+      ],
+      "pair_oracle_miss_rescues": 2,
+      "wrong_pair_flipped_samples": [
+        12,
+        13,
+        17,
+        21,
+        30
+      ]
+    },
+    {
+      "flipped_samples": [
+        12,
+        13,
+        21,
+        30,
+        31
+      ],
+      "known_hit_harmed_samples_top2": [
+        27
+      ],
+      "known_hit_harms_top2": 1,
+      "name": "active_clipped_l2_p95_plus_weak",
+      "oracle_only_pair_flipped_samples": [
+        12,
+        30,
+        31
+      ],
+      "oracle_wins_12": 5,
+      "oracle_wins_oracle_only_pair_7": 3,
+      "oracle_wins_wrong_selected_pair_8": 4,
+      "pair_oracle_hit_harmed_samples_top2": [],
+      "pair_oracle_hit_harms_top2": 0,
+      "pair_oracle_miss_rescued_samples": [
+        12,
+        30,
+        31
+      ],
+      "pair_oracle_miss_rescues": 3,
+      "wrong_pair_flipped_samples": [
+        12,
+        13,
+        21,
+        30
+      ]
+    },
+    {
+      "flipped_samples": [
+        5,
+        12,
+        13,
+        21,
+        30
+      ],
+      "known_hit_harmed_samples_top2": [
+        27
+      ],
+      "known_hit_harms_top2": 1,
+      "name": "active_clipped_l2_p90_plus_weak",
+      "oracle_only_pair_flipped_samples": [
+        5,
+        12,
+        30
+      ],
+      "oracle_wins_12": 5,
+      "oracle_wins_oracle_only_pair_7": 3,
+      "oracle_wins_wrong_selected_pair_8": 4,
+      "pair_oracle_hit_harmed_samples_top2": [],
+      "pair_oracle_hit_harms_top2": 0,
+      "pair_oracle_miss_rescued_samples": [
+        5,
+        12,
+        30
+      ],
+      "pair_oracle_miss_rescues": 3,
+      "wrong_pair_flipped_samples": [
+        12,
+        13,
+        21,
+        30
+      ]
+    },
+    {
+      "flipped_samples": [
+        12,
+        13,
+        21,
+        30
+      ],
+      "known_hit_harmed_samples_top2": [
+        27
+      ],
+      "known_hit_harms_top2": 1,
+      "name": "active_huber_p90_plus_weak",
+      "oracle_only_pair_flipped_samples": [
+        12,
+        30
+      ],
+      "oracle_wins_12": 4,
+      "oracle_wins_oracle_only_pair_7": 2,
+      "oracle_wins_wrong_selected_pair_8": 4,
+      "pair_oracle_hit_harmed_samples_top2": [],
+      "pair_oracle_hit_harms_top2": 0,
+      "pair_oracle_miss_rescued_samples": [
+        12,
+        30
+      ],
+      "pair_oracle_miss_rescues": 2,
+      "wrong_pair_flipped_samples": [
+        12,
+        13,
+        21,
+        30
+      ]
+    },
+    {
+      "flipped_samples": [
+        12,
+        17,
+        21,
+        30,
+        31
+      ],
+      "known_hit_harmed_samples_top2": [
+        27
+      ],
+      "known_hit_harms_top2": 1,
+      "name": "active_top1_removed_plus_weak",
+      "oracle_only_pair_flipped_samples": [
+        12,
+        30,
+        31
+      ],
+      "oracle_wins_12": 5,
+      "oracle_wins_oracle_only_pair_7": 3,
+      "oracle_wins_wrong_selected_pair_8": 4,
+      "pair_oracle_hit_harmed_samples_top2": [],
+      "pair_oracle_hit_harms_top2": 0,
+      "pair_oracle_miss_rescued_samples": [
+        12,
+        30,
+        31
+      ],
+      "pair_oracle_miss_rescues": 3,
+      "wrong_pair_flipped_samples": [
+        12,
+        17,
+        21,
+        30
+      ]
+    },
+    {
+      "flipped_samples": [
+        12,
+        21,
+        30
+      ],
+      "known_hit_harmed_samples_top2": [
+        27
+      ],
+      "known_hit_harms_top2": 1,
+      "name": "active_top2_removed_plus_weak",
+      "oracle_only_pair_flipped_samples": [
+        12,
+        30
+      ],
+      "oracle_wins_12": 3,
+      "oracle_wins_oracle_only_pair_7": 2,
+      "oracle_wins_wrong_selected_pair_8": 3,
+      "pair_oracle_hit_harmed_samples_top2": [],
+      "pair_oracle_hit_harms_top2": 0,
+      "pair_oracle_miss_rescued_samples": [
+        12,
+        30
+      ],
+      "pair_oracle_miss_rescues": 2,
+      "wrong_pair_flipped_samples": [
+        12,
+        21,
+        30
+      ]
+    },
+    {
+      "flipped_samples": [
+        8,
+        12,
+        17,
+        21,
+        24,
+        30
+      ],
+      "known_hit_harmed_samples_top2": [],
+      "known_hit_harms_top2": 0,
+      "name": "per_active_dim_norm_plus_weak",
+      "oracle_only_pair_flipped_samples": [
+        8,
+        12,
+        24,
+        30
+      ],
+      "oracle_wins_12": 6,
+      "oracle_wins_oracle_only_pair_7": 4,
+      "oracle_wins_wrong_selected_pair_8": 5,
+      "pair_oracle_hit_harmed_samples_top2": [],
+      "pair_oracle_hit_harms_top2": 0,
+      "pair_oracle_miss_rescued_samples": [
+        8,
+        12,
+        24,
+        30
+      ],
+      "pair_oracle_miss_rescues": 4,
+      "wrong_pair_flipped_samples": [
+        12,
+        17,
+        21,
+        24,
+        30
+      ]
+    },
+    {
+      "flipped_samples": [
+        5,
+        8,
+        12,
+        13,
+        21,
+        30
+      ],
+      "known_hit_harmed_samples_top2": [
+        18,
+        27
+      ],
+      "known_hit_harms_top2": 2,
+      "name": "weak_only_diagnostic",
+      "oracle_only_pair_flipped_samples": [
+        5,
+        8,
+        12,
+        30
+      ],
+      "oracle_wins_12": 6,
+      "oracle_wins_oracle_only_pair_7": 4,
+      "oracle_wins_wrong_selected_pair_8": 4,
+      "pair_oracle_hit_harmed_samples_top2": [],
+      "pair_oracle_hit_harms_top2": 0,
+      "pair_oracle_miss_rescued_samples": [
+        5,
+        8,
+        12,
+        30
+      ],
+      "pair_oracle_miss_rescues": 4,
+      "wrong_pair_flipped_samples": [
+        12,
+        13,
+        21,
+        30
+      ]
+    }
+  ]
+}

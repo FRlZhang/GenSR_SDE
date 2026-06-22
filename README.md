@@ -127,6 +127,11 @@ Current best result so far:
   10/12 lean KM1/drift-like. This supports only an offline robust/clipped
   active-residual ablation on existing candidates, not a formal eval or new
   default rerank mode.
+- the offline active-residual ablation found per-active-dimension normalization
+  flips 6/12 expanded-pairing misses and 4/7 oracle-only-pair misses, but this
+  calibration used miss residuals only; simpler clipped/Huber/top-k variants
+  harm one debug top-2 selected-hit check. The next scorer step should be richer
+  residual logging in a small smoke, not a new default or formal eval.
 
 See [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md)
 and [PROJECT_STATUS.md](/Users/lzhang/Documents/GenSR_SDE/PROJECT_STATUS.md) for

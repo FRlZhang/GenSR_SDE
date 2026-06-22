@@ -2,6 +2,49 @@
 
 ## Last Codex Workflow
 
+Codex added an offline expanded-pairing active-residual scorer ablation:
+
+```text
+scripts/analyze_expanded_pair_active_ablation.py
+expanded_pairing_active_residual_ablation.md
+expanded_pairing_active_residual_ablation.json
+/private/tmp/gensr_sde_expanded_pair_active_ablation.log
+```
+
+This used existing residual/candidate logs only. It did not run
+`sde_validation_probe.py`, model decoding, candidate regeneration, formal eval,
+64-sample eval, grids, retraining, or scorer/default changes.
+
+Summary:
+
+```text
+selected misses analyzed=12
+oracle-only-pair misses=7
+wrong selected pair cases=8
+known selected-hit top2 checks=3
+pair-oracle hit checks=1
+best offline variant=per_active_dim_norm_plus_weak
+best offline variant rescues=6/12
+oracle-only-pair rescues=4/7
+debug top2 hit harms for best variant=0
+decision=C
+```
+
+Clipped/Huber/top-k active variants rescued 3-5 misses but harmed one debug
+top-2 selected-hit check. Per-active-dimension normalization was strongest, but
+it was calibrated only from miss residuals. Recommendation: do not add a rerank
+mode and do not run a formal eval; if scorer work continues, add richer
+residual logging in a small 8- or 16-sample smoke first.
+
+Validation:
+
+```text
+py_compile scripts/analyze_expanded_pair_active_ablation.py: passed
+helper run: completed in about 7 seconds
+```
+
+## Previous Codex Workflow
+
 Codex added targeted expanded-pairing active-residual trap diagnostics:
 
 ```text

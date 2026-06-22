@@ -2,11 +2,10 @@
 
 ## Next Engineering Task
 
-Use the expanded-pairing active-residual trap diagnostics to decide whether any
-offline scorer-side check is still worthwhile. Expanded-pairing pruning
-diagnostics found no safe oracle-preserving pruning rule, and the new residual
-diagnostic shows active traps are often outlier-dominated KM1/drift-like
-residual effects.
+Use the expanded-pairing active-residual ablation to decide whether richer
+residual logging is worth adding before any scorer change. Expanded-pairing
+pruning diagnostics found no safe oracle-preserving pruning rule, and the
+offline scorer ablation is promising but not stable enough for a rerank mode.
 
 Current strongest no-retraining decoding setting:
 
@@ -68,6 +67,19 @@ outlier-dominated active traps=7/12
 broad active traps=2/12
 mixed active traps=3/12
 KM1/drift-leaning active advantages=10/12
+```
+
+Expanded-pairing active residual ablation:
+
+```text
+variants=current_logged_rolewise,current_recomputed,active_clipped_l2_p95_plus_weak,active_clipped_l2_p90_plus_weak,active_huber_p90_plus_weak,active_top1_removed_plus_weak,active_top2_removed_plus_weak,per_active_dim_norm_plus_weak,weak_only_diagnostic
+best offline variant=per_active_dim_norm_plus_weak
+best offline variant rescues=6/12
+oracle-only-pair rescues=4/7
+wrong selected pair rescues=5/8
+debug top2 selected-hit harms=0/3 for best variant
+clipped/Huber/top-k variants harm one debug top2 selected hit
+decision=C
 ```
 
 Candidate-coverage-only result:
@@ -168,10 +180,9 @@ before modifying `sde_validation_probe.py`.
 
 Likely next additions:
 
-- if continuing scorer analysis, run one offline robust/clipped
-  active-residual ablation on existing expanded-pairing miss candidates only;
-- do not add a rerank mode or formal eval unless the offline ablation gives a
-  clear oracle-preserving signal;
+- if continuing scorer analysis, add richer residual-vector logging in a small
+  8- or 16-sample smoke before testing a scorer mode;
+- do not add a rerank mode or formal eval from the offline ablation alone;
 - defer drift span diversity work until the expanded-pairing ranking failure is
   understood;
 - keep role-wise constant diagnostics in every rerank experiment;
@@ -218,6 +229,6 @@ Likely next additions:
 
 ## Success Standard
 
-The next useful step should test, offline only, whether clipping/normalizing the
-active residual dimensions would rescue expanded-pairing misses without harming
-known selected hits or pair oracles.
+The next useful scorer-side step is richer residual logging in a small smoke so
+full candidate-pool hit safety can be checked offline. The other main direction
+remains drift span diversity for the 17 expanded-pairing oracle-absent samples.

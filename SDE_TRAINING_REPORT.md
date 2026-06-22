@@ -2,6 +2,35 @@
 
 Date: 2026-06-11
 
+Update, 2026-06-22 active-residual offline ablation: added
+`scripts/analyze_expanded_pair_active_ablation.py` and wrote
+`expanded_pairing_active_residual_ablation.md` /
+`expanded_pairing_active_residual_ablation.json`. This was offline analysis
+only from existing residual/candidate logs: no formal eval, model decoding,
+candidate regeneration, 64-sample eval, grid, retraining, or scorer/default
+change was run.
+
+Key findings:
+
+| Variant | Oracle wins /12 | Oracle-only pair wins /7 | Wrong pair wins /8 | Debug top-2 hit harms |
+| --- | ---: | ---: | ---: | ---: |
+| current_logged_rolewise | 0 | 0 | 0 | 0 |
+| active_clipped_l2_p95_plus_weak | 5 | 3 | 4 | 1 |
+| active_clipped_l2_p90_plus_weak | 5 | 3 | 4 | 1 |
+| active_huber_p90_plus_weak | 4 | 2 | 4 | 1 |
+| active_top1_removed_plus_weak | 5 | 3 | 4 | 1 |
+| active_top2_removed_plus_weak | 3 | 2 | 3 | 1 |
+| per_active_dim_norm_plus_weak | 6 | 4 | 5 | 0 |
+| weak_only_diagnostic | 6 | 4 | 4 | 2 |
+
+Interpretation: per-active-dimension normalization is the strongest offline
+signal, rescuing 6/12 misses and 4/7 oracle-only-pair misses without harming
+the limited debug top-2 selected-hit check, but it is calibrated only from miss
+residuals. The simpler clipped/Huber/top-k active variants rescue several
+misses but harm one debug top-2 selected hit. This is enough to justify richer
+residual logging in a future 8- or 16-sample smoke, but not enough to add a
+rerank mode or run a formal 32-sample eval.
+
 Update, 2026-06-22 active-residual trap diagnostic: added
 `scripts/analyze_expanded_pair_active_residuals.py` and wrote
 `expanded_pairing_active_residual_trap_diagnostics.md` /

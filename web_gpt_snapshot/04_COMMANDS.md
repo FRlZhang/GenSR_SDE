@@ -250,6 +250,35 @@ outlier-dominated active traps=7/12
 KM1/drift-leaning active advantages=10/12
 ```
 
+## Expanded Pairing Active-Residual Ablation
+
+This is offline analysis over existing residual/candidate logs. It does not run
+formal eval, model decoding, candidate regeneration, or a grid.
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/tmp/cache \
+/opt/miniconda3/envs/gensr/bin/python3 scripts/analyze_expanded_pair_active_ablation.py \
+  --residual-json expanded_pairing_active_residual_trap_diagnostics.json \
+  --miss-json expanded_pairing_oracle_miss_ranking_diagnostics.json \
+  --pruning-json expanded_pairing_wrong_pair_pruning_diagnostics.json \
+  --coverage-json candidate_coverage_pair_expanded.json \
+  --source-log /private/tmp/gensr_sde_32_expanded_pairing_rolewise.log \
+  --report expanded_pairing_active_residual_ablation.md \
+  --json-output expanded_pairing_active_residual_ablation.json \
+  > /private/tmp/gensr_sde_expanded_pair_active_ablation.log 2>&1
+```
+
+Latest result:
+
+```text
+best offline variant=per_active_dim_norm_plus_weak
+oracle wins=6/12
+oracle-only-pair wins=4/7
+wrong selected pair wins=5/8
+debug top2 hit harms=0/3 for best variant
+decision=C
+```
+
 ## Small Smoke Test
 
 ```bash
