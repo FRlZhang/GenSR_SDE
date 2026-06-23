@@ -289,7 +289,7 @@ PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/
 /opt/miniconda3/envs/gensr/bin/python3 sde_validation_probe.py \
   --eval-only \
   --load-checkpoint /private/tmp/gensr_sde_role_token_2000/role_token_2000.pth \
-  --eval-samples 8 \
+  --eval-samples 16 \
   --batch-size 8 \
   --n-paths 800 \
   --active-paths 800 \
@@ -311,8 +311,8 @@ PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/
   --pair-drift-topk 4 \
   --pair-diffusion-topk 6 \
   --rerank-debug-topk 2 \
-  --rerank-residual-debug-json /private/tmp/gensr_sde_residual_debug_smoke8.json \
-  > /private/tmp/gensr_sde_residual_debug_smoke8.log 2>&1
+  --rerank-residual-debug-json /private/tmp/gensr_sde_residual_debug_smoke16.json \
+  > /private/tmp/gensr_sde_residual_debug_smoke16.log 2>&1
 ```
 
 Offline safety parser:
@@ -320,20 +320,23 @@ Offline safety parser:
 ```bash
 PYTHONDONTWRITEBYTECODE=1 \
 /opt/miniconda3/envs/gensr/bin/python3 scripts/analyze_residual_debug_safety.py \
-  --input-json /private/tmp/gensr_sde_residual_debug_smoke8.json \
-  --report residual_debug_safety_smoke8.md \
-  --json-output residual_debug_safety_smoke8.json \
-  > /private/tmp/gensr_sde_residual_debug_safety_smoke8.log 2>&1
+  --input-json /private/tmp/gensr_sde_residual_debug_smoke16.json \
+  --report residual_debug_safety_smoke16.md \
+  --json-output residual_debug_safety_smoke16.json \
+  > /private/tmp/gensr_sde_residual_debug_safety_smoke16.log 2>&1
 ```
 
-Latest 8-sample result:
+Latest 16-sample result:
 
 ```text
-samples logged=8
-candidates logged=101
-samples with oracle=0
-selected hits=0
-result=inconclusive for scorer safety; logging validated
+samples logged=16
+candidates logged=201
+samples with oracle=2
+selected hits=1
+pair oracle samples=1
+selected-hit harms=0
+oracle-present selected-miss rescues=0
+result=limited no-harm evidence, no formal eval justified
 ```
 
 ## Small Smoke Test

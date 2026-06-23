@@ -166,8 +166,9 @@ def analyze(payload: dict) -> dict:
 def write_report(path: Path, input_path: Path, analysis: dict) -> None:
     summary = analysis["summary"]
     rows = analysis["sample_rows"]
+    sample_count = summary.get("samples", 0)
     lines = [
-        "# Residual Debug Safety Smoke 8",
+        f"# Residual Debug Safety Smoke {sample_count}",
         "",
         "Scope: offline parse of residual debug JSON only. No model decoding, candidate generation, simulation, formal eval, retraining, or scorer change was run.",
         "",
@@ -199,7 +200,7 @@ def write_report(path: Path, input_path: Path, analysis: dict) -> None:
             f"- Selected misses rescued: `{summary['selected_misses_rescued']}`.",
             f"- Offline selected pair candidates: `{summary['offline_selected_pair_candidates']}`.",
             "",
-            "The smoke is only 8 samples, so absence of harm is not enough for a formal eval. It is useful for checking whether the residual logging is complete and whether a future 16-sample smoke is worth running.",
+            f"The smoke is only {sample_count} samples, so absence of harm is not enough for a formal eval. It is useful for checking whether the residual logging is complete and whether a future targeted smoke is worth running.",
             "",
             "## Per Sample",
             "",
@@ -225,7 +226,7 @@ def write_report(path: Path, input_path: Path, analysis: dict) -> None:
             "",
             "## Recommendation",
             "",
-            "Use this logging path for one future 16-sample smoke before considering any scorer implementation. Do not run a formal 32-sample eval from this 8-sample safety check alone.",
+            "Use this logging path for a future targeted smoke before considering any scorer implementation. Do not run a formal 32-sample eval from this safety check alone.",
             "",
         ]
     )

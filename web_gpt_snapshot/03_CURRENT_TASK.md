@@ -2,10 +2,11 @@
 
 ## Next Engineering Task
 
-Use the new residual-debug JSON export to check scorer safety offline before
-any scorer change. Expanded-pairing pruning diagnostics found no safe
-oracle-preserving pruning rule, and the offline scorer ablation is promising but
-not stable enough for a rerank mode.
+Use residual-debug JSON output to check scorer safety offline before any scorer
+change. Expanded-pairing pruning diagnostics found no safe oracle-preserving
+pruning rule, and the offline scorer ablation is promising but not stable
+enough for a rerank mode. A 16-sample residual-debug smoke now provides limited
+no-harm evidence, but no miss rescue.
 
 Current strongest no-retraining decoding setting:
 
@@ -86,14 +87,16 @@ Residual debug logging smoke:
 
 ```text
 new flag=--rerank-residual-debug-json
-smoke samples=8
-candidates logged=101
+latest smoke samples=16
+candidates logged=201
 active residual vector length=18
 weak residual vector length=96
-samples with oracle=0
-selected hits=0
-pair oracle samples=0
-safety helper result=inconclusive because no oracle/hit cases
+samples with oracle=2
+selected hits=1
+pair oracle samples=1
+selected-hit harms under offline safety score=0
+oracle-present selected-miss rescues=0
+safety helper result=limited no-harm evidence, no rescue
 ```
 
 Candidate-coverage-only result:
@@ -194,8 +197,8 @@ before modifying `sde_validation_probe.py`.
 
 Likely next additions:
 
-- if continuing scorer analysis, run one 16-sample smoke with
-  `--rerank-residual-debug-json` before testing a scorer mode;
+- if continuing scorer analysis, prefer one future 16-sample expanded-pairing
+  residual-debug smoke before testing a scorer mode;
 - do not add a rerank mode or formal eval from the offline ablation alone;
 - defer drift span diversity work until the expanded-pairing ranking failure is
   understood;

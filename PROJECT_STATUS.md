@@ -24,9 +24,11 @@ normalization (`6/12` miss rescues, `4/7` oracle-only-pair rescues), but it was
 calibrated only on miss residuals; clipped/Huber/top-k variants rescued several
 misses while harming one debug top-2 selected-hit check. This does not justify a
 new rerank mode or formal eval yet. A residual-debug JSON export now exists for
-full candidate-pool offline safety checks; the first 8-sample smoke logged 101
-candidates with active/weak residual vectors but had no oracle candidates, so it
-validated logging rather than scorer safety.
+full candidate-pool offline safety checks. The first 8-sample smoke validated
+logging only; a follow-up 16-sample smoke logged 201 candidates with 2 oracle
+samples and 1 selected hit. Offline per-active-dimension normalization preserved
+that hit and harmed none, but rescued 0/1 oracle-present misses, so it still
+does not justify a new rerank mode or formal eval.
 
 ## Last Updated
 
@@ -218,10 +220,13 @@ validated logging rather than scorer safety.
   With the flag absent, rerank behavior is unchanged. An 8-sample eval-only
   smoke from the 2000-step checkpoint logged 101 valid candidates with
   candidate labels, source/rank metadata, constants, active residual vectors
-  (18 dims), and weak residual vectors (96 dims). The offline safety helper ran,
-  but the smoke had 0 oracle candidates and 0 selected hits, so it was
-  inconclusive for scorer safety. Next scorer-side step should be one 16-sample
-  smoke with the same logging, not a formal eval.
+  (18 dims), and weak residual vectors (96 dims), but it had 0 oracle candidates
+  and 0 selected hits. A follow-up 16-sample smoke logged 201 valid candidates,
+  2 oracle samples, 1 selected hit, and 1 pair-oracle sample. The offline
+  `per_active_dim_norm_plus_weak` safety parse preserved the selected hit and
+  harmed 0, but rescued 0/1 oracle-present selected misses. This validates the
+  logging path and gives limited safety evidence, but still does not justify a
+  formal eval or new rerank mode.
 - Logged validated experiments in
   [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md).
 
@@ -229,8 +234,9 @@ validated logging rather than scorer safety.
 
 - Transitioning from "can the model learn the fingerprint?" to "can we decode
   the right symbolic sequence?".
-- Using the new residual-debug JSON export to check scorer safety offline before
-  any formal scorer change.
+- Using the residual-debug JSON export to check scorer safety offline before
+  any formal scorer change; the 16-sample smoke gave limited no-harm evidence
+  but no miss rescue.
 - The 2000-step role-token checkpoint has been restored in `/private/tmp` and
   backed up under `checkpoints/`; model weights remain ignored by git.
 
@@ -256,9 +262,9 @@ validated logging rather than scorer safety.
 7. Do not add pair pruning from the current evidence: no oracle-preserving
    pruning rule was found from existing logs/JSON.
 8. Do not add robust/clipped/per-dimension normalized active scoring as a rerank
-   mode from the offline ablation alone. If scorer analysis continues, run one
-   16-sample smoke with `--rerank-residual-debug-json` and recheck hit safety
-   offline before any formal eval.
+   mode from the offline ablation or 16-sample safety smoke alone. If scorer
+   analysis continues, the smallest next check is a 16-sample residual-debug
+   smoke under expanded pairing, not a formal eval.
 9. Shift candidate-generation work toward drift span diversity: after expanded
    pairing, the remaining 17 oracle-absent samples all contain the truth
    diffusion but miss the truth drift.

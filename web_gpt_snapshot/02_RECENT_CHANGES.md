@@ -2,6 +2,56 @@
 
 ## Last Codex Workflow
 
+Codex ran one 16-sample residual-debug smoke and offline safety parse:
+
+```text
+/private/tmp/gensr_sde_residual_debug_smoke16.log
+/private/tmp/gensr_sde_residual_debug_smoke16.json
+residual_debug_logging_smoke16_report.md
+residual_debug_safety_smoke16.md
+residual_debug_safety_smoke16.json
+```
+
+This was a single smoke plus offline parse. It did not run a formal 32-sample
+eval, 64-sample eval, grids, retraining, scorer changes, candidate-generation
+changes, or rerank mode changes.
+
+Summary:
+
+```text
+samples logged=16
+candidates logged=201
+valid candidates=201
+parse failures=0
+fingerprint failures=0
+active residual vector length=18
+weak residual vector length=96
+samples with oracle=2
+selected hits=1
+pair oracle samples=1
+selected-hit harms=0
+oracle-present selected-miss rescues=0
+```
+
+Interpretation: the smoke is no longer completely inconclusive because it
+contains oracle and selected-hit cases. The offline
+`per_active_dim_norm_plus_weak` diagnostic preserved the one selected hit and
+pair-oracle hit, but did not rescue the one oracle-present miss. No formal eval
+or scorer implementation is justified from this result alone. If scorer safety
+needs one more check, run a future 16-sample expanded-pairing residual-debug
+smoke; otherwise return to drift span diversity or deeper fingerprint ambiguity
+diagnostics.
+
+Validation:
+
+```text
+py_compile sde_validation_probe.py scripts/analyze_residual_debug_safety.py: passed
+16-sample smoke: passed
+safety helper: passed
+```
+
+## Previous Codex Workflow
+
 Codex added richer residual-vector logging and ran one 8-sample smoke:
 
 ```text

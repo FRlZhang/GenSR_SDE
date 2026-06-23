@@ -7,6 +7,39 @@ Update, 2026-06-23 residual debug logging smoke: added optional
 `scripts/analyze_residual_debug_safety.py`, `residual_debug_logging_smoke_report.md`,
 and the smoke safety report. With the flag absent, rerank behavior is unchanged.
 
+Follow-up 16-sample smoke:
+
+```text
+/private/tmp/gensr_sde_residual_debug_smoke16.json
+/private/tmp/gensr_sde_residual_debug_smoke16.log
+residual_debug_safety_smoke16.md
+residual_debug_safety_smoke16.json
+```
+
+| Item | Value |
+| --- | ---: |
+| Samples logged | 16 |
+| Candidates logged | 201 |
+| Valid candidates | 201 |
+| Parse failures | 0 |
+| Fingerprint failures | 0 |
+| Active residual vector length | 18 |
+| Weak residual vector length | 96 |
+| Samples with oracle candidate | 2 |
+| Selected hits | 1 |
+| Pair-oracle samples | 1 |
+| Selected-hit harms under offline safety score | 0 |
+| Oracle-present selected-miss rescues | 0 |
+
+The 16-sample smoke is more informative than the first 8-sample smoke because
+it contains oracle and selected-hit cases. The offline
+`per_active_dim_norm_plus_weak` diagnostic preserved the one selected hit,
+including the pair-oracle case, but rescued 0/1 oracle-present misses. This
+supports keeping the logging path, but still does not justify adding a scorer
+mode or running a formal 32-sample eval. If scorer safety needs one more check,
+use a future 16-sample expanded-pairing residual-debug smoke; otherwise return
+to drift span diversity or deeper fingerprint ambiguity diagnostics.
+
 The 8-sample eval-only smoke used the restored 2000-step checkpoint and baseline
 pairing settings. It completed without parse or fingerprint failures and wrote:
 
