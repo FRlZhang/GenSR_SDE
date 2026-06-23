@@ -67,7 +67,15 @@ also shows pair pressure is high even after folding: target-sample pair-count
 estimate rises from `370` raw current pairs to `1105` canonical admitted pairs
 (`+198.6%`), while drift-only tail canonicalization reduces admitted drift
 templates by `39.6%`. Decision remains `B`: use a capped/smaller normalized
-admission rule in a future coverage-only diagnostic; no formal eval yet.
+admission rule in a future coverage-only diagnostic; no formal eval yet. The
+capped-policy diagnostic is now complete: `P2_one_per_family` preserves the full
+`30/32` normalized-admission ceiling, recovers the same 15 target samples,
+keeps only samples `16` and `28` missing, and reduces target pair count to
+`340`, slightly below the pre-admission raw estimate `370` and close to the
+truth-aware upper bound `320`. Sampling can be dropped in this diagnostic
+without losing recovered canonical drifts. Decision `A`: use
+`P2_one_per_family` for a future small coverage-only implementation hook; no
+formal eval yet.
 
 ## Last Updated
 
@@ -355,6 +363,22 @@ admission rule in a future coverage-only diagnostic; no formal eval yet.
   target-sample pair estimates rise `370 -> 1105` after canonical admission.
   Decision `B`: use a smaller/capped normalized admission rule in coverage-only
   diagnostics; do not run formal eval.
+- Added
+  [scripts/analyze_capped_normalized_drift_admission.py](/Users/lzhang/Documents/GenSR_SDE/scripts/analyze_capped_normalized_drift_admission.py)
+  and wrote
+  [capped_normalized_drift_admission_diagnostics.md](/Users/lzhang/Documents/GenSR_SDE/capped_normalized_drift_admission_diagnostics.md)
+  /
+  [capped_normalized_drift_admission_diagnostics.json](/Users/lzhang/Documents/GenSR_SDE/capped_normalized_drift_admission_diagnostics.json).
+  This fixed-policy JSON-only diagnostic compared full admission, one per
+  canonical form, one per family, top-k canonical caps, a truth-aware upper
+  bound, and rank-bucket representatives. Best practical policy is
+  `P2_one_per_family`: it preserves `30/32` projected oracle coverage and the
+  same recovered targets as full admission, while reducing target pair count
+  from `1105` to `340` (`69.2%` reduction versus full admission). The
+  truth-aware upper bound is `30/32` at pair count `320`, so `P2` is only 20
+  pairs above the diagnostic lower bound. Sampling can be dropped; collision
+  safety remains clean. Decision `A`: use `P2_one_per_family` for a future small
+  coverage-only implementation hook; no formal eval.
 - Logged validated experiments in
   [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md).
 
@@ -362,10 +386,10 @@ admission rule in a future coverage-only diagnostic; no formal eval yet.
 
 - Transitioning from "can the model learn the fingerprint?" to "can we decode
   the right symbolic sequence?".
-- Planning a capped normalized drift-only admission coverage diagnostic before
-  widening drift beam/top-k or changing production candidate-generation
-  defaults. Residual-debug safety checks do not support continuing scorer-side
-  normalization.
+- Planning a small coverage-only implementation hook for capped normalized
+  drift-only admission with `P2_one_per_family` before widening drift beam/top-k
+  or changing production candidate-generation defaults. Residual-debug safety
+  checks do not support continuing scorer-side normalization.
 - The 2000-step role-token checkpoint has been restored in `/private/tmp` and
   backed up under `checkpoints/`; model weights remain ignored by git.
 
@@ -395,9 +419,10 @@ admission rule in a future coverage-only diagnostic; no formal eval yet.
    expanded-pairing 16-sample smoke had 5 oracle samples, 0 selected hits, and
    0/5 offline miss rescues, so do not run a formal 32-sample eval for this
    scorer idea.
-9. Prefer a capped normalized drift-only admission coverage diagnostic before
-   widening beam/top-k. Full normalized admission projects `30/32`, but raises
-   estimated target-sample pair pressure from `370` to `1105`.
+9. Prefer a small coverage-only implementation hook for
+   `P2_one_per_family` capped normalized drift-only admission before widening
+   beam/top-k. It preserves the `30/32` diagnostic ceiling with target pair
+   count `340`, versus `1105` for full normalized admission.
 10. Do not run formal eval from the drift-only or constant-folding diagnostics;
    they are oracle-coverage diagnostics, not selected-recovery evidence.
 11. Keep drift/diffusion pairing enabled and tune candidate pool size carefully
@@ -476,6 +501,10 @@ admission rule in a future coverage-only diagnostic; no formal eval yet.
 - Full normalized drift-only admission is coverage-positive but high-pressure:
   canonicalization deduplicates the drift-only tail by `39.6%`, yet estimated
   target-sample pair count still rises by `198.6%`.
+- Capped normalized admission is promising in coverage-only diagnostics:
+  `P2_one_per_family` keeps `30/32` projected coverage with much lower pair
+  pressure, but this still has no semantic fingerprint or selected-rerank
+  validation.
 - Constant-folding collision checks are token-structure-only; they did not flag
   unsafe observed overmerge, but semantic fingerprint validation and
   selected-rerank behavior remain untested.

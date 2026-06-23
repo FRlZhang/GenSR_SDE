@@ -397,6 +397,58 @@ decision=B
 Do not run formal eval from this diagnostic. Next step should be a capped
 normalized drift-only admission coverage diagnostic.
 
+## Capped Normalized Drift Admission Diagnostic
+
+This parses existing JSON only and compares fixed capped normalized drift-only
+admission policies. It does not run model decoding, candidate generation,
+fingerprint simulation, reranking, formal eval, 64-sample eval, grids,
+retraining, scorer changes, rerank-mode changes, checkpoint/data changes,
+target-format changes, fingerprint changes, or production candidate-generation
+default changes.
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 \
+/opt/miniconda3/envs/gensr/bin/python3 scripts/analyze_capped_normalized_drift_admission.py \
+  --expanded-coverage-json candidate_coverage_pair_expanded.json \
+  --drift-only-json drift_only_candidate_diversity_smoke.json \
+  --normalized-admission-json normalized_drift_only_admission_coverage_diagnostics.json \
+  --report capped_normalized_drift_admission_diagnostics.md \
+  --json-output capped_normalized_drift_admission_diagnostics.json \
+  > /private/tmp/gensr_sde_capped_normalized_drift_admission.log 2>&1
+```
+
+Compile check:
+
+```bash
+PYTHONPYCACHEPREFIX=/private/tmp/gensr_pycache \
+/opt/miniconda3/envs/gensr/bin/python3 -m py_compile \
+  scripts/analyze_capped_normalized_drift_admission.py
+```
+
+Latest result:
+
+```text
+best_practical_policy=P2_one_per_family
+baseline_current_expanded=15/32
+baseline_current_expanded_canonical=23/32
+baseline_full_normalized_admission=30/32
+pre_admission_target_pair_count=370
+full_normalized_admission_target_pair_count=1105
+P2_one_per_family_coverage=30/32
+P2_one_per_family_pair_count=340
+P2_pair_reduction_vs_full=765 (69.2%)
+truth_aware_upper_bound_coverage=30/32
+truth_aware_upper_bound_pair_count=320
+newly_recovered_beyond_current=0,2,6,7,15,25,29
+remaining_missing=16,28
+sampling_can_be_dropped=True
+unsafe_collision_flag=False
+decision=A
+```
+
+Do not run formal eval from this diagnostic. Next step should be a small
+coverage-only implementation hook for `P2_one_per_family`.
+
 ## Expanded Pairing Formal Eval Result
 
 The formal eval log is:

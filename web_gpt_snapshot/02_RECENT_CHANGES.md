@@ -2,6 +2,111 @@
 
 ## Last Codex Workflow
 
+Codex added a capped normalized drift admission diagnostic:
+
+```text
+scripts/analyze_capped_normalized_drift_admission.py
+capped_normalized_drift_admission_diagnostics.md
+capped_normalized_drift_admission_diagnostics.json
+```
+
+This parsed existing JSON only and compared the fixed policies requested:
+
+```text
+P0_full_admission
+P1_one_per_canonical_form
+P2_one_per_family
+P3_top_k_canonical_per_sample for k=1,2,3,5
+P4_recovery_targeted_oracle_upper_bound
+P5_rank_bucket_representative
+```
+
+No model decoding, candidate generation, fingerprint simulation, reranking,
+formal eval, 64-sample eval, grids, retraining, scorer changes, rerank-mode
+changes, checkpoint/data changes, target-format changes, fingerprint changes,
+or production candidate-generation default changes were run.
+
+Baseline:
+
+```text
+current_expanded_full_oracle=15/32
+canonicalized_expanded_pool_coverage=23/32
+full_normalized_drift_only_admission_coverage=30/32
+pre_admission_target_pair_count=370
+full_normalized_admission_target_pair_count=1105
+```
+
+Policy comparison:
+
+```text
+P0_full_admission:
+  coverage=30/32
+  pair_count=1105
+P1_one_per_canonical_form:
+  coverage=30/32
+  pair_count=1105
+P2_one_per_family:
+  coverage=30/32
+  pair_count=340
+  pair_reduction_vs_full=765 (69.2%)
+P3_top_1_canonical_per_sample:
+  coverage=23/32
+  pair_count=285
+P3_top_2_canonical_per_sample:
+  coverage=23/32
+  pair_count=370
+P3_top_3_canonical_per_sample:
+  coverage=30/32
+  pair_count=425
+P3_top_5_canonical_per_sample:
+  coverage=30/32
+  pair_count=595
+P4_recovery_targeted_oracle_upper_bound:
+  coverage=30/32
+  pair_count=320
+P5_rank_bucket_representative:
+  coverage=23/32
+  pair_count=370
+```
+
+Best practical policy:
+
+```text
+P2_one_per_family
+coverage=30/32
+recovered_targets=0,1,2,3,4,6,7,9,10,14,15,20,22,25,29
+newly_recovered_beyond_current=0,2,6,7,15,25,29
+remaining_missing=16,28
+source_breakdown: beam=15
+family_breakdown: linear=6, sin=6, nested-mul linear=3, polynomial-like=0
+sampling_can_be_dropped=True
+```
+
+Safety:
+
+```text
+unsafe_collision_flag=False
+nonconstant_structural_merge_detected=False
+polynomial_like_truth_collides_with_linear_like=False
+pow2_x0_not_x0=True
+const_pow2_not_const_x0=True
+sin_x0_not_x0=True
+```
+
+Decision `A`: `P2_one_per_family` preserves the full `30/32` diagnostic ceiling
+with much lower pair pressure, only 20 pairs above the truth-aware upper bound.
+Recommend a future small coverage-only implementation hook for this capped
+normalized admission policy. No formal eval is recommended.
+
+Validation:
+
+```text
+py_compile scripts/analyze_capped_normalized_drift_admission.py: passed
+helper run: passed
+```
+
+## Previous Codex Workflow
+
 Codex added a coverage-only normalized drift-only admission diagnostic:
 
 ```text
