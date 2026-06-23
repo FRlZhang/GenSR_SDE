@@ -2,6 +2,54 @@
 
 ## Last Codex Workflow
 
+Codex added richer residual-vector logging and ran one 8-sample smoke:
+
+```text
+sde_validation_probe.py --rerank-residual-debug-json
+scripts/analyze_residual_debug_safety.py
+residual_debug_logging_smoke_report.md
+residual_debug_safety_smoke8.md
+residual_debug_safety_smoke8.json
+/private/tmp/gensr_sde_residual_debug_smoke8.json
+/private/tmp/gensr_sde_residual_debug_smoke8.log
+```
+
+This was a code/logging plus small smoke task. It did not run a formal
+32-sample eval, 64-sample eval, grids, retraining, scorer changes, or rerank
+mode changes.
+
+Summary:
+
+```text
+new flag=--rerank-residual-debug-json
+samples logged=8
+candidates logged=101
+valid candidates=101
+parse failures=0
+fingerprint failures=0
+active residual vector length=18
+weak residual vector length=96
+samples with oracle=0
+selected hits=0
+pair oracle samples=0
+```
+
+The debug JSON contains candidate-level source/rank labels, selected/oracle/pair
+labels, role-wise constants, normalized model score, active/weak scores, and
+active/weak residual vectors. The safety helper ran
+`per_active_dim_norm_plus_weak`, but the smoke had no oracle candidates or
+selected hits, so it validates logging and is inconclusive for scorer safety.
+
+Validation:
+
+```text
+py_compile sde_validation_probe.py scripts/analyze_residual_debug_safety.py: passed
+8-sample smoke: passed
+safety helper: passed
+```
+
+## Previous Codex Workflow
+
 Codex added an offline expanded-pairing active-residual scorer ablation:
 
 ```text

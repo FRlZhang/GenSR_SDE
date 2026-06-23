@@ -2,6 +2,41 @@
 
 Date: 2026-06-11
 
+Update, 2026-06-23 residual debug logging smoke: added optional
+`--rerank-residual-debug-json` to `sde_validation_probe.py`, plus
+`scripts/analyze_residual_debug_safety.py`, `residual_debug_logging_smoke_report.md`,
+and the smoke safety report. With the flag absent, rerank behavior is unchanged.
+
+The 8-sample eval-only smoke used the restored 2000-step checkpoint and baseline
+pairing settings. It completed without parse or fingerprint failures and wrote:
+
+```text
+/private/tmp/gensr_sde_residual_debug_smoke8.json
+/private/tmp/gensr_sde_residual_debug_smoke8.log
+```
+
+Logging summary:
+
+| Item | Value |
+| --- | ---: |
+| Samples logged | 8 |
+| Candidates logged | 101 |
+| Valid candidates | 101 |
+| Active residual vector length | 18 |
+| Weak residual vector length | 96 |
+| Samples with oracle candidate | 0 |
+| Selected hits | 0 |
+| Pair-oracle samples | 0 |
+
+The candidate-level JSON includes source/rank labels, selected/oracle/pair
+labels, role-wise constants, normalized model score, active/weak scores, and
+active/weak residual vectors. The offline safety helper ran
+`per_active_dim_norm_plus_weak`, but the smoke contained no oracle candidates
+and no selected hits, so it validates the logging path rather than scorer
+safety. No formal eval is justified. If scorer work continues, run one
+16-sample smoke with the same residual debug flag before implementing any scorer
+mode.
+
 Update, 2026-06-22 active-residual offline ablation: added
 `scripts/analyze_expanded_pair_active_ablation.py` and wrote
 `expanded_pairing_active_residual_ablation.md` /

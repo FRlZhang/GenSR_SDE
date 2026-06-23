@@ -279,6 +279,63 @@ debug top2 hit harms=0/3 for best variant
 decision=C
 ```
 
+## Residual Debug Logging Smoke
+
+This is an 8- or 16-sample eval-only smoke for candidate-level residual JSON
+logging. It is not a formal eval and does not add a scorer mode.
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/tmp/cache \
+/opt/miniconda3/envs/gensr/bin/python3 sde_validation_probe.py \
+  --eval-only \
+  --load-checkpoint /private/tmp/gensr_sde_role_token_2000/role_token_2000.pth \
+  --eval-samples 8 \
+  --batch-size 8 \
+  --n-paths 800 \
+  --active-paths 800 \
+  --n-steps 60 \
+  --max-generated-len 40 \
+  --min-generated-len 8 \
+  --constrained-beam-size 8 \
+  --rerank-candidates 8 \
+  --rerank-topk-from-beam 8 \
+  --rerank-score constant_grid_rolewise_no_multi_u0 \
+  --rerank-constant-values 0.25,0.5,1.0,2.0,4.0 \
+  --rerank-tie-epsilon 0.005 \
+  --rerank-tie-break none \
+  --sample-candidates 8 \
+  --sample-temperatures 0.8,1.0,1.2 \
+  --sample-top-k 8 \
+  --sample-top-p 0.95 \
+  --pair-drift-diffusion-candidates 8 \
+  --pair-drift-topk 4 \
+  --pair-diffusion-topk 6 \
+  --rerank-debug-topk 2 \
+  --rerank-residual-debug-json /private/tmp/gensr_sde_residual_debug_smoke8.json \
+  > /private/tmp/gensr_sde_residual_debug_smoke8.log 2>&1
+```
+
+Offline safety parser:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 \
+/opt/miniconda3/envs/gensr/bin/python3 scripts/analyze_residual_debug_safety.py \
+  --input-json /private/tmp/gensr_sde_residual_debug_smoke8.json \
+  --report residual_debug_safety_smoke8.md \
+  --json-output residual_debug_safety_smoke8.json \
+  > /private/tmp/gensr_sde_residual_debug_safety_smoke8.log 2>&1
+```
+
+Latest 8-sample result:
+
+```text
+samples logged=8
+candidates logged=101
+samples with oracle=0
+selected hits=0
+result=inconclusive for scorer safety; logging validated
+```
+
 ## Small Smoke Test
 
 ```bash

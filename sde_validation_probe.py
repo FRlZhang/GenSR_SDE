@@ -16,6 +16,7 @@ from __future__ import annotations
 import argparse
 import copy
 import heapq
+import json
 import os
 import pickle
 import random
@@ -87,6 +88,7 @@ def parse_args() -> argparse.Namespace:
         default="none",
     )
     parser.add_argument("--rerank-debug-topk", type=int, default=0)
+    parser.add_argument("--rerank-residual-debug-json", type=Path, default=None)
     parser.add_argument("--sample-candidates", type=int, default=0)
     parser.add_argument("--sample-temperature", type=float, default=1.0)
     parser.add_argument("--sample-temperatures", type=str, default="")
@@ -1183,6 +1185,8 @@ def empty_distance_details() -> dict:
         "shared_constant_active_kramers_moyal_distance": None,
         "shared_constant_gaussian_weak_kernel_distance": None,
         "shared_best_constant": None,
+        "active_kramers_moyal_residual": None,
+        "gaussian_weak_kernel_residual": None,
     }
 
 
@@ -1192,6 +1196,12 @@ def _normalized_l2(target: np.ndarray, candidate: np.ndarray) -> float:
         return float("inf")
     denom = np.linalg.norm(target) + 1e-8
     return float(np.linalg.norm(diff) / denom)
+
+
+def _normalized_residual_vector(target: np.ndarray, candidate: np.ndarray) -> np.ndarray:
+    diff = target - candidate
+    denom = np.linalg.norm(target) + 1e-8
+    return diff / denom
 
 
 def fingerprint_distance_details(
@@ -1210,6 +1220,8 @@ def fingerprint_distance_details(
             "multi_u0_moments_distance": inf,
             "active_kramers_moyal_distance": inf,
             "gaussian_weak_kernel_distance": inf,
+            "active_kramers_moyal_residual": None,
+            "gaussian_weak_kernel_residual": None,
         }
 
     segment_slices = {
@@ -1222,6 +1234,14 @@ def fingerprint_distance_details(
     }
     for name, segment_slice in segment_slices.items():
         details[name] = _normalized_l2(target[segment_slice], candidate[segment_slice])
+    details["active_kramers_moyal_residual"] = _normalized_residual_vector(
+        target[segment_slices["active_kramers_moyal_distance"]],
+        candidate[segment_slices["active_kramers_moyal_distance"]],
+    )
+    details["gaussian_weak_kernel_residual"] = _normalized_residual_vector(
+        target[segment_slices["gaussian_weak_kernel_distance"]],
+        candidate[segment_slices["gaussian_weak_kernel_distance"]],
+    )
 
     if score_kind in {"short_moment", "active_only"}:
         details["distance"] = details["active_kramers_moyal_distance"]
@@ -1400,6 +1420,12 @@ def score_candidate_system(
             "gaussian_weak_kernel_distance"
         ],
         "shared_best_constant": shared_details["best_drift_constant"],
+        "active_kramers_moyal_residual": best_details[
+            "active_kramers_moyal_residual"
+        ],
+        "gaussian_weak_kernel_residual": best_details[
+            "gaussian_weak_kernel_residual"
+        ],
     }, None, fingerprint_failures
 
 
@@ -1684,6 +1710,115 @@ def empty_oracle_diagnostic_counts() -> dict:
     return counts
 
 
+def _json_ready(value):
+    if isinstance(value, torch.Tensor):
+        return value.detach().cpu().tolist()
+    if isinstance(value, np.ndarray):
+        return value.astype(float).tolist()
+    if isinstance(value, np.integer):
+        return int(value)
+    if isinstance(value, np.floating):
+        number = float(value)
+        return number if np.isfinite(number) else None
+    if isinstance(value, float):
+        if not np.isfinite(value):
+            return None
+        return value
+    if isinstance(value, dict):
+        return {key: _json_ready(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_json_ready(item) for item in value]
+    return value
+
+
+def write_residual_debug_json(path: Path, payload: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(_json_ready(payload), indent=2, sort_keys=True))
+
+
+def residual_debug_candidate_record(
+    record: dict,
+    rank: int,
+    selected_record: dict | None,
+) -> dict:
+    return {
+        "candidate_rank": rank,
+        "candidate_index": record["candidate_idx"],
+        "source": record["source"],
+        "source_rank": record.get("source_rank"),
+        "sequence": record["words"],
+        "drift_tokens": record["drift_tokens"],
+        "diffusion_tokens": record["diffusion_tokens"],
+        "is_selected": record is selected_record,
+        "is_oracle_exact": bool(record["exact"]),
+        "is_oracle_relaxed": bool(record["relaxed"]),
+        "is_pair_oracle": bool(record["source"] == "pair" and is_oracle_record(record)),
+        "is_pair": bool(record["source"] == "pair"),
+        "rerank_score": record["distance"],
+        "active_score": record["active_kramers_moyal_distance"],
+        "weak_score": record["gaussian_weak_kernel_distance"],
+        "full_score": record["full_distance"],
+        "multi_u0_score": record["multi_u0_moments_distance"],
+        "baseline_score": record["baseline_distance"],
+        "shared_constant_score": record["shared_constant_distance"],
+        "best_constant": record["best_constant"],
+        "best_drift_constant": record["best_drift_constant"],
+        "best_diffusion_constant": record["best_diffusion_constant"],
+        "shared_best_constant": record["shared_best_constant"],
+        "normalized_model_score": record["normalized_model_score"],
+        "model_score": record["model_score"],
+        "state_dependent_drift": record["state_dependent_drift"],
+        "failure_reason": record["failure_reason"],
+        "active_residual_vector": record["active_kramers_moyal_residual"],
+        "weak_residual_vector": record["gaussian_weak_kernel_residual"],
+    }
+
+
+def residual_debug_sample_record(
+    sample_index: int,
+    truth: list[str],
+    greedy_words: list[str],
+    beam_words: list[str],
+    ranked_records: list[dict],
+    selected_record: dict | None,
+    oracle_record: dict | None,
+) -> dict:
+    selected_rank = None
+    oracle_rank = None
+    for rank, record in enumerate(ranked_records, start=1):
+        if record is selected_record:
+            selected_rank = rank
+        if record is oracle_record:
+            oracle_rank = rank
+    return {
+        "sample_index": sample_index,
+        "truth_sequence": truth,
+        "greedy_sequence": greedy_words,
+        "constrained_beam_sequence": beam_words,
+        "selected_sequence": (
+            selected_record["words"] if selected_record is not None else None
+        ),
+        "selected_rank": selected_rank,
+        "selected_is_oracle": (
+            bool(is_oracle_record(selected_record)) if selected_record is not None else False
+        ),
+        "oracle_rank": oracle_rank,
+        "oracle_sequence": (
+            oracle_record["words"] if oracle_record is not None else None
+        ),
+        "has_oracle": oracle_record is not None,
+        "has_pair_oracle": any(
+            record["source"] == "pair" and is_oracle_record(record)
+            for record in ranked_records
+        ),
+        "candidate_count": len(ranked_records),
+        "candidates": [
+            residual_debug_candidate_record(record, rank, selected_record)
+            for rank, record in enumerate(ranked_records, start=1)
+        ],
+    }
+
+
 def rerank_candidate_rows(
     env,
     samples: list[dict],
@@ -1701,6 +1836,7 @@ def rerank_candidate_rows(
     max_len: int,
     debug_topk: int,
     sample_offset: int = 0,
+    residual_debug: bool = False,
 ) -> tuple[torch.Tensor, dict]:
     pad_id = env.equation_word2id["<PAD>"]
     rows = []
@@ -1722,6 +1858,7 @@ def rerank_candidate_rows(
     oracle_diagnostic_counts = empty_oracle_diagnostic_counts()
     oracle_miss_rows = []
     oracle_rescue_rows = []
+    residual_debug_rows = []
 
     for sample_idx, sample in enumerate(samples):
         global_sample_idx = sample_offset + sample_idx
@@ -1739,11 +1876,14 @@ def rerank_candidate_rows(
             else []
         )
         selection_ranked_records = []
+        source_rank_counts = {}
         for candidate_idx, candidate in enumerate(candidates):
             attempted += 1
             words = decode_generation(env, candidate["tensor"])
             unique_candidates.add(tuple(words))
             source = candidate.get("source", "beam")
+            source_rank_counts[source] = source_rank_counts.get(source, 0) + 1
+            source_rank = source_rank_counts[source]
             is_pair = source == "pair"
             if is_pair:
                 pair_attempted += 1
@@ -1775,6 +1915,7 @@ def rerank_candidate_rows(
                         "source": source,
                         "tensor": candidate["tensor"],
                         "candidate_idx": candidate_idx,
+                        "source_rank": source_rank,
                         "state_dependent_drift": has_state_dependent_drift(drift_tokens),
                         "exact": exact_hit,
                         "relaxed": relaxed_hit,
@@ -1806,6 +1947,7 @@ def rerank_candidate_rows(
                         "source": source,
                         "tensor": candidate["tensor"],
                         "candidate_idx": candidate_idx,
+                        "source_rank": source_rank,
                         "state_dependent_drift": has_state_dependent_drift(drift_tokens),
                         "exact": exact_hit,
                         "relaxed": relaxed_hit,
@@ -1831,6 +1973,7 @@ def rerank_candidate_rows(
                         "source": source,
                         "tensor": candidate["tensor"],
                         "candidate_idx": candidate_idx,
+                        "source_rank": source_rank,
                         "state_dependent_drift": has_state_dependent_drift(drift_tokens),
                         "exact": exact_hit,
                         "relaxed": relaxed_hit,
@@ -1848,6 +1991,7 @@ def rerank_candidate_rows(
                 "source": source,
                 "tensor": candidate["tensor"],
                 "candidate_idx": candidate_idx,
+                "source_rank": source_rank,
                 "state_dependent_drift": has_state_dependent_drift(drift_tokens),
                 "exact": exact_hit,
                 "relaxed": relaxed_hit,
@@ -2122,6 +2266,18 @@ def rerank_candidate_rows(
                         "candidates_before_oracle": candidates_before_oracle,
                     }
                 )
+        if residual_debug:
+            residual_debug_rows.append(
+                residual_debug_sample_record(
+                    global_sample_idx,
+                    truth,
+                    greedy_words,
+                    beam_words,
+                    selection_ranked_records,
+                    selected_record,
+                    best_oracle_record,
+                )
+            )
 
     return torch.stack(rows, dim=0), {
         "rerank_candidates_attempted": attempted,
@@ -2142,6 +2298,7 @@ def rerank_candidate_rows(
         "rerank_debug": debug_rows,
         "rerank_oracle_misses": oracle_miss_rows,
         "rerank_oracle_rescue_cases": oracle_rescue_rows,
+        "rerank_residual_debug": residual_debug_rows,
         **oracle_diagnostic_counts,
     }
 
@@ -2237,6 +2394,7 @@ def evaluate(
     pair_drift_diffusion_candidates: int,
     pair_drift_topk: int,
     pair_diffusion_topk: int,
+    residual_debug: bool = False,
 ) -> dict:
     rows = []
     seq_rows = []
@@ -2328,6 +2486,7 @@ def evaluate(
                     trainer.params.max_generated_output_len,
                     rerank_debug_topk,
                     i * batch_size,
+                    residual_debug,
                 )
                 reranked_seq = sequence_metrics(
                     trainer.env,
@@ -2519,13 +2678,16 @@ def evaluate(
         debug_rows = []
         oracle_miss_rows = []
         oracle_rescue_rows = []
+        residual_debug_rows = []
         for row in rerank_stat_rows:
             debug_rows.extend(row["rerank_debug"])
             oracle_miss_rows.extend(row["rerank_oracle_misses"])
             oracle_rescue_rows.extend(row["rerank_oracle_rescue_cases"])
+            residual_debug_rows.extend(row["rerank_residual_debug"])
         result["rerank_debug"] = debug_rows
         result["rerank_oracle_misses"] = oracle_miss_rows
         result["rerank_oracle_rescue_cases"] = oracle_rescue_rows
+        result["rerank_residual_debug"] = residual_debug_rows
     result["examples"] = examples[:5]
     return result
 
@@ -2605,13 +2767,38 @@ def main() -> None:
         args.pair_drift_diffusion_candidates,
         args.pair_drift_topk,
         args.pair_diffusion_topk,
+        args.rerank_residual_debug_json is not None,
     )
+    if args.rerank_residual_debug_json is not None:
+        write_residual_debug_json(
+            args.rerank_residual_debug_json,
+            {
+                "metadata": {
+                    "eval_samples": args.eval_samples,
+                    "batch_size": args.batch_size,
+                    "eval_seed": args.eval_seed,
+                    "n_paths": args.n_paths,
+                    "active_paths": args.active_paths,
+                    "n_steps": args.n_steps,
+                    "rerank_score": args.rerank_score,
+                    "rerank_constant_values": rerank_constant_values,
+                    "rerank_tie_epsilon": args.rerank_tie_epsilon,
+                    "rerank_tie_break": args.rerank_tie_break,
+                    "pair_drift_diffusion_candidates": args.pair_drift_diffusion_candidates,
+                    "pair_drift_topk": args.pair_drift_topk,
+                    "pair_diffusion_topk": args.pair_diffusion_topk,
+                },
+                "samples": metrics.get("rerank_residual_debug", []),
+            },
+        )
+        print(f"rerank_residual_debug_json={args.rerank_residual_debug_json}")
     for key, value in metrics.items():
         if key in {
             "examples",
             "rerank_debug",
             "rerank_oracle_misses",
             "rerank_oracle_rescue_cases",
+            "rerank_residual_debug",
         }:
             continue
         print(f"{key}={value:.6f}")

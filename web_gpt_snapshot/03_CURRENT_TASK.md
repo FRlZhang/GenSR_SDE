@@ -2,10 +2,10 @@
 
 ## Next Engineering Task
 
-Use the expanded-pairing active-residual ablation to decide whether richer
-residual logging is worth adding before any scorer change. Expanded-pairing
-pruning diagnostics found no safe oracle-preserving pruning rule, and the
-offline scorer ablation is promising but not stable enough for a rerank mode.
+Use the new residual-debug JSON export to check scorer safety offline before
+any scorer change. Expanded-pairing pruning diagnostics found no safe
+oracle-preserving pruning rule, and the offline scorer ablation is promising but
+not stable enough for a rerank mode.
 
 Current strongest no-retraining decoding setting:
 
@@ -80,6 +80,20 @@ wrong selected pair rescues=5/8
 debug top2 selected-hit harms=0/3 for best variant
 clipped/Huber/top-k variants harm one debug top2 selected hit
 decision=C
+```
+
+Residual debug logging smoke:
+
+```text
+new flag=--rerank-residual-debug-json
+smoke samples=8
+candidates logged=101
+active residual vector length=18
+weak residual vector length=96
+samples with oracle=0
+selected hits=0
+pair oracle samples=0
+safety helper result=inconclusive because no oracle/hit cases
 ```
 
 Candidate-coverage-only result:
@@ -180,8 +194,8 @@ before modifying `sde_validation_probe.py`.
 
 Likely next additions:
 
-- if continuing scorer analysis, add richer residual-vector logging in a small
-  8- or 16-sample smoke before testing a scorer mode;
+- if continuing scorer analysis, run one 16-sample smoke with
+  `--rerank-residual-debug-json` before testing a scorer mode;
 - do not add a rerank mode or formal eval from the offline ablation alone;
 - defer drift span diversity work until the expanded-pairing ranking failure is
   understood;
@@ -229,6 +243,6 @@ Likely next additions:
 
 ## Success Standard
 
-The next useful scorer-side step is richer residual logging in a small smoke so
-full candidate-pool hit safety can be checked offline. The other main direction
+The next useful scorer-side step is one 16-sample residual-debug smoke so full
+candidate-pool hit safety can be checked offline. The other main direction
 remains drift span diversity for the 17 expanded-pairing oracle-absent samples.

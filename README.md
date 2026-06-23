@@ -132,6 +132,10 @@ Current best result so far:
   calibration used miss residuals only; simpler clipped/Huber/top-k variants
   harm one debug top-2 selected-hit check. The next scorer step should be richer
   residual logging in a small smoke, not a new default or formal eval.
+- `sde_validation_probe.py` now has optional `--rerank-residual-debug-json` for
+  candidate-level residual export. The first 8-sample smoke logged 101
+  candidates with active/weak residual vectors and labels, but had no oracle
+  candidates, so it validates the logging path rather than scorer safety.
 
 See [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md)
 and [PROJECT_STATUS.md](/Users/lzhang/Documents/GenSR_SDE/PROJECT_STATUS.md) for
@@ -234,6 +238,7 @@ PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/
   --rerank-topk-from-beam 8 \
   --rerank-score full_fingerprint \
   --rerank-debug-topk 2 \
+  --rerank-residual-debug-json /private/tmp/gensr_sde_residual_debug.json \
   --sample-candidates 8 \
   --sample-temperatures 0.8,1.0,1.2 \
   --sample-top-k 8 \
