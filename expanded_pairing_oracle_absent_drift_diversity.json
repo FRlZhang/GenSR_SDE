@@ -1,0 +1,2831 @@
+{
+  "baseline_comparison": {
+    "diffusion_only_present": 17,
+    "drift_and_diffusion_separate_not_paired": 6,
+    "full_oracle_present": 9,
+    "oracle_absent": 23
+  },
+  "collapse_pattern_breakdown": {
+    "drops-polynomial-power": 2,
+    "over-nested, over-nested-sin": 6,
+    "state-collapsed": 3,
+    "state-collapsed, constant-heavy": 6
+  },
+  "decision": {
+    "choice": "A",
+    "label": "Drift spans are missing but nearby drift families appear",
+    "recommended_next_action": "Run one future drift-only candidate diversity smoke that logs drift-only candidate spans/ranks before any rerank or formal eval change."
+  },
+  "drift_family_breakdown": {
+    "constant drift": 0,
+    "linear drift": 6,
+    "nested-mul linear drift": 3,
+    "other / unknown": 0,
+    "polynomial-like drift": 2,
+    "sin drift": 6
+  },
+  "exact_diffusion_source_counts": {
+    "beam": 17,
+    "pair": 17,
+    "sampling": 6
+  },
+  "fields_available": {
+    "exact_diffusion_present": true,
+    "exact_diffusion_rank": true,
+    "exact_drift_present": true,
+    "grammar_rejection_counts": false,
+    "nearest_drift_candidate": true,
+    "nearest_drift_rank_within_logged_candidates": true,
+    "source_breakdown_for_logged_candidates": true,
+    "token_logits_or_raw_sampling_entropy": false,
+    "truth_diffusion_tokens": true,
+    "truth_drift_tokens": true,
+    "truth_full_expression": true,
+    "unlogged_beam_or_sampling_tail_ranks": false
+  },
+  "limitations": [
+    "Existing coverage JSON proves exact drift is absent from the logged candidate pool, but it does not contain ranks for unlogged beam/sampling tails.",
+    "Sampling entropy, token logits, and grammar rejection counts are not present, so sampling under-diversity and grammar collapse are inferred from emitted spans only."
+  ],
+  "metadata": {
+    "checkpoint": "/private/tmp/gensr_sde_role_token_2000/role_token_2000.pth",
+    "eval_samples": 32,
+    "pair_diffusion_topk": 6,
+    "pair_drift_diffusion_candidates": 32,
+    "pair_drift_topk": 5,
+    "source_log": "/private/tmp/gensr_sde_32_rolewise_no_multi_u0.log"
+  },
+  "nearest_drift_family_breakdown": {
+    "constant drift": 6,
+    "nested-mul linear drift": 3,
+    "sin drift": 8
+  },
+  "nearest_drift_source_counts": {
+    "beam": 17,
+    "pair": 17,
+    "sampling": 5
+  },
+  "nearest_drift_template_breakdown": {
+    "mul CONSTANT CONSTANT": 6,
+    "mul mul CONSTANT CONSTANT CONSTANT": 3,
+    "mul mul CONSTANT CONSTANT sin x_0": 8
+  },
+  "samples": [
+    {
+      "best_available_diffusion_candidate": {
+        "best_occurrence": {
+          "candidate_rank": 1,
+          "source": "beam",
+          "source_rank": 1
+        },
+        "distance": 0,
+        "family": "other / unknown",
+        "occurrences": [
+          {
+            "candidate_rank": 1,
+            "source": "beam",
+            "source_rank": 1
+          },
+          {
+            "candidate_rank": 6,
+            "source": "beam",
+            "source_rank": 6
+          },
+          {
+            "candidate_rank": 7,
+            "source": "beam",
+            "source_rank": 7
+          },
+          {
+            "candidate_rank": 12,
+            "source": "pair",
+            "source_rank": 2
+          }
+        ],
+        "right_family": false,
+        "sources": [
+          "beam",
+          "pair"
+        ],
+        "tokens": [
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ]
+      },
+      "best_available_drift_candidate": {
+        "best_occurrence": {
+          "candidate_rank": 6,
+          "source": "beam",
+          "source_rank": 6
+        },
+        "distance": 1,
+        "family": "constant drift",
+        "occurrences": [
+          {
+            "candidate_rank": 6,
+            "source": "beam",
+            "source_rank": 6
+          },
+          {
+            "candidate_rank": 14,
+            "source": "pair",
+            "source_rank": 4
+          },
+          {
+            "candidate_rank": 16,
+            "source": "pair",
+            "source_rank": 6
+          },
+          {
+            "candidate_rank": 17,
+            "source": "pair",
+            "source_rank": 7
+          },
+          {
+            "candidate_rank": 18,
+            "source": "pair",
+            "source_rank": 8
+          }
+        ],
+        "right_family": false,
+        "sources": [
+          "beam",
+          "pair"
+        ],
+        "tokens": [
+          "mul",
+          "CONSTANT",
+          "CONSTANT"
+        ]
+      },
+      "blocker": "exact drift absent from logged candidate sources",
+      "collapse_pattern": "state-collapsed, constant-heavy",
+      "coverage": "diffusion_only_present",
+      "diffusion_sources_with_partial_spans": {
+        "beam": true,
+        "pair": true,
+        "sampling": true
+      },
+      "drift_family": "linear drift",
+      "drift_sources_with_partial_spans": {
+        "beam": true,
+        "pair": true,
+        "sampling": true
+      },
+      "exact_diffusion_occurrences": [
+        {
+          "candidate_rank": 1,
+          "score": -0.5361454621402761,
+          "source": "beam",
+          "source_rank": 1
+        },
+        {
+          "candidate_rank": 6,
+          "score": -0.6198010075267381,
+          "source": "beam",
+          "source_rank": 6
+        },
+        {
+          "candidate_rank": 7,
+          "score": -0.6287436422163598,
+          "source": "beam",
+          "source_rank": 7
+        },
+        {
+          "candidate_rank": 12,
+          "score": -0.16908633695129183,
+          "source": "pair",
+          "source_rank": 2
+        }
+      ],
+      "exact_diffusion_rank": 1,
+      "has_exact_diffusion": true,
+      "has_exact_drift": false,
+      "has_full_oracle": false,
+      "missing_side": "drift",
+      "nearest_drift_rank": 6,
+      "sample_index": 0,
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "sqrt",
+        "abs",
+        "x_0"
+      ],
+      "truth_drift_rank": null,
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "truth_full_expression": "<DRIFT> mul CONSTANT x_0 <DIFFUSION> mul CONSTANT sqrt abs x_0",
+      "unique_diffusions": 5,
+      "unique_drifts": 4
+    },
+    {
+      "best_available_diffusion_candidate": {
+        "best_occurrence": {
+          "candidate_rank": 1,
+          "source": "beam",
+          "source_rank": 1
+        },
+        "distance": 0,
+        "family": "other / unknown",
+        "occurrences": [
+          {
+            "candidate_rank": 1,
+            "source": "beam",
+            "source_rank": 1
+          },
+          {
+            "candidate_rank": 6,
+            "source": "beam",
+            "source_rank": 6
+          },
+          {
+            "candidate_rank": 7,
+            "source": "beam",
+            "source_rank": 7
+          },
+          {
+            "candidate_rank": 11,
+            "source": "pair",
+            "source_rank": 2
+          }
+        ],
+        "right_family": false,
+        "sources": [
+          "beam",
+          "pair"
+        ],
+        "tokens": [
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ]
+      },
+      "best_available_drift_candidate": {
+        "best_occurrence": {
+          "candidate_rank": 1,
+          "source": "beam",
+          "source_rank": 1
+        },
+        "distance": 1,
+        "family": "sin drift",
+        "occurrences": [
+          {
+            "candidate_rank": 1,
+            "source": "beam",
+            "source_rank": 1
+          },
+          {
+            "candidate_rank": 3,
+            "source": "beam",
+            "source_rank": 3
+          },
+          {
+            "candidate_rank": 10,
+            "source": "pair",
+            "source_rank": 1
+          },
+          {
+            "candidate_rank": 12,
+            "source": "pair",
+            "source_rank": 3
+          },
+          {
+            "candidate_rank": 13,
+            "source": "pair",
+            "source_rank": 4
+          }
+        ],
+        "right_family": true,
+        "sources": [
+          "beam",
+          "pair"
+        ],
+        "tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ]
+      },
+      "blocker": "exact drift absent from logged candidate sources",
+      "collapse_pattern": "over-nested, over-nested-sin",
+      "coverage": "diffusion_only_present",
+      "diffusion_sources_with_partial_spans": {
+        "beam": true,
+        "pair": true,
+        "sampling": true
+      },
+      "drift_family": "sin drift",
+      "drift_sources_with_partial_spans": {
+        "beam": true,
+        "pair": true,
+        "sampling": true
+      },
+      "exact_diffusion_occurrences": [
+        {
+          "candidate_rank": 1,
+          "score": -0.5357275044204808,
+          "source": "beam",
+          "source_rank": 1
+        },
+        {
+          "candidate_rank": 6,
+          "score": -0.6199401520210543,
+          "source": "beam",
+          "source_rank": 6
+        },
+        {
+          "candidate_rank": 7,
+          "score": -0.6281394719266481,
+          "source": "beam",
+          "source_rank": 7
+        },
+        {
+          "candidate_rank": 11,
+          "score": -0.16900340748794968,
+          "source": "pair",
+          "source_rank": 2
+        }
+      ],
+      "exact_diffusion_rank": 1,
+      "has_exact_diffusion": true,
+      "has_exact_drift": false,
+      "has_full_oracle": false,
+      "missing_side": "drift",
+      "nearest_drift_rank": 1,
+      "sample_index": 1,
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "sqrt",
+        "abs",
+        "x_0"
+      ],
+      "truth_drift_rank": null,
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ],
+      "truth_full_expression": "<DRIFT> mul CONSTANT sin x_0 <DIFFUSION> mul CONSTANT sqrt abs x_0",
+      "unique_diffusions": 5,
+      "unique_drifts": 4
+    },
+    {
+      "best_available_diffusion_candidate": {
+        "best_occurrence": {
+          "candidate_rank": 3,
+          "source": "beam",
+          "source_rank": 3
+        },
+        "distance": 0,
+        "family": "other / unknown",
+        "occurrences": [
+          {
+            "candidate_rank": 3,
+            "source": "beam",
+            "source_rank": 3
+          },
+          {
+            "candidate_rank": 8,
+            "source": "beam",
+            "source_rank": 8
+          },
+          {
+            "candidate_rank": 16,
+            "source": "pair",
+            "source_rank": 6
+          },
+          {
+            "candidate_rank": 10,
+            "source": "sampling",
+            "source_rank": 2
+          }
+        ],
+        "right_family": false,
+        "sources": [
+          "beam",
+          "pair",
+          "sampling"
+        ],
+        "tokens": [
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ]
+      },
+      "best_available_drift_candidate": {
+        "best_occurrence": {
+          "candidate_rank": 2,
+          "source": "beam",
+          "source_rank": 2
+        },
+        "distance": 1,
+        "family": "nested-mul linear drift",
+        "occurrences": [
+          {
+            "candidate_rank": 2,
+            "source": "beam",
+            "source_rank": 2
+          },
+          {
+            "candidate_rank": 4,
+            "source": "beam",
+            "source_rank": 4
+          },
+          {
+            "candidate_rank": 5,
+            "source": "beam",
+            "source_rank": 5
+          },
+          {
+            "candidate_rank": 12,
+            "source": "pair",
+            "source_rank": 2
+          },
+          {
+            "candidate_rank": 10,
+            "source": "sampling",
+            "source_rank": 2
+          }
+        ],
+        "right_family": true,
+        "sources": [
+          "beam",
+          "pair",
+          "sampling"
+        ],
+        "tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "CONSTANT"
+        ]
+      },
+      "blocker": "exact drift absent from logged candidate sources",
+      "collapse_pattern": "state-collapsed",
+      "coverage": "diffusion_only_present",
+      "diffusion_sources_with_partial_spans": {
+        "beam": true,
+        "pair": true,
+        "sampling": true
+      },
+      "drift_family": "nested-mul linear drift",
+      "drift_sources_with_partial_spans": {
+        "beam": true,
+        "pair": true,
+        "sampling": true
+      },
+      "exact_diffusion_occurrences": [
+        {
+          "candidate_rank": 3,
+          "score": -0.570418560494411,
+          "source": "beam",
+          "source_rank": 3
+        },
+        {
+          "candidate_rank": 8,
+          "score": -0.6520071979635146,
+          "source": "beam",
+          "source_rank": 8
+        },
+        {
+          "candidate_rank": 10,
+          "score": -0.6361540591035535,
+          "source": "sampling",
+          "source_rank": 2
+        },
+        {
+          "candidate_rank": 16,
+          "score": -0.222070252178053,
+          "source": "pair",
+          "source_rank": 6
+        }
+      ],
+      "exact_diffusion_rank": 3,
+      "has_exact_diffusion": true,
+      "has_exact_drift": false,
+      "has_full_oracle": false,
+      "missing_side": "drift",
+      "nearest_drift_rank": 2,
+      "sample_index": 2,
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "abs",
+        "x_0"
+      ],
+      "truth_drift_rank": null,
+      "truth_drift_tokens": [
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "x_0"
+      ],
+      "truth_full_expression": "<DRIFT> mul mul CONSTANT CONSTANT x_0 <DIFFUSION> mul CONSTANT abs x_0",
+      "unique_diffusions": 5,
+      "unique_drifts": 4
+    },
+    {
+      "best_available_diffusion_candidate": {
+        "best_occurrence": {
+          "candidate_rank": 2,
+          "source": "beam",
+          "source_rank": 2
+        },
+        "distance": 0,
+        "family": "other / unknown",
+        "occurrences": [
+          {
+            "candidate_rank": 2,
+            "source": "beam",
+            "source_rank": 2
+          },
+          {
+            "candidate_rank": 10,
+            "source": "pair",
+            "source_rank": 1
+          },
+          {
+            "candidate_rank": 12,
+            "source": "pair",
+            "source_rank": 3
+          },
+          {
+            "candidate_rank": 15,
+            "source": "pair",
+            "source_rank": 6
+          },
+          {
+            "candidate_rank": 16,
+            "source": "pair",
+            "source_rank": 7
+          }
+        ],
+        "right_family": false,
+        "sources": [
+          "beam",
+          "pair"
+        ],
+        "tokens": [
+          "add",
+          "CONSTANT",
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ]
+      },
+      "best_available_drift_candidate": {
+        "best_occurrence": {
+          "candidate_rank": 7,
+          "source": "beam",
+          "source_rank": 7
+        },
+        "distance": 1,
+        "family": "constant drift",
+        "occurrences": [
+          {
+            "candidate_rank": 7,
+            "source": "beam",
+            "source_rank": 7
+          },
+          {
+            "candidate_rank": 15,
+            "source": "pair",
+            "source_rank": 6
+          },
+          {
+            "candidate_rank": 18,
+            "source": "pair",
+            "source_rank": 9
+          },
+          {
+            "candidate_rank": 22,
+            "source": "pair",
+            "source_rank": 13
+          },
+          {
+            "candidate_rank": 23,
+            "source": "pair",
+            "source_rank": 14
+          }
+        ],
+        "right_family": false,
+        "sources": [
+          "beam",
+          "pair"
+        ],
+        "tokens": [
+          "mul",
+          "CONSTANT",
+          "CONSTANT"
+        ]
+      },
+      "blocker": "exact drift absent from logged candidate sources",
+      "collapse_pattern": "state-collapsed, constant-heavy",
+      "coverage": "diffusion_only_present",
+      "diffusion_sources_with_partial_spans": {
+        "beam": true,
+        "pair": true,
+        "sampling": true
+      },
+      "drift_family": "linear drift",
+      "drift_sources_with_partial_spans": {
+        "beam": true,
+        "pair": true,
+        "sampling": true
+      },
+      "exact_diffusion_occurrences": [
+        {
+          "candidate_rank": 2,
+          "score": -0.5360443224177724,
+          "source": "beam",
+          "source_rank": 2
+        },
+        {
+          "candidate_rank": 10,
+          "score": -0.15389744618535572,
+          "source": "pair",
+          "source_rank": 1
+        },
+        {
+          "candidate_rank": 12,
+          "score": -0.1702765811739595,
+          "source": "pair",
+          "source_rank": 3
+        },
+        {
+          "candidate_rank": 15,
+          "score": -0.19184174789520617,
+          "source": "pair",
+          "source_rank": 6
+        },
+        {
+          "candidate_rank": 16,
+          "score": -0.16024876552838266,
+          "source": "pair",
+          "source_rank": 7
+        }
+      ],
+      "exact_diffusion_rank": 2,
+      "has_exact_diffusion": true,
+      "has_exact_drift": false,
+      "has_full_oracle": false,
+      "missing_side": "drift",
+      "nearest_drift_rank": 7,
+      "sample_index": 3,
+      "truth_diffusion_tokens": [
+        "add",
+        "CONSTANT",
+        "mul",
+        "CONSTANT",
+        "abs",
+        "x_0"
+      ],
+      "truth_drift_rank": null,
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "truth_full_expression": "<DRIFT> mul CONSTANT x_0 <DIFFUSION> add CONSTANT mul CONSTANT abs x_0",
+      "unique_diffusions": 5,
+      "unique_drifts": 5
+    },
+    {
+      "best_available_diffusion_candidate": {
+        "best_occurrence": {
+          "candidate_rank": 6,
+          "source": "beam",
+          "source_rank": 6
+        },
+        "distance": 0,
+        "family": "constant drift",
+        "occurrences": [
+          {
+            "candidate_rank": 6,
+            "source": "beam",
+            "source_rank": 6
+          },
+          {
+            "candidate_rank": 15,
+            "source": "pair",
+            "source_rank": 6
+          },
+          {
+            "candidate_rank": 21,
+            "source": "pair",
+            "source_rank": 12
+          },
+          {
+            "candidate_rank": 23,
+            "source": "pair",
+            "source_rank": 14
+          },
+          {
+            "candidate_rank": 25,
+            "source": "pair",
+            "source_rank": 16
+          }
+        ],
+        "right_family": false,
+        "sources": [
+          "beam",
+          "pair"
+        ],
+        "tokens": [
+          "mul",
+          "CONSTANT",
+          "CONSTANT"
+        ]
+      },
+      "best_available_drift_candidate": {
+        "best_occurrence": {
+          "candidate_rank": 2,
+          "source": "beam",
+          "source_rank": 2
+        },
+        "distance": 1,
+        "family": "sin drift",
+        "occurrences": [
+          {
+            "candidate_rank": 2,
+            "source": "beam",
+            "source_rank": 2
+          },
+          {
+            "candidate_rank": 3,
+            "source": "beam",
+            "source_rank": 3
+          },
+          {
+            "candidate_rank": 11,
+            "source": "pair",
+            "source_rank": 2
+          },
+          {
+            "candidate_rank": 13,
+            "source": "pair",
+            "source_rank": 4
+          },
+          {
+            "candidate_rank": 15,
+            "source": "pair",
+            "source_rank": 6
+          }
+        ],
+        "right_family": true,
+        "sources": [
+          "beam",
+          "pair"
+        ],
+        "tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ]
+      },
+      "blocker": "exact drift absent from logged candidate sources",
+      "collapse_pattern": "over-nested, over-nested-sin",
+      "coverage": "diffusion_only_present",
+      "diffusion_sources_with_partial_spans": {
+        "beam": true,
+        "pair": true,
+        "sampling": true
+      },
+      "drift_family": "sin drift",
+      "drift_sources_with_partial_spans": {
+        "beam": true,
+        "pair": true,
+        "sampling": true
+      },
+      "exact_diffusion_occurrences": [
+        {
+          "candidate_rank": 6,
+          "score": -0.6174651077484574,
+          "source": "beam",
+          "source_rank": 6
+        },
+        {
+          "candidate_rank": 15,
+          "score": -0.1916183476861514,
+          "source": "pair",
+          "source_rank": 6
+        },
+        {
+          "candidate_rank": 21,
+          "score": -0.2133590155530278,
+          "source": "pair",
+          "source_rank": 12
+        },
+        {
+          "candidate_rank": 23,
+          "score": -0.24652943191651072,
+          "source": "pair",
+          "source_rank": 14
+        },
+        {
+          "candidate_rank": 25,
+          "score": -0.19645795458122645,
+          "source": "pair",
+          "source_rank": 16
+        }
+      ],
+      "exact_diffusion_rank": 5,
+      "has_exact_diffusion": true,
+      "has_exact_drift": false,
+      "has_full_oracle": false,
+      "missing_side": "drift",
+      "nearest_drift_rank": 2,
+      "sample_index": 4,
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "CONSTANT"
+      ],
+      "truth_drift_rank": null,
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ],
+      "truth_full_expression": "<DRIFT> mul CONSTANT sin x_0 <DIFFUSION> mul CONSTANT CONSTANT",
+      "unique_diffusions": 5,
+      "unique_drifts": 5
+    },
+    {
+      "best_available_diffusion_candidate": {
+        "best_occurrence": {
+          "candidate_rank": 4,
+          "source": "beam",
+          "source_rank": 4
+        },
+        "distance": 0,
+        "family": "linear drift",
+        "occurrences": [
+          {
+            "candidate_rank": 4,
+            "source": "beam",
+            "source_rank": 4
+          },
+          {
+            "candidate_rank": 13,
+            "source": "pair",
+            "source_rank": 3
+          },
+          {
+            "candidate_rank": 17,
+            "source": "pair",
+            "source_rank": 7
+          },
+          {
+            "candidate_rank": 19,
+            "source": "pair",
+            "source_rank": 9
+          }
+        ],
+        "right_family": false,
+        "sources": [
+          "beam",
+          "pair"
+        ],
+        "tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      "best_available_drift_candidate": {
+        "best_occurrence": {
+          "candidate_rank": 6,
+          "source": "beam",
+          "source_rank": 6
+        },
+        "distance": 1,
+        "family": "constant drift",
+        "occurrences": [
+          {
+            "candidate_rank": 6,
+            "source": "beam",
+            "source_rank": 6
+          },
+          {
+            "candidate_rank": 14,
+            "source": "pair",
+            "source_rank": 4
+          },
+          {
+            "candidate_rank": 16,
+            "source": "pair",
+            "source_rank": 6
+          },
+          {
+            "candidate_rank": 17,
+            "source": "pair",
+            "source_rank": 7
+          },
+          {
+            "candidate_rank": 18,
+            "source": "pair",
+            "source_rank": 8
+          }
+        ],
+        "right_family": false,
+        "sources": [
+          "beam",
+          "pair"
+        ],
+        "tokens": [
+          "mul",
+          "CONSTANT",
+          "CONSTANT"
+        ]
+      },
+      "blocker": "exact drift absent from logged candidate sources",
+      "collapse_pattern": "state-collapsed, constant-heavy",
+      "coverage": "diffusion_only_present",
+      "diffusion_sources_with_partial_spans": {
+        "beam": true,
+        "pair": true,
+        "sampling": true
+      },
+      "drift_family": "linear drift",
+      "drift_sources_with_partial_spans": {
+        "beam": true,
+        "pair": true,
+        "sampling": true
+      },
+      "exact_diffusion_occurrences": [
+        {
+          "candidate_rank": 4,
+          "score": -0.6154859622524629,
+          "source": "beam",
+          "source_rank": 4
+        },
+        {
+          "candidate_rank": 13,
+          "score": -0.19120384017580636,
+          "source": "pair",
+          "source_rank": 3
+        },
+        {
+          "candidate_rank": 17,
+          "score": -0.24634184842839885,
+          "source": "pair",
+          "source_rank": 7
+        },
+        {
+          "candidate_rank": 19,
+          "score": -0.1961834809173577,
+          "source": "pair",
+          "source_rank": 9
+        }
+      ],
+      "exact_diffusion_rank": 4,
+      "has_exact_diffusion": true,
+      "has_exact_drift": false,
+      "has_full_oracle": false,
+      "missing_side": "drift",
+      "nearest_drift_rank": 6,
+      "sample_index": 6,
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "truth_drift_rank": null,
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "truth_full_expression": "<DRIFT> mul CONSTANT x_0 <DIFFUSION> mul CONSTANT x_0",
+      "unique_diffusions": 5,
+      "unique_drifts": 4
+    },
+    {
+      "best_available_diffusion_candidate": {
+        "best_occurrence": {
+          "candidate_rank": 5,
+          "source": "beam",
+          "source_rank": 5
+        },
+        "distance": 0,
+        "family": "constant drift",
+        "occurrences": [
+          {
+            "candidate_rank": 5,
+            "source": "beam",
+            "source_rank": 5
+          },
+          {
+            "candidate_rank": 18,
+            "source": "pair",
+            "source_rank": 8
+          },
+          {
+            "candidate_rank": 20,
+            "source": "pair",
+            "source_rank": 10
+          },
+          {
+            "candidate_rank": 10,
+            "source": "sampling",
+            "source_rank": 2
+          }
+        ],
+        "right_family": false,
+        "sources": [
+          "beam",
+          "pair",
+          "sampling"
+        ],
+        "tokens": [
+          "mul",
+          "CONSTANT",
+          "CONSTANT"
+        ]
+      },
+      "best_available_drift_candidate": {
+        "best_occurrence": {
+          "candidate_rank": 6,
+          "source": "beam",
+          "source_rank": 6
+        },
+        "distance": 1,
+        "family": "constant drift",
+        "occurrences": [
+          {
+            "candidate_rank": 6,
+            "source": "beam",
+            "source_rank": 6
+          },
+          {
+            "candidate_rank": 14,
+            "source": "pair",
+            "source_rank": 4
+          },
+          {
+            "candidate_rank": 16,
+            "source": "pair",
+            "source_rank": 6
+          },
+          {
+            "candidate_rank": 17,
+            "source": "pair",
+            "source_rank": 7
+          },
+          {
+            "candidate_rank": 18,
+            "source": "pair",
+            "source_rank": 8
+          }
+        ],
+        "right_family": false,
+        "sources": [
+          "beam",
+          "pair"
+        ],
+        "tokens": [
+          "mul",
+          "CONSTANT",
+          "CONSTANT"
+        ]
+      },
+      "blocker": "exact drift absent from logged candidate sources",
+      "collapse_pattern": "state-collapsed, constant-heavy",
+      "coverage": "diffusion_only_present",
+      "diffusion_sources_with_partial_spans": {
+        "beam": true,
+        "pair": true,
+        "sampling": true
+      },
+      "drift_family": "linear drift",
+      "drift_sources_with_partial_spans": {
+        "beam": true,
+        "pair": true,
+        "sampling": true
+      },
+      "exact_diffusion_occurrences": [
+        {
+          "candidate_rank": 5,
+          "score": -0.6177445887518193,
+          "source": "beam",
+          "source_rank": 5
+        },
+        {
+          "candidate_rank": 10,
+          "score": -0.7146858923052631,
+          "source": "sampling",
+          "source_rank": 2
+        },
+        {
+          "candidate_rank": 18,
+          "score": -0.24682857553185159,
+          "source": "pair",
+          "source_rank": 8
+        },
+        {
+          "candidate_rank": 20,
+          "score": -0.19652042153969626,
+          "source": "pair",
+          "source_rank": 10
+        }
+      ],
+      "exact_diffusion_rank": 5,
+      "has_exact_diffusion": true,
+      "has_exact_drift": false,
+      "has_full_oracle": false,
+      "missing_side": "drift",
+      "nearest_drift_rank": 6,
+      "sample_index": 7,
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "CONSTANT"
+      ],
+      "truth_drift_rank": null,
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "truth_full_expression": "<DRIFT> mul CONSTANT x_0 <DIFFUSION> mul CONSTANT CONSTANT",
+      "unique_diffusions": 5,
+      "unique_drifts": 4
+    },
+    {
+      "best_available_diffusion_candidate": {
+        "best_occurrence": {
+          "candidate_rank": 2,
+          "source": "beam",
+          "source_rank": 2
+        },
+        "distance": 0,
+        "family": "other / unknown",
+        "occurrences": [
+          {
+            "candidate_rank": 2,
+            "source": "beam",
+            "source_rank": 2
+          },
+          {
+            "candidate_rank": 6,
+            "source": "beam",
+            "source_rank": 6
+          },
+          {
+            "candidate_rank": 7,
+            "source": "beam",
+            "source_rank": 7
+          },
+          {
+            "candidate_rank": 11,
+            "source": "pair",
+            "source_rank": 1
+          }
+        ],
+        "right_family": false,
+        "sources": [
+          "beam",
+          "pair"
+        ],
+        "tokens": [
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ]
+      },
+      "best_available_drift_candidate": {
+        "best_occurrence": {
+          "candidate_rank": 2,
+          "source": "beam",
+          "source_rank": 2
+        },
+        "distance": 1,
+        "family": "sin drift",
+        "occurrences": [
+          {
+            "candidate_rank": 2,
+            "source": "beam",
+            "source_rank": 2
+          },
+          {
+            "candidate_rank": 3,
+            "source": "beam",
+            "source_rank": 3
+          },
+          {
+            "candidate_rank": 12,
+            "source": "pair",
+            "source_rank": 2
+          },
+          {
+            "candidate_rank": 13,
+            "source": "pair",
+            "source_rank": 3
+          },
+          {
+            "candidate_rank": 10,
+            "source": "sampling",
+            "source_rank": 2
+          }
+        ],
+        "right_family": true,
+        "sources": [
+          "beam",
+          "pair",
+          "sampling"
+        ],
+        "tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ]
+      },
+      "blocker": "exact drift absent from logged candidate sources",
+      "collapse_pattern": "over-nested, over-nested-sin",
+      "coverage": "diffusion_only_present",
+      "diffusion_sources_with_partial_spans": {
+        "beam": true,
+        "pair": true,
+        "sampling": true
+      },
+      "drift_family": "sin drift",
+      "drift_sources_with_partial_spans": {
+        "beam": true,
+        "pair": true,
+        "sampling": true
+      },
+      "exact_diffusion_occurrences": [
+        {
+          "candidate_rank": 2,
+          "score": -0.5366597770018997,
+          "source": "beam",
+          "source_rank": 2
+        },
+        {
+          "candidate_rank": 6,
+          "score": -0.6196179431246032,
+          "source": "beam",
+          "source_rank": 6
+        },
+        {
+          "candidate_rank": 7,
+          "score": -0.6282537603098545,
+          "source": "beam",
+          "source_rank": 7
+        },
+        {
+          "candidate_rank": 11,
+          "score": -0.16906677873657555,
+          "source": "pair",
+          "source_rank": 1
+        }
+      ],
+      "exact_diffusion_rank": 2,
+      "has_exact_diffusion": true,
+      "has_exact_drift": false,
+      "has_full_oracle": false,
+      "missing_side": "drift",
+      "nearest_drift_rank": 2,
+      "sample_index": 9,
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "sqrt",
+        "abs",
+        "x_0"
+      ],
+      "truth_drift_rank": null,
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ],
+      "truth_full_expression": "<DRIFT> mul CONSTANT sin x_0 <DIFFUSION> mul CONSTANT sqrt abs x_0",
+      "unique_diffusions": 5,
+      "unique_drifts": 4
+    },
+    {
+      "best_available_diffusion_candidate": {
+        "best_occurrence": {
+          "candidate_rank": 3,
+          "source": "beam",
+          "source_rank": 3
+        },
+        "distance": 0,
+        "family": "other / unknown",
+        "occurrences": [
+          {
+            "candidate_rank": 3,
+            "source": "beam",
+            "source_rank": 3
+          },
+          {
+            "candidate_rank": 8,
+            "source": "beam",
+            "source_rank": 8
+          },
+          {
+            "candidate_rank": 16,
+            "source": "pair",
+            "source_rank": 7
+          },
+          {
+            "candidate_rank": 9,
+            "source": "sampling",
+            "source_rank": 1
+          }
+        ],
+        "right_family": false,
+        "sources": [
+          "beam",
+          "pair",
+          "sampling"
+        ],
+        "tokens": [
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ]
+      },
+      "best_available_drift_candidate": {
+        "best_occurrence": {
+          "candidate_rank": 2,
+          "source": "beam",
+          "source_rank": 2
+        },
+        "distance": 1,
+        "family": "sin drift",
+        "occurrences": [
+          {
+            "candidate_rank": 2,
+            "source": "beam",
+            "source_rank": 2
+          },
+          {
+            "candidate_rank": 3,
+            "source": "beam",
+            "source_rank": 3
+          },
+          {
+            "candidate_rank": 11,
+            "source": "pair",
+            "source_rank": 2
+          },
+          {
+            "candidate_rank": 12,
+            "source": "pair",
+            "source_rank": 3
+          },
+          {
+            "candidate_rank": 13,
+            "source": "pair",
+            "source_rank": 4
+          }
+        ],
+        "right_family": true,
+        "sources": [
+          "beam",
+          "pair"
+        ],
+        "tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ]
+      },
+      "blocker": "exact drift absent from logged candidate sources",
+      "collapse_pattern": "over-nested, over-nested-sin",
+      "coverage": "diffusion_only_present",
+      "diffusion_sources_with_partial_spans": {
+        "beam": true,
+        "pair": true,
+        "sampling": true
+      },
+      "drift_family": "sin drift",
+      "drift_sources_with_partial_spans": {
+        "beam": true,
+        "pair": true,
+        "sampling": true
+      },
+      "exact_diffusion_occurrences": [
+        {
+          "candidate_rank": 3,
+          "score": -0.5715611554437341,
+          "source": "beam",
+          "source_rank": 3
+        },
+        {
+          "candidate_rank": 8,
+          "score": -0.6516624836775398,
+          "source": "beam",
+          "source_rank": 8
+        },
+        {
+          "candidate_rank": 9,
+          "score": -0.6363549352713515,
+          "source": "sampling",
+          "source_rank": 1
+        },
+        {
+          "candidate_rank": 16,
+          "score": -0.22219381670918067,
+          "source": "pair",
+          "source_rank": 7
+        }
+      ],
+      "exact_diffusion_rank": 3,
+      "has_exact_diffusion": true,
+      "has_exact_drift": false,
+      "has_full_oracle": false,
+      "missing_side": "drift",
+      "nearest_drift_rank": 2,
+      "sample_index": 10,
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "abs",
+        "x_0"
+      ],
+      "truth_drift_rank": null,
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ],
+      "truth_full_expression": "<DRIFT> mul CONSTANT sin x_0 <DIFFUSION> mul CONSTANT abs x_0",
+      "unique_diffusions": 5,
+      "unique_drifts": 4
+    },
+    {
+      "best_available_diffusion_candidate": {
+        "best_occurrence": {
+          "candidate_rank": 3,
+          "source": "beam",
+          "source_rank": 3
+        },
+        "distance": 0,
+        "family": "other / unknown",
+        "occurrences": [
+          {
+            "candidate_rank": 3,
+            "source": "beam",
+            "source_rank": 3
+          },
+          {
+            "candidate_rank": 17,
+            "source": "pair",
+            "source_rank": 8
+          },
+          {
+            "candidate_rank": 18,
+            "source": "pair",
+            "source_rank": 9
+          },
+          {
+            "candidate_rank": 19,
+            "source": "pair",
+            "source_rank": 10
+          },
+          {
+            "candidate_rank": 9,
+            "source": "sampling",
+            "source_rank": 1
+          }
+        ],
+        "right_family": false,
+        "sources": [
+          "beam",
+          "pair",
+          "sampling"
+        ],
+        "tokens": [
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ]
+      },
+      "best_available_drift_candidate": {
+        "best_occurrence": {
+          "candidate_rank": 2,
+          "source": "beam",
+          "source_rank": 2
+        },
+        "distance": 1,
+        "family": "sin drift",
+        "occurrences": [
+          {
+            "candidate_rank": 2,
+            "source": "beam",
+            "source_rank": 2
+          },
+          {
+            "candidate_rank": 3,
+            "source": "beam",
+            "source_rank": 3
+          },
+          {
+            "candidate_rank": 11,
+            "source": "pair",
+            "source_rank": 2
+          },
+          {
+            "candidate_rank": 13,
+            "source": "pair",
+            "source_rank": 4
+          },
+          {
+            "candidate_rank": 14,
+            "source": "pair",
+            "source_rank": 5
+          }
+        ],
+        "right_family": true,
+        "sources": [
+          "beam",
+          "pair"
+        ],
+        "tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ]
+      },
+      "blocker": "exact drift absent from logged candidate sources",
+      "collapse_pattern": "over-nested, over-nested-sin",
+      "coverage": "diffusion_only_present",
+      "diffusion_sources_with_partial_spans": {
+        "beam": true,
+        "pair": true,
+        "sampling": true
+      },
+      "drift_family": "sin drift",
+      "drift_sources_with_partial_spans": {
+        "beam": true,
+        "pair": true,
+        "sampling": true
+      },
+      "exact_diffusion_occurrences": [
+        {
+          "candidate_rank": 3,
+          "score": -0.5701030164001268,
+          "source": "beam",
+          "source_rank": 3
+        },
+        {
+          "candidate_rank": 9,
+          "score": -0.6356346066191833,
+          "source": "sampling",
+          "source_rank": 1
+        },
+        {
+          "candidate_rank": 17,
+          "score": -0.1938553339959097,
+          "source": "pair",
+          "source_rank": 8
+        },
+        {
+          "candidate_rank": 18,
+          "score": -0.2219592066318428,
+          "source": "pair",
+          "source_rank": 9
+        },
+        {
+          "candidate_rank": 19,
+          "score": -0.18008147724165408,
+          "source": "pair",
+          "source_rank": 10
+        }
+      ],
+      "exact_diffusion_rank": 3,
+      "has_exact_diffusion": true,
+      "has_exact_drift": false,
+      "has_full_oracle": false,
+      "missing_side": "drift",
+      "nearest_drift_rank": 2,
+      "sample_index": 14,
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "abs",
+        "x_0"
+      ],
+      "truth_drift_rank": null,
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ],
+      "truth_full_expression": "<DRIFT> mul CONSTANT sin x_0 <DIFFUSION> mul CONSTANT abs x_0",
+      "unique_diffusions": 5,
+      "unique_drifts": 5
+    },
+    {
+      "best_available_diffusion_candidate": {
+        "best_occurrence": {
+          "candidate_rank": 4,
+          "source": "beam",
+          "source_rank": 4
+        },
+        "distance": 0,
+        "family": "linear drift",
+        "occurrences": [
+          {
+            "candidate_rank": 4,
+            "source": "beam",
+            "source_rank": 4
+          },
+          {
+            "candidate_rank": 12,
+            "source": "pair",
+            "source_rank": 4
+          },
+          {
+            "candidate_rank": 17,
+            "source": "pair",
+            "source_rank": 9
+          },
+          {
+            "candidate_rank": 19,
+            "source": "pair",
+            "source_rank": 11
+          }
+        ],
+        "right_family": false,
+        "sources": [
+          "beam",
+          "pair"
+        ],
+        "tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      "best_available_drift_candidate": {
+        "best_occurrence": {
+          "candidate_rank": 6,
+          "source": "beam",
+          "source_rank": 6
+        },
+        "distance": 1,
+        "family": "constant drift",
+        "occurrences": [
+          {
+            "candidate_rank": 6,
+            "source": "beam",
+            "source_rank": 6
+          },
+          {
+            "candidate_rank": 14,
+            "source": "pair",
+            "source_rank": 6
+          },
+          {
+            "candidate_rank": 16,
+            "source": "pair",
+            "source_rank": 8
+          },
+          {
+            "candidate_rank": 17,
+            "source": "pair",
+            "source_rank": 9
+          },
+          {
+            "candidate_rank": 18,
+            "source": "pair",
+            "source_rank": 10
+          }
+        ],
+        "right_family": false,
+        "sources": [
+          "beam",
+          "pair"
+        ],
+        "tokens": [
+          "mul",
+          "CONSTANT",
+          "CONSTANT"
+        ]
+      },
+      "blocker": "exact drift absent from logged candidate sources",
+      "collapse_pattern": "state-collapsed, constant-heavy",
+      "coverage": "diffusion_only_present",
+      "diffusion_sources_with_partial_spans": {
+        "beam": true,
+        "pair": true
+      },
+      "drift_family": "linear drift",
+      "drift_sources_with_partial_spans": {
+        "beam": true,
+        "pair": true
+      },
+      "exact_diffusion_occurrences": [
+        {
+          "candidate_rank": 4,
+          "score": -0.6159089513900923,
+          "source": "beam",
+          "source_rank": 4
+        },
+        {
+          "candidate_rank": 12,
+          "score": -0.19132594920604754,
+          "source": "pair",
+          "source_rank": 4
+        },
+        {
+          "candidate_rank": 17,
+          "score": -0.24642000727483862,
+          "source": "pair",
+          "source_rank": 9
+        },
+        {
+          "candidate_rank": 19,
+          "score": -0.19621658749782986,
+          "source": "pair",
+          "source_rank": 11
+        }
+      ],
+      "exact_diffusion_rank": 4,
+      "has_exact_diffusion": true,
+      "has_exact_drift": false,
+      "has_full_oracle": false,
+      "missing_side": "drift",
+      "nearest_drift_rank": 6,
+      "sample_index": 15,
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "truth_drift_rank": null,
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "truth_full_expression": "<DRIFT> mul CONSTANT x_0 <DIFFUSION> mul CONSTANT x_0",
+      "unique_diffusions": 5,
+      "unique_drifts": 4
+    },
+    {
+      "best_available_diffusion_candidate": {
+        "best_occurrence": {
+          "candidate_rank": 5,
+          "source": "beam",
+          "source_rank": 5
+        },
+        "distance": 0,
+        "family": "linear drift",
+        "occurrences": [
+          {
+            "candidate_rank": 5,
+            "source": "beam",
+            "source_rank": 5
+          },
+          {
+            "candidate_rank": 14,
+            "source": "pair",
+            "source_rank": 4
+          },
+          {
+            "candidate_rank": 20,
+            "source": "pair",
+            "source_rank": 10
+          },
+          {
+            "candidate_rank": 22,
+            "source": "pair",
+            "source_rank": 12
+          },
+          {
+            "candidate_rank": 24,
+            "source": "pair",
+            "source_rank": 14
+          }
+        ],
+        "right_family": false,
+        "sources": [
+          "beam",
+          "pair"
+        ],
+        "tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      "best_available_drift_candidate": {
+        "best_occurrence": {
+          "candidate_rank": 1,
+          "source": "beam",
+          "source_rank": 1
+        },
+        "distance": 1,
+        "family": "sin drift",
+        "occurrences": [
+          {
+            "candidate_rank": 1,
+            "source": "beam",
+            "source_rank": 1
+          },
+          {
+            "candidate_rank": 3,
+            "source": "beam",
+            "source_rank": 3
+          },
+          {
+            "candidate_rank": 11,
+            "source": "pair",
+            "source_rank": 1
+          },
+          {
+            "candidate_rank": 14,
+            "source": "pair",
+            "source_rank": 4
+          },
+          {
+            "candidate_rank": 10,
+            "source": "sampling",
+            "source_rank": 2
+          }
+        ],
+        "right_family": false,
+        "sources": [
+          "beam",
+          "pair",
+          "sampling"
+        ],
+        "tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ]
+      },
+      "blocker": "exact drift absent from logged candidate sources",
+      "collapse_pattern": "drops-polynomial-power",
+      "coverage": "diffusion_only_present",
+      "diffusion_sources_with_partial_spans": {
+        "beam": true,
+        "pair": true,
+        "sampling": true
+      },
+      "drift_family": "polynomial-like drift",
+      "drift_sources_with_partial_spans": {
+        "beam": true,
+        "pair": true,
+        "sampling": true
+      },
+      "exact_diffusion_occurrences": [
+        {
+          "candidate_rank": 5,
+          "score": -0.6157469759823533,
+          "source": "beam",
+          "source_rank": 5
+        },
+        {
+          "candidate_rank": 14,
+          "score": -0.19121302458879727,
+          "source": "pair",
+          "source_rank": 4
+        },
+        {
+          "candidate_rank": 20,
+          "score": -0.21296471311589713,
+          "source": "pair",
+          "source_rank": 10
+        },
+        {
+          "candidate_rank": 22,
+          "score": -0.2464215620996911,
+          "source": "pair",
+          "source_rank": 12
+        },
+        {
+          "candidate_rank": 24,
+          "score": -0.19613330940710144,
+          "source": "pair",
+          "source_rank": 14
+        }
+      ],
+      "exact_diffusion_rank": 4,
+      "has_exact_diffusion": true,
+      "has_exact_drift": false,
+      "has_full_oracle": false,
+      "missing_side": "drift",
+      "nearest_drift_rank": 1,
+      "sample_index": 16,
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "truth_drift_rank": null,
+      "truth_drift_tokens": [
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "pow2",
+        "x_0"
+      ],
+      "truth_full_expression": "<DRIFT> mul mul CONSTANT CONSTANT pow2 x_0 <DIFFUSION> mul CONSTANT x_0",
+      "unique_diffusions": 5,
+      "unique_drifts": 5
+    },
+    {
+      "best_available_diffusion_candidate": {
+        "best_occurrence": {
+          "candidate_rank": 4,
+          "source": "beam",
+          "source_rank": 4
+        },
+        "distance": 0,
+        "family": "linear drift",
+        "occurrences": [
+          {
+            "candidate_rank": 4,
+            "source": "beam",
+            "source_rank": 4
+          },
+          {
+            "candidate_rank": 12,
+            "source": "pair",
+            "source_rank": 3
+          },
+          {
+            "candidate_rank": 17,
+            "source": "pair",
+            "source_rank": 8
+          },
+          {
+            "candidate_rank": 19,
+            "source": "pair",
+            "source_rank": 10
+          }
+        ],
+        "right_family": false,
+        "sources": [
+          "beam",
+          "pair"
+        ],
+        "tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      "best_available_drift_candidate": {
+        "best_occurrence": {
+          "candidate_rank": 1,
+          "source": "beam",
+          "source_rank": 1
+        },
+        "distance": 1,
+        "family": "sin drift",
+        "occurrences": [
+          {
+            "candidate_rank": 1,
+            "source": "beam",
+            "source_rank": 1
+          },
+          {
+            "candidate_rank": 3,
+            "source": "beam",
+            "source_rank": 3
+          },
+          {
+            "candidate_rank": 10,
+            "source": "pair",
+            "source_rank": 1
+          },
+          {
+            "candidate_rank": 12,
+            "source": "pair",
+            "source_rank": 3
+          },
+          {
+            "candidate_rank": 13,
+            "source": "pair",
+            "source_rank": 4
+          }
+        ],
+        "right_family": true,
+        "sources": [
+          "beam",
+          "pair"
+        ],
+        "tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ]
+      },
+      "blocker": "exact drift absent from logged candidate sources",
+      "collapse_pattern": "over-nested, over-nested-sin",
+      "coverage": "diffusion_only_present",
+      "diffusion_sources_with_partial_spans": {
+        "beam": true,
+        "pair": true,
+        "sampling": true
+      },
+      "drift_family": "sin drift",
+      "drift_sources_with_partial_spans": {
+        "beam": true,
+        "pair": true,
+        "sampling": true
+      },
+      "exact_diffusion_occurrences": [
+        {
+          "candidate_rank": 4,
+          "score": -0.6149224605554512,
+          "source": "beam",
+          "source_rank": 4
+        },
+        {
+          "candidate_rank": 12,
+          "score": -0.19098266174825235,
+          "source": "pair",
+          "source_rank": 3
+        },
+        {
+          "candidate_rank": 17,
+          "score": -0.24636993077979272,
+          "source": "pair",
+          "source_rank": 8
+        },
+        {
+          "candidate_rank": 19,
+          "score": -0.19594631661571643,
+          "source": "pair",
+          "source_rank": 10
+        }
+      ],
+      "exact_diffusion_rank": 4,
+      "has_exact_diffusion": true,
+      "has_exact_drift": false,
+      "has_full_oracle": false,
+      "missing_side": "drift",
+      "nearest_drift_rank": 1,
+      "sample_index": 20,
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "truth_drift_rank": null,
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ],
+      "truth_full_expression": "<DRIFT> mul CONSTANT sin x_0 <DIFFUSION> mul CONSTANT x_0",
+      "unique_diffusions": 5,
+      "unique_drifts": 4
+    },
+    {
+      "best_available_diffusion_candidate": {
+        "best_occurrence": {
+          "candidate_rank": 5,
+          "source": "beam",
+          "source_rank": 5
+        },
+        "distance": 0,
+        "family": "linear drift",
+        "occurrences": [
+          {
+            "candidate_rank": 5,
+            "source": "beam",
+            "source_rank": 5
+          },
+          {
+            "candidate_rank": 14,
+            "source": "pair",
+            "source_rank": 5
+          },
+          {
+            "candidate_rank": 20,
+            "source": "pair",
+            "source_rank": 11
+          },
+          {
+            "candidate_rank": 22,
+            "source": "pair",
+            "source_rank": 13
+          },
+          {
+            "candidate_rank": 24,
+            "source": "pair",
+            "source_rank": 15
+          }
+        ],
+        "right_family": false,
+        "sources": [
+          "beam",
+          "pair"
+        ],
+        "tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      "best_available_drift_candidate": {
+        "best_occurrence": {
+          "candidate_rank": 7,
+          "source": "beam",
+          "source_rank": 7
+        },
+        "distance": 1,
+        "family": "constant drift",
+        "occurrences": [
+          {
+            "candidate_rank": 7,
+            "source": "beam",
+            "source_rank": 7
+          },
+          {
+            "candidate_rank": 15,
+            "source": "pair",
+            "source_rank": 6
+          },
+          {
+            "candidate_rank": 18,
+            "source": "pair",
+            "source_rank": 9
+          },
+          {
+            "candidate_rank": 22,
+            "source": "pair",
+            "source_rank": 13
+          },
+          {
+            "candidate_rank": 23,
+            "source": "pair",
+            "source_rank": 14
+          }
+        ],
+        "right_family": false,
+        "sources": [
+          "beam",
+          "pair"
+        ],
+        "tokens": [
+          "mul",
+          "CONSTANT",
+          "CONSTANT"
+        ]
+      },
+      "blocker": "exact drift absent from logged candidate sources",
+      "collapse_pattern": "state-collapsed, constant-heavy",
+      "coverage": "diffusion_only_present",
+      "diffusion_sources_with_partial_spans": {
+        "beam": true,
+        "pair": true,
+        "sampling": true
+      },
+      "drift_family": "linear drift",
+      "drift_sources_with_partial_spans": {
+        "beam": true,
+        "pair": true,
+        "sampling": true
+      },
+      "exact_diffusion_occurrences": [
+        {
+          "candidate_rank": 5,
+          "score": -0.6162122861611733,
+          "source": "beam",
+          "source_rank": 5
+        },
+        {
+          "candidate_rank": 14,
+          "score": -0.19122381160101412,
+          "source": "pair",
+          "source_rank": 5
+        },
+        {
+          "candidate_rank": 20,
+          "score": -0.21316308032273693,
+          "source": "pair",
+          "source_rank": 11
+        },
+        {
+          "candidate_rank": 22,
+          "score": -0.24641903749999336,
+          "source": "pair",
+          "source_rank": 13
+        },
+        {
+          "candidate_rank": 24,
+          "score": -0.19619114444470587,
+          "source": "pair",
+          "source_rank": 15
+        }
+      ],
+      "exact_diffusion_rank": 4,
+      "has_exact_diffusion": true,
+      "has_exact_drift": false,
+      "has_full_oracle": false,
+      "missing_side": "drift",
+      "nearest_drift_rank": 7,
+      "sample_index": 22,
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "truth_drift_rank": null,
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "truth_full_expression": "<DRIFT> mul CONSTANT x_0 <DIFFUSION> mul CONSTANT x_0",
+      "unique_diffusions": 5,
+      "unique_drifts": 5
+    },
+    {
+      "best_available_diffusion_candidate": {
+        "best_occurrence": {
+          "candidate_rank": 3,
+          "source": "beam",
+          "source_rank": 3
+        },
+        "distance": 0,
+        "family": "other / unknown",
+        "occurrences": [
+          {
+            "candidate_rank": 3,
+            "source": "beam",
+            "source_rank": 3
+          },
+          {
+            "candidate_rank": 8,
+            "source": "beam",
+            "source_rank": 8
+          },
+          {
+            "candidate_rank": 16,
+            "source": "pair",
+            "source_rank": 6
+          },
+          {
+            "candidate_rank": 9,
+            "source": "sampling",
+            "source_rank": 1
+          }
+        ],
+        "right_family": false,
+        "sources": [
+          "beam",
+          "pair",
+          "sampling"
+        ],
+        "tokens": [
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ]
+      },
+      "best_available_drift_candidate": {
+        "best_occurrence": {
+          "candidate_rank": 1,
+          "source": "beam",
+          "source_rank": 1
+        },
+        "distance": 1,
+        "family": "nested-mul linear drift",
+        "occurrences": [
+          {
+            "candidate_rank": 1,
+            "source": "beam",
+            "source_rank": 1
+          },
+          {
+            "candidate_rank": 4,
+            "source": "beam",
+            "source_rank": 4
+          },
+          {
+            "candidate_rank": 5,
+            "source": "beam",
+            "source_rank": 5
+          },
+          {
+            "candidate_rank": 11,
+            "source": "pair",
+            "source_rank": 1
+          },
+          {
+            "candidate_rank": 9,
+            "source": "sampling",
+            "source_rank": 1
+          }
+        ],
+        "right_family": true,
+        "sources": [
+          "beam",
+          "pair",
+          "sampling"
+        ],
+        "tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "CONSTANT"
+        ]
+      },
+      "blocker": "exact drift absent from logged candidate sources",
+      "collapse_pattern": "state-collapsed",
+      "coverage": "diffusion_only_present",
+      "diffusion_sources_with_partial_spans": {
+        "beam": true,
+        "pair": true,
+        "sampling": true
+      },
+      "drift_family": "nested-mul linear drift",
+      "drift_sources_with_partial_spans": {
+        "beam": true,
+        "pair": true,
+        "sampling": true
+      },
+      "exact_diffusion_occurrences": [
+        {
+          "candidate_rank": 3,
+          "score": -0.5705755384009956,
+          "source": "beam",
+          "source_rank": 3
+        },
+        {
+          "candidate_rank": 8,
+          "score": -0.6510717348439244,
+          "source": "beam",
+          "source_rank": 8
+        },
+        {
+          "candidate_rank": 9,
+          "score": -0.6358962018306364,
+          "source": "sampling",
+          "source_rank": 1
+        },
+        {
+          "candidate_rank": 16,
+          "score": -0.22215279128780888,
+          "source": "pair",
+          "source_rank": 6
+        }
+      ],
+      "exact_diffusion_rank": 3,
+      "has_exact_diffusion": true,
+      "has_exact_drift": false,
+      "has_full_oracle": false,
+      "missing_side": "drift",
+      "nearest_drift_rank": 1,
+      "sample_index": 25,
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "abs",
+        "x_0"
+      ],
+      "truth_drift_rank": null,
+      "truth_drift_tokens": [
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "x_0"
+      ],
+      "truth_full_expression": "<DRIFT> mul mul CONSTANT CONSTANT x_0 <DIFFUSION> mul CONSTANT abs x_0",
+      "unique_diffusions": 5,
+      "unique_drifts": 4
+    },
+    {
+      "best_available_diffusion_candidate": {
+        "best_occurrence": {
+          "candidate_rank": 2,
+          "source": "beam",
+          "source_rank": 2
+        },
+        "distance": 0,
+        "family": "other / unknown",
+        "occurrences": [
+          {
+            "candidate_rank": 2,
+            "source": "beam",
+            "source_rank": 2
+          },
+          {
+            "candidate_rank": 4,
+            "source": "beam",
+            "source_rank": 4
+          },
+          {
+            "candidate_rank": 7,
+            "source": "beam",
+            "source_rank": 7
+          },
+          {
+            "candidate_rank": 8,
+            "source": "beam",
+            "source_rank": 8
+          },
+          {
+            "candidate_rank": 11,
+            "source": "pair",
+            "source_rank": 1
+          }
+        ],
+        "right_family": false,
+        "sources": [
+          "beam",
+          "pair"
+        ],
+        "tokens": [
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ]
+      },
+      "best_available_drift_candidate": {
+        "best_occurrence": {
+          "candidate_rank": 2,
+          "source": "beam",
+          "source_rank": 2
+        },
+        "distance": 1,
+        "family": "sin drift",
+        "occurrences": [
+          {
+            "candidate_rank": 2,
+            "source": "beam",
+            "source_rank": 2
+          },
+          {
+            "candidate_rank": 3,
+            "source": "beam",
+            "source_rank": 3
+          },
+          {
+            "candidate_rank": 12,
+            "source": "pair",
+            "source_rank": 2
+          },
+          {
+            "candidate_rank": 14,
+            "source": "pair",
+            "source_rank": 4
+          },
+          {
+            "candidate_rank": 10,
+            "source": "sampling",
+            "source_rank": 2
+          }
+        ],
+        "right_family": false,
+        "sources": [
+          "beam",
+          "pair",
+          "sampling"
+        ],
+        "tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ]
+      },
+      "blocker": "exact drift absent from logged candidate sources",
+      "collapse_pattern": "drops-polynomial-power",
+      "coverage": "diffusion_only_present",
+      "diffusion_sources_with_partial_spans": {
+        "beam": true,
+        "pair": true,
+        "sampling": true
+      },
+      "drift_family": "polynomial-like drift",
+      "drift_sources_with_partial_spans": {
+        "beam": true,
+        "pair": true,
+        "sampling": true
+      },
+      "exact_diffusion_occurrences": [
+        {
+          "candidate_rank": 2,
+          "score": -0.536320094696481,
+          "source": "beam",
+          "source_rank": 2
+        },
+        {
+          "candidate_rank": 4,
+          "score": -0.5976123726987513,
+          "source": "beam",
+          "source_rank": 4
+        },
+        {
+          "candidate_rank": 7,
+          "score": -0.6193163652177117,
+          "source": "beam",
+          "source_rank": 7
+        },
+        {
+          "candidate_rank": 8,
+          "score": -0.6280782355412158,
+          "source": "beam",
+          "source_rank": 8
+        },
+        {
+          "candidate_rank": 11,
+          "score": -0.16897320030911886,
+          "source": "pair",
+          "source_rank": 1
+        }
+      ],
+      "exact_diffusion_rank": 2,
+      "has_exact_diffusion": true,
+      "has_exact_drift": false,
+      "has_full_oracle": false,
+      "missing_side": "drift",
+      "nearest_drift_rank": 2,
+      "sample_index": 28,
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "sqrt",
+        "abs",
+        "x_0"
+      ],
+      "truth_drift_rank": null,
+      "truth_drift_tokens": [
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "pow2",
+        "x_0"
+      ],
+      "truth_full_expression": "<DRIFT> mul mul CONSTANT CONSTANT pow2 x_0 <DIFFUSION> mul CONSTANT sqrt abs x_0",
+      "unique_diffusions": 5,
+      "unique_drifts": 5
+    },
+    {
+      "best_available_diffusion_candidate": {
+        "best_occurrence": {
+          "candidate_rank": 5,
+          "source": "beam",
+          "source_rank": 5
+        },
+        "distance": 0,
+        "family": "constant drift",
+        "occurrences": [
+          {
+            "candidate_rank": 5,
+            "source": "beam",
+            "source_rank": 5
+          },
+          {
+            "candidate_rank": 18,
+            "source": "pair",
+            "source_rank": 9
+          },
+          {
+            "candidate_rank": 20,
+            "source": "pair",
+            "source_rank": 11
+          },
+          {
+            "candidate_rank": 9,
+            "source": "sampling",
+            "source_rank": 1
+          }
+        ],
+        "right_family": false,
+        "sources": [
+          "beam",
+          "pair",
+          "sampling"
+        ],
+        "tokens": [
+          "mul",
+          "CONSTANT",
+          "CONSTANT"
+        ]
+      },
+      "best_available_drift_candidate": {
+        "best_occurrence": {
+          "candidate_rank": 1,
+          "source": "beam",
+          "source_rank": 1
+        },
+        "distance": 1,
+        "family": "nested-mul linear drift",
+        "occurrences": [
+          {
+            "candidate_rank": 1,
+            "source": "beam",
+            "source_rank": 1
+          },
+          {
+            "candidate_rank": 4,
+            "source": "beam",
+            "source_rank": 4
+          },
+          {
+            "candidate_rank": 5,
+            "source": "beam",
+            "source_rank": 5
+          },
+          {
+            "candidate_rank": 10,
+            "source": "pair",
+            "source_rank": 1
+          },
+          {
+            "candidate_rank": 12,
+            "source": "pair",
+            "source_rank": 3
+          }
+        ],
+        "right_family": true,
+        "sources": [
+          "beam",
+          "pair"
+        ],
+        "tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "CONSTANT"
+        ]
+      },
+      "blocker": "exact drift absent from logged candidate sources",
+      "collapse_pattern": "state-collapsed",
+      "coverage": "diffusion_only_present",
+      "diffusion_sources_with_partial_spans": {
+        "beam": true,
+        "pair": true,
+        "sampling": true
+      },
+      "drift_family": "nested-mul linear drift",
+      "drift_sources_with_partial_spans": {
+        "beam": true,
+        "pair": true,
+        "sampling": true
+      },
+      "exact_diffusion_occurrences": [
+        {
+          "candidate_rank": 5,
+          "score": -0.616996532654706,
+          "source": "beam",
+          "source_rank": 5
+        },
+        {
+          "candidate_rank": 9,
+          "score": -0.7142234224338143,
+          "source": "sampling",
+          "source_rank": 1
+        },
+        {
+          "candidate_rank": 18,
+          "score": -0.2465006262765471,
+          "source": "pair",
+          "source_rank": 9
+        },
+        {
+          "candidate_rank": 20,
+          "score": -0.19644038569961544,
+          "source": "pair",
+          "source_rank": 11
+        }
+      ],
+      "exact_diffusion_rank": 5,
+      "has_exact_diffusion": true,
+      "has_exact_drift": false,
+      "has_full_oracle": false,
+      "missing_side": "drift",
+      "nearest_drift_rank": 1,
+      "sample_index": 29,
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "CONSTANT"
+      ],
+      "truth_drift_rank": null,
+      "truth_drift_tokens": [
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "x_0"
+      ],
+      "truth_full_expression": "<DRIFT> mul mul CONSTANT CONSTANT x_0 <DIFFUSION> mul CONSTANT CONSTANT",
+      "unique_diffusions": 5,
+      "unique_drifts": 4
+    }
+  ],
+  "source_diversity": {
+    "beam": {
+      "avg_drift_templates_per_oracle_absent_sample": 4.352941176470588,
+      "samples_with_diffusion_spans": 17,
+      "samples_with_drift_spans": 17,
+      "unique_diffusion_templates": 5,
+      "unique_drift_templates": 5
+    },
+    "pair": {
+      "avg_drift_templates_per_oracle_absent_sample": 4.352941176470588,
+      "samples_with_diffusion_spans": 17,
+      "samples_with_drift_spans": 17,
+      "unique_diffusion_templates": 5,
+      "unique_drift_templates": 5
+    },
+    "sampling": {
+      "avg_drift_templates_per_oracle_absent_sample": 1.411764705882353,
+      "samples_with_diffusion_spans": 16,
+      "samples_with_drift_spans": 16,
+      "unique_diffusion_templates": 2,
+      "unique_drift_templates": 2
+    }
+  },
+  "summary": {
+    "diffusion_missing": 0,
+    "exact_diffusion_present_among_oracle_absent": 17,
+    "exact_drift_missing": 17,
+    "exact_drift_present_among_oracle_absent": 0,
+    "full_oracle_present": 15,
+    "nearest_drift_right_family": 9,
+    "oracle_absent": 17,
+    "oracle_absent_sample_indices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      6,
+      7,
+      9,
+      10,
+      14,
+      15,
+      16,
+      20,
+      22,
+      25,
+      28,
+      29
+    ],
+    "pairing_missing": 0,
+    "total_samples": 32
+  }
+}

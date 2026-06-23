@@ -2,9 +2,11 @@
 
 ## Next Engineering Task
 
-Return to drift span diversity diagnostics for expanded-pairing oracle-absent
-samples. Residual-debug safety checks do not support continuing scorer-side
-normalization or adding a new rerank mode.
+Plan one diagnostic-only drift-only candidate diversity smoke for the
+expanded-pairing oracle-absent samples. The drift diversity report is complete:
+the remaining 17 oracle-absent samples are all exact-drift misses with exact
+diffusion present. Residual-debug safety checks do not support continuing
+scorer-side normalization or adding a new rerank mode.
 
 Current strongest no-retraining decoding setting:
 
@@ -121,6 +123,45 @@ oracle_absent=17/32
 rescued pairing-missing samples=5,8,11,23,30,31
 ```
 
+Expanded-pairing oracle-absent drift diversity report:
+
+```text
+script=scripts/analyze_expanded_pairing_oracle_absent_drift_diversity.py
+report=expanded_pairing_oracle_absent_drift_diversity.md
+json=expanded_pairing_oracle_absent_drift_diversity.json
+oracle_absent=17/32
+exact_drift_missing=17/17
+pairing_missing=0/17
+diffusion_missing=0/17
+exact_diffusion_present=17/17
+nearest_drift_right_family=9/17
+decision=A
+```
+
+Drift-family breakdown among the 17 exact-drift-missing cases:
+
+```text
+linear drift=6
+sin drift=6
+nested-mul linear drift=3
+polynomial-like drift=2
+constant drift=0
+other/unknown=0
+```
+
+Interpretation: exact drift is absent from all logged sources for the remaining
+17 samples, while exact diffusion is already present. Beam contributes more
+usable drift diversity than sampling in the emitted pool; sampling mostly
+duplicates a small set of nearby templates. Nearest logged drifts often collapse
+toward over-nested or constant-heavy forms such as `mul CONSTANT CONSTANT`,
+`mul mul CONSTANT CONSTANT CONSTANT`, and
+`mul mul CONSTANT CONSTANT sin x_0`.
+
+Existing logs are sufficient to prove current-pool exact-drift absence, but
+insufficient to distinguish unlogged beam/sampling tail misses from model or
+grammar distribution misses because they lack unlogged tail ranks, token
+logits/entropy, and grammar rejection counts.
+
 Role-wise constants rescued one shared-constant miss, sample 17, by allowing
 drift constant `1.0` and diffusion constant `0.5`. The active-heavy `2:1` and
 weak-downweighted `1:0.5` variants both regressed to `3/32`, so do not continue
@@ -205,19 +246,21 @@ cap; its combined pair rank was 24.
 ## Primary File To Modify
 
 No primary source file needs to change unless the next task explicitly adds a
-new log parser. Prefer a narrow helper under `scripts/` and existing log data
-before modifying `sde_validation_probe.py`.
+drift-only candidate diversity smoke/helper. Prefer a narrow helper under
+`scripts/` and existing log/data paths before modifying `sde_validation_probe.py`.
 
 Likely next additions:
 
-- return to drift span diversity diagnostics for the 17 expanded-pairing
-  oracle-absent samples;
+- one diagnostic-only drift-only candidate diversity smoke that logs drift-span
+  ranks/sources for the 17 expanded-pairing oracle-absent samples;
 - do not add `per_active_dim_norm_plus_weak` or any robust/clipped normalized
   active scorer mode from current evidence;
-- do not run a formal 32-sample eval for this scorer idea;
+- do not run a formal 32-sample eval for this scorer idea or from the drift
+  diversity report alone;
 - keep role-wise constant diagnostics in every rerank experiment;
-- consider candidate-generation changes only after deciding whether the current
-  scorer can reliably choose among existing oracle candidates.
+- consider candidate-generation changes only after a drift-only diagnostic shows
+  whether exact drift is below unlogged top-k/sampling tails or absent from the
+  current model/grammar distribution.
 
 ## Supporting Files If Needed
 

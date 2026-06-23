@@ -34,9 +34,13 @@ oracle availability to 5/16, with 4/16 pair-oracle samples, but selected
 recovery dropped to 0/16 and offline normalization rescued 0/5 oracle-present
 misses. Therefore scorer-side normalization is not supported by current safety
 evidence; do not add `per_active_dim_norm_plus_weak` as a rerank mode or run a
-formal 32-sample eval for it. The next direction should return to drift span
-diversity for expanded-pairing oracle-absent samples, or deeper fingerprint
-ambiguity diagnostics.
+formal 32-sample eval for it. Expanded-pairing oracle-absent drift diversity
+diagnostics now show that all remaining `17/32` oracle-absent samples are
+exact-drift misses with exact diffusion already present; pairing-missing and
+diffusion-missing are both `0/17`. The next direction should be one
+diagnostic-only drift-only candidate diversity smoke that logs drift-span
+ranks/sources before any rerank, formal-eval, or candidate-generation default
+change.
 
 ## Last Updated
 
@@ -245,6 +249,19 @@ ambiguity diagnostics.
   no expanded-pairing selected hits to harm. Oracle ranks under the offline
   score were sample 5 rank 8, sample 8 rank 6, sample 11 rank 3, sample 12
   rank 3, and sample 13 rank 11.
+- Added an offline drift-diversity diagnostic helper in
+  [scripts/analyze_expanded_pairing_oracle_absent_drift_diversity.py](/Users/lzhang/Documents/GenSR_SDE/scripts/analyze_expanded_pairing_oracle_absent_drift_diversity.py)
+  and wrote
+  [expanded_pairing_oracle_absent_drift_diversity.md](/Users/lzhang/Documents/GenSR_SDE/expanded_pairing_oracle_absent_drift_diversity.md).
+  The helper parses existing coverage JSON only; it did not run
+  `sde_validation_probe.py`, candidate regeneration, fingerprint simulation,
+  formal eval, 64-sample eval, grids, retraining, scorer changes, or
+  candidate-generation changes. The 17 expanded-pairing oracle-absent samples
+  are all exact-drift misses with exact diffusion already present. Drift-family
+  breakdown is linear 6, sin 6, nested-mul linear 3, polynomial-like 2. Exact
+  drift is absent from all logged sources, while nearest logged drifts are
+  often nearby over-nested or constant-heavy templates; decision `A`
+  recommends one future diagnostic-only drift-only candidate diversity smoke.
 - Logged validated experiments in
   [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md).
 
@@ -252,9 +269,10 @@ ambiguity diagnostics.
 
 - Transitioning from "can the model learn the fingerprint?" to "can we decode
   the right symbolic sequence?".
-- Returning to drift span diversity diagnostics for expanded-pairing
-  oracle-absent samples. Residual-debug safety checks do not support continuing
-  scorer-side normalization.
+- Preparing a future drift-only candidate diversity smoke or helper that logs
+  drift span ranks/sources for the remaining expanded-pairing oracle-absent
+  cases. Residual-debug safety checks do not support continuing scorer-side
+  normalization.
 - The 2000-step role-token checkpoint has been restored in `/private/tmp` and
   backed up under `checkpoints/`; model weights remain ignored by git.
 
@@ -284,9 +302,11 @@ ambiguity diagnostics.
    expanded-pairing 16-sample smoke had 5 oracle samples, 0 selected hits, and
    0/5 offline miss rescues, so do not run a formal 32-sample eval for this
    scorer idea.
-9. Shift candidate-generation work toward drift span diversity: after expanded
-   pairing, the remaining 17 oracle-absent samples all contain the truth
-   diffusion but miss the truth drift.
+9. Shift candidate-generation work toward diagnostic-only drift span diversity:
+   after expanded pairing, the remaining 17 oracle-absent samples all contain
+   the truth diffusion but miss the truth drift. Existing logs do not include
+   unlogged beam/sampling tail ranks, token entropy/logits, or grammar
+   rejection counts.
 10. Keep drift/diffusion pairing enabled and tune candidate pool size carefully
    because fingerprint recomputation is CPU-expensive.
 11. Reuse the saved 2000-step checkpoint for decoding experiments instead of

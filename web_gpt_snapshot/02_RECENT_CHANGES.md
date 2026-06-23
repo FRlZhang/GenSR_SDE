@@ -2,6 +2,67 @@
 
 ## Last Codex Workflow
 
+Codex added an offline drift-diversity diagnostic for the 17 expanded-pairing
+oracle-absent samples:
+
+```text
+scripts/analyze_expanded_pairing_oracle_absent_drift_diversity.py
+expanded_pairing_oracle_absent_drift_diversity.md
+expanded_pairing_oracle_absent_drift_diversity.json
+```
+
+This parsed existing coverage JSON only. It did not run `sde_validation_probe.py`,
+candidate regeneration, model decoding, fingerprint simulation, formal
+32-sample eval, 64-sample eval, grids, retraining, scorer changes, or
+candidate-generation changes.
+
+Summary:
+
+```text
+expanded full_oracle_present=15/32
+expanded oracle_absent=17/32
+exact_drift_missing=17/17
+pairing_missing=0/17
+diffusion_missing=0/17
+exact_diffusion_present=17/17
+nearest_drift_right_family=9/17
+decision=A
+```
+
+Drift-family breakdown:
+
+```text
+linear drift=6
+sin drift=6
+nested-mul linear drift=3
+polynomial-like drift=2
+constant drift=0
+other/unknown=0
+```
+
+Interpretation: expanded pairing rescued all six previous pairing-missing
+cases, so the remaining oracle ceiling problem is drift span generation. Exact
+drift is absent from all logged sources for the remaining 17 samples; nearest
+logged drifts are often nearby over-nested or constant-heavy templates. Exact
+diffusion is already present for every remaining oracle-absent sample. Existing
+logs do not contain unlogged beam/sampling tail ranks, token logits/entropy, or
+grammar rejection counts, so they cannot prove whether the exact drift is below
+an unlogged top-k tail versus absent from the model/grammar distribution.
+
+Recommendation: run one future diagnostic-only drift-only candidate diversity
+smoke that logs drift-span ranks/sources. Do not run formal eval, 64-sample
+eval, grids, retraining, or scorer/rerank-mode changes from this report alone.
+
+Validation:
+
+```text
+py_compile scripts/analyze_expanded_pairing_oracle_absent_drift_diversity.py: passed
+git diff --check: passed
+git diff --cached --check: passed
+```
+
+## Previous Codex Workflow
+
 Codex recorded the user-run expanded-pairing 16-sample residual-debug smoke and
 safety parse:
 

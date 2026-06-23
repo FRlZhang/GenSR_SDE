@@ -154,6 +154,40 @@ oracle_absent=17/32
 rescued pairing samples=5,8,11,23,30,31
 ```
 
+## Expanded Pairing Oracle-Absent Drift Diversity Diagnostic
+
+This parses existing coverage JSON only. It does not run model decoding,
+candidate generation/regeneration, fingerprint simulation, formal eval,
+64-sample eval, grids, retraining, scorer changes, or candidate-generation
+changes.
+
+```bash
+/opt/miniconda3/envs/gensr/bin/python3 scripts/analyze_expanded_pairing_oracle_absent_drift_diversity.py \
+  --coverage-json candidate_coverage_pair_expanded.json \
+  --baseline-json candidate_coverage_diagnostics.json \
+  --report expanded_pairing_oracle_absent_drift_diversity.md \
+  --json-output expanded_pairing_oracle_absent_drift_diversity.json
+```
+
+Compile check:
+
+```bash
+PYTHONPYCACHEPREFIX=/private/tmp/gensr_pycache \
+/opt/miniconda3/envs/gensr/bin/python3 -m py_compile \
+  scripts/analyze_expanded_pairing_oracle_absent_drift_diversity.py
+```
+
+Latest result:
+
+```text
+oracle_absent=17/32
+exact_drift_missing=17/17
+pairing_missing=0/17
+diffusion_missing=0/17
+exact_diffusion_present=17/17
+decision=A
+```
+
 ## Expanded Pairing Formal Eval Result
 
 The formal eval log is:
