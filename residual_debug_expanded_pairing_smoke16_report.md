@@ -4,18 +4,19 @@ Date: 2026-06-23
 
 ## Status
 
-Blocked before execution by the workflow time limit. I did not run the
-expanded-pairing 16-sample smoke or the safety helper.
+Completed by user locally with:
 
-Reason: the previous baseline 16-sample residual-debug smoke took about
-9.5 minutes with 201 logged candidates. Expanded pairing roughly increases the
-candidate pool by the same ratio seen in the 32-sample formal run
-(`715 / 405`, about 1.77x), so the expanded 16-sample smoke is expected to
-exceed the requested 10-minute Codex limit.
+```bash
+bash scripts/run_expanded_pairing_residual_debug_smoke16.sh
+```
+
+This was a 16-sample smoke plus offline safety parse, not a formal 32-sample
+eval, 64-sample eval, active/weak grid, retraining run, scorer change,
+candidate-generation change, or rerank heuristic.
 
 ## Prepared Local Script
 
-The smallest local command is:
+The local command is:
 
 ```bash
 bash scripts/run_expanded_pairing_residual_debug_smoke16.sh
@@ -38,25 +39,36 @@ residual_debug_safety_expanded_pairing_smoke16.json
 
 ## Requested Metrics
 
-No new smoke metrics are available because the smoke was not run.
-
 | Item | Value |
-| --- | --- |
-| Smoke completed | no |
-| Samples logged | n/a |
-| Candidates logged | n/a |
-| Parse failures | n/a |
-| Fingerprint failures | n/a |
-| Samples with oracle candidates | n/a |
-| Selected hits | n/a |
-| Oracle-present selected misses | n/a |
-| Pair-oracle samples | n/a |
-| Active residual vectors | n/a |
-| Weak residual vectors | n/a |
-| Selected hits preserved | n/a |
-| Selected hits harmed | n/a |
-| Oracle-present selected misses rescued | n/a |
-| Pair-oracle cases preserved/harmed | n/a |
+| --- | ---: |
+| Smoke completed | yes |
+| Samples logged | 16 |
+| Candidates logged | 350 |
+| Parse failures | 0 |
+| Fingerprint failures | 0 |
+| Samples with oracle candidates | 5 |
+| Selected hits | 0 |
+| Oracle-present selected misses | 5 |
+| Pair-oracle samples | 4 |
+| Active residual vector length | 18 |
+| Weak residual vector length | 96 |
+| Offline selected hits | 0 |
+| Selected hits harmed | 0 |
+| Oracle-present selected misses rescued | 0 |
+| Offline selected pair candidates | 8 |
+
+The `selected-hit harms=0` count is not strong safety evidence because the
+expanded-pairing smoke had 0 selected hits to harm.
+
+Oracle ranks under the offline `per_active_dim_norm_plus_weak` score:
+
+```text
+sample 5: oracle rank 8
+sample 8: oracle rank 6
+sample 11: oracle rank 3
+sample 12: oracle rank 3
+sample 13: oracle rank 11
+```
 
 ## Baseline Comparison
 
@@ -74,7 +86,10 @@ oracle-present selected-miss rescues=0
 
 ## Recommendation
 
-Do not add a scorer mode and do not run a formal 32-sample eval. Run the local
-script manually only if the expanded-pairing safety check is still needed. If it
-shows no selected-hit harm but no rescue, stop scorer-side normalization for now
-and return to drift span diversity or deeper fingerprint ambiguity diagnostics.
+Do not add `per_active_dim_norm_plus_weak` as a scorer mode and do not run a
+formal 32-sample eval for this scorer idea. Expanded pairing improved oracle
+availability from 2/16 to 5/16 and pair-oracle availability from 1/16 to 4/16,
+but selected recovery dropped from 1/16 to 0/16, and offline normalization
+rescued 0/5 oracle-present selected misses. Stop scorer-side normalization for
+now and return to drift span diversity or deeper fingerprint ambiguity
+diagnostics.

@@ -25,14 +25,18 @@ calibrated only on miss residuals; clipped/Huber/top-k variants rescued several
 misses while harming one debug top-2 selected-hit check. This does not justify a
 new rerank mode or formal eval yet. A residual-debug JSON export now exists for
 full candidate-pool offline safety checks. The first 8-sample smoke validated
-logging only; a follow-up 16-sample smoke logged 201 candidates with 2 oracle
-samples and 1 selected hit. Offline per-active-dimension normalization preserved
-that hit and harmed none, but rescued 0/1 oracle-present misses, so it still
-does not justify a new rerank mode or formal eval.
-The next requested expanded-pairing 16-sample residual-debug smoke was not run
-inside Codex because it was expected to exceed the 10-minute limit; a standalone
-local script was prepared instead:
-[scripts/run_expanded_pairing_residual_debug_smoke16.sh](/Users/lzhang/Documents/GenSR_SDE/scripts/run_expanded_pairing_residual_debug_smoke16.sh).
+logging only; a follow-up 16-sample baseline-pairing smoke logged 201
+candidates with 2 oracle samples and 1 selected hit. Offline
+per-active-dimension normalization preserved that hit and harmed none, but
+rescued 0/1 oracle-present misses. The user then ran the prepared
+expanded-pairing 16-sample smoke, which logged 350 candidates and increased
+oracle availability to 5/16, with 4/16 pair-oracle samples, but selected
+recovery dropped to 0/16 and offline normalization rescued 0/5 oracle-present
+misses. Therefore scorer-side normalization is not supported by current safety
+evidence; do not add `per_active_dim_norm_plus_weak` as a rerank mode or run a
+formal 32-sample eval for it. The next direction should return to drift span
+diversity for expanded-pairing oracle-absent samples, or deeper fingerprint
+ambiguity diagnostics.
 
 ## Last Updated
 
@@ -231,6 +235,16 @@ local script was prepared instead:
   harmed 0, but rescued 0/1 oracle-present selected misses. This validates the
   logging path and gives limited safety evidence, but still does not justify a
   formal eval or new rerank mode.
+- Recorded the user-run expanded-pairing 16-sample residual-debug smoke and
+  safety parse. Expanded pairing logged 350 valid candidates, raised oracle
+  availability from 2/16 to 5/16 and pair-oracle availability from 1/16 to
+  4/16, but selected recovery dropped from 1/16 to 0/16. The offline
+  `per_active_dim_norm_plus_weak` safety parse produced 0 offline selected
+  hits, 0 selected-miss rescues, and 8 offline selected pair candidates. The
+  `selected-hit harms=0` count is not strong safety evidence because there were
+  no expanded-pairing selected hits to harm. Oracle ranks under the offline
+  score were sample 5 rank 8, sample 8 rank 6, sample 11 rank 3, sample 12
+  rank 3, and sample 13 rank 11.
 - Logged validated experiments in
   [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md).
 
@@ -238,11 +252,9 @@ local script was prepared instead:
 
 - Transitioning from "can the model learn the fingerprint?" to "can we decode
   the right symbolic sequence?".
-- Using the residual-debug JSON export to check scorer safety offline before
-  any formal scorer change; the 16-sample smoke gave limited no-harm evidence
-  but no miss rescue. The expanded-pairing smoke is prepared as a local script
-  rather than run in Codex because its expected runtime exceeds the current
-  10-minute smoke budget.
+- Returning to drift span diversity diagnostics for expanded-pairing
+  oracle-absent samples. Residual-debug safety checks do not support continuing
+  scorer-side normalization.
 - The 2000-step role-token checkpoint has been restored in `/private/tmp` and
   backed up under `checkpoints/`; model weights remain ignored by git.
 
@@ -268,9 +280,10 @@ local script was prepared instead:
 7. Do not add pair pruning from the current evidence: no oracle-preserving
    pruning rule was found from existing logs/JSON.
 8. Do not add robust/clipped/per-dimension normalized active scoring as a rerank
-   mode from the offline ablation or 16-sample safety smoke alone. If scorer
-   analysis continues, run the prepared local expanded-pairing 16-sample
-   residual-debug smoke script, not a formal eval.
+   mode from the offline ablation or residual-debug safety smokes. The
+   expanded-pairing 16-sample smoke had 5 oracle samples, 0 selected hits, and
+   0/5 offline miss rescues, so do not run a formal 32-sample eval for this
+   scorer idea.
 9. Shift candidate-generation work toward drift span diversity: after expanded
    pairing, the remaining 17 oracle-absent samples all contain the truth
    diffusion but miss the truth drift.

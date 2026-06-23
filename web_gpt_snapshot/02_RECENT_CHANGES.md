@@ -2,28 +2,59 @@
 
 ## Last Codex Workflow
 
-Codex prepared, but did not run, the expanded-pairing 16-sample residual-debug
-smoke:
+Codex recorded the user-run expanded-pairing 16-sample residual-debug smoke and
+safety parse:
 
 ```text
 scripts/run_expanded_pairing_residual_debug_smoke16.sh
 residual_debug_expanded_pairing_smoke16_report.md
+residual_debug_safety_expanded_pairing_smoke16.md
+residual_debug_safety_expanded_pairing_smoke16.json
 ```
 
-Reason: the baseline 16-sample smoke took about 9.5 minutes with 201 logged
-candidates, and expanded pairing is expected to exceed the requested 10-minute
-Codex limit because it substantially increases the candidate pool. No formal
-32-sample eval, 64-sample eval, grid, retraining, scorer change, candidate
-generation change, or rerank mode was run.
+No new experiment was run by Codex in this documentation workflow. The user-run
+smoke was not a formal 32-sample eval, 64-sample eval, grid, retraining run,
+scorer change, candidate-generation change, or rerank mode change.
 
-Local command:
+Summary:
 
-```bash
-bash scripts/run_expanded_pairing_residual_debug_smoke16.sh
+```text
+baseline candidates logged=201
+baseline oracle=2/16
+baseline pair-oracle=1/16
+baseline selected=1/16
+expanded candidates logged=350
+expanded oracle=5/16
+expanded pair-oracle=4/16
+expanded selected=0/16
+parse failures=0
+fingerprint failures=0
+active residual vector length=18
+weak residual vector length=96
+offline per_active_dim_norm_plus_weak selected hits=0
+offline selected-hit harms=0
+offline selected-miss rescues=0/5
+offline selected pair candidates=8
 ```
 
-The script runs exactly one expanded-pairing 16-sample smoke and one safety
-helper parse.
+Oracle ranks under the offline score:
+
+```text
+sample 5: rank 8
+sample 8: rank 6
+sample 11: rank 3
+sample 12: rank 3
+sample 13: rank 11
+```
+
+Interpretation: expanded pairing improves oracle availability but selected
+recovery fails, and per-active-dimension normalization rescues none of the
+oracle-present misses. The `selected-hit harms=0` count is not strong safety
+evidence because expanded-pairing selected hits were already 0. Do not add
+`per_active_dim_norm_plus_weak` as a rerank mode and do not run a formal
+32-sample eval for this scorer idea. Return to drift span diversity for
+expanded-pairing oracle-absent samples, or deeper fingerprint ambiguity
+diagnostics.
 
 Validation:
 

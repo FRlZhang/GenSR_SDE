@@ -133,9 +133,13 @@ Current best result so far:
   harm one debug top-2 selected-hit check. The next scorer step should be richer
   residual logging in a small smoke, not a new default or formal eval.
 - `sde_validation_probe.py` now has optional `--rerank-residual-debug-json` for
-  candidate-level residual export. The first 8-sample smoke logged 101
-  candidates with active/weak residual vectors and labels, but had no oracle
-  candidates, so it validates the logging path rather than scorer safety.
+  candidate-level residual export. The baseline 16-sample smoke logged 201
+  candidates with 2 oracle samples and 1 selected hit. An expanded-pairing
+  16-sample smoke logged 350 candidates and raised oracle availability to 5/16,
+  but selected hits fell to 0/16 and offline per-active-dimension normalization
+  rescued 0/5 oracle-present misses. Do not add that normalization as a rerank
+  mode; the next direction is drift span diversity or deeper fingerprint
+  ambiguity diagnostics.
 
 See [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md)
 and [PROJECT_STATUS.md](/Users/lzhang/Documents/GenSR_SDE/PROJECT_STATUS.md) for

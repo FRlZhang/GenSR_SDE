@@ -2,13 +2,9 @@
 
 ## Next Engineering Task
 
-Use residual-debug JSON output to check scorer safety offline before any scorer
-change. Expanded-pairing pruning diagnostics found no safe oracle-preserving
-pruning rule, and the offline scorer ablation is promising but not stable
-enough for a rerank mode. A 16-sample residual-debug smoke now provides limited
-no-harm evidence, but no miss rescue. The expanded-pairing 16-sample smoke was
-prepared as a local script because it is expected to exceed the 10-minute Codex
-budget.
+Return to drift span diversity diagnostics for expanded-pairing oracle-absent
+samples. Residual-debug safety checks do not support continuing scorer-side
+normalization or adding a new rerank mode.
 
 Current strongest no-retraining decoding setting:
 
@@ -105,8 +101,15 @@ Prepared expanded-pairing residual-debug smoke:
 
 ```text
 script=scripts/run_expanded_pairing_residual_debug_smoke16.sh
-status=not run in Codex; expected to exceed 10-minute budget
-output if run=residual_debug_safety_expanded_pairing_smoke16.md/json
+status=user ran locally
+candidates logged=350
+samples with oracle=5/16
+pair-oracle samples=4/16
+selected hits=0/16
+oracle-present selected misses=5/16
+offline per_active_dim_norm_plus_weak rescues=0/5
+offline selected pair candidates=8
+oracle ranks under offline score=5:8,8:6,11:3,12:3,13:11
 ```
 
 Candidate-coverage-only result:
@@ -207,11 +210,11 @@ before modifying `sde_validation_probe.py`.
 
 Likely next additions:
 
-- if continuing scorer analysis, run the prepared local expanded-pairing
-  16-sample residual-debug smoke before testing a scorer mode;
-- do not add a rerank mode or formal eval from the offline ablation alone;
-- defer drift span diversity work until the expanded-pairing ranking failure is
-  understood;
+- return to drift span diversity diagnostics for the 17 expanded-pairing
+  oracle-absent samples;
+- do not add `per_active_dim_norm_plus_weak` or any robust/clipped normalized
+  active scorer mode from current evidence;
+- do not run a formal 32-sample eval for this scorer idea;
 - keep role-wise constant diagnostics in every rerank experiment;
 - consider candidate-generation changes only after deciding whether the current
   scorer can reliably choose among existing oracle candidates.

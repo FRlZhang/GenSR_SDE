@@ -341,7 +341,7 @@ result=limited no-harm evidence, no formal eval justified
 
 ## Expanded Pairing Residual Debug Smoke
 
-Prepared local script:
+Local script:
 
 ```bash
 bash scripts/run_expanded_pairing_residual_debug_smoke16.sh
@@ -357,8 +357,27 @@ rerank_residual_debug_json=/private/tmp/gensr_sde_residual_debug_expanded_pairin
 safety_report=residual_debug_safety_expanded_pairing_smoke16.md
 ```
 
-It was not run in Codex because the baseline 16-sample smoke took about
-9.5 minutes and expanded pairing is expected to exceed the 10-minute budget.
+User-run result:
+
+```text
+candidates logged=350
+samples with oracle=5/16
+pair-oracle samples=4/16
+selected hits=0/16
+oracle-present selected misses=5/16
+parse failures=0
+fingerprint failures=0
+active residual vector length=18
+weak residual vector length=96
+offline per_active_dim_norm_plus_weak selected hits=0
+offline selected-hit harms=0
+offline selected-miss rescues=0/5
+offline selected pair candidates=8
+```
+
+Do not add `per_active_dim_norm_plus_weak` as a rerank mode, and do not run a
+formal 32-sample eval for this scorer idea. Next return to drift span diversity
+or deeper fingerprint ambiguity diagnostics.
 
 ## Small Smoke Test
 

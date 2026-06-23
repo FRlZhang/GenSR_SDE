@@ -40,14 +40,42 @@ mode or running a formal 32-sample eval. If scorer safety needs one more check,
 use a future 16-sample expanded-pairing residual-debug smoke; otherwise return
 to drift span diversity or deeper fingerprint ambiguity diagnostics.
 
-An expanded-pairing 16-sample residual-debug smoke was requested next, but not
-run inside Codex because the baseline 16-sample smoke already took about
-9.5 minutes and expanded pairing is expected to exceed the 10-minute workflow
-limit. The standalone command is recorded in
-`scripts/run_expanded_pairing_residual_debug_smoke16.sh`. It runs exactly one
-expanded-pairing smoke and one safety-helper parse, writing
-`residual_debug_safety_expanded_pairing_smoke16.md` and the matching JSON if
-the user runs it locally.
+The user then ran the prepared expanded-pairing 16-sample residual-debug smoke:
+
+```text
+/private/tmp/gensr_sde_residual_debug_expanded_pairing_smoke16.json
+/private/tmp/gensr_sde_residual_debug_expanded_pairing_smoke16.log
+residual_debug_safety_expanded_pairing_smoke16.md
+residual_debug_safety_expanded_pairing_smoke16.json
+```
+
+| Item | Baseline 16 | Expanded-pairing 16 |
+| --- | ---: | ---: |
+| Candidates logged | 201 | 350 |
+| Samples with oracle candidate | 2/16 | 5/16 |
+| Pair-oracle samples | 1/16 | 4/16 |
+| Selected hits | 1/16 | 0/16 |
+| Oracle-present selected misses | 1/16 | 5/16 |
+| Parse failures | 0 | 0 |
+| Fingerprint failures | 0 | 0 |
+| Active residual vector length | 18 | 18 |
+| Weak residual vector length | 96 | 96 |
+
+Offline `per_active_dim_norm_plus_weak` on the expanded-pairing smoke produced
+0 offline selected hits, 0 selected-hit harms, 0 selected-miss rescues, and 8
+offline selected pair candidates. The `selected-hit harms=0` count is not strong
+safety evidence because expanded-pairing selected hits were already 0. Oracle
+ranks under the offline score were: sample 5 rank 8, sample 8 rank 6, sample 11
+rank 3, sample 12 rank 3, and sample 13 rank 11.
+
+Interpretation: expanded pairing improves 16-sample oracle availability from
+2/16 to 5/16 and pair-oracle availability from 1/16 to 4/16, but selected
+recovery drops from 1/16 to 0/16. Since per-active-dimension normalization
+rescues 0/5 oracle-present selected misses, scorer-side normalization is not
+supported. Do not add `per_active_dim_norm_plus_weak` as a rerank mode and do
+not run a formal 32-sample eval for this scorer idea. Next work should return
+to drift span diversity for expanded-pairing oracle-absent samples, or deeper
+fingerprint ambiguity diagnostics.
 
 The 8-sample eval-only smoke used the restored 2000-step checkpoint and baseline
 pairing settings. It completed without parse or fingerprint failures and wrote:
