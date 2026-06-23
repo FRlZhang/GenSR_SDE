@@ -2,13 +2,14 @@
 
 ## Next Engineering Task
 
-Plan a helper-only or small-smoke candidate-normalization diagnostic for
-constant-chain folding before widening drift beam/top-k. The drift-only smoke is
-complete: exact drift appears in only `3/17` targets, all beam rank-30
-nested-mul linear cases, while constant folding matches `15/17` drift-only
-candidates and explains all linear/sin exact misses. Residual-debug safety
-checks do not support continuing scorer-side normalization or adding a new
-rerank mode.
+Plan one small coverage-only normalized drift-only admission diagnostic before
+widening drift beam/top-k or changing production candidate-generation defaults.
+The drift-only smoke is complete: exact drift appears in only `3/17` targets,
+all beam rank-30 nested-mul linear cases. Candidate-normalization folding is
+also complete in helper-only mode: current expanded-pool folding projects
+`23/32`, exact-tail admission projects `18/32`, and drift-only tail plus folding
+projects `30/32`. Residual-debug safety checks do not support continuing
+scorer-side normalization or adding a new rerank mode.
 
 Current strongest no-retraining decoding setting:
 
@@ -217,6 +218,34 @@ linear_sin_canonical_matches=12/12
 polynomial_like_missing_after_canonical=2/2
 decision=B
 ```
+
+Candidate-normalization constant-folding diagnostic:
+
+```text
+script=scripts/analyze_candidate_normalization_constant_folding.py
+report=candidate_normalization_constant_folding_diagnostics.md
+json=candidate_normalization_constant_folding_diagnostics.json
+current_expanded_full_oracle=15/32
+canonicalized_expanded_pool_coverage=23/32
+current_expanded_pool_gain=+8
+current_expanded_pool_new_samples=1,3,4,9,10,14,20,22
+exact_tail_admission_coverage=18/32
+exact_tail_recovered_samples=2,25,29
+canonicalized_drift_only_admission_coverage=30/32
+canonicalized_drift_only_recovered_samples=0,1,2,3,4,6,7,9,10,14,15,20,22,25,29
+polynomial_like_missing_after_normalization=16,28
+source_breakdown_current_pool: beam+pair=7, both=1
+source_breakdown_drift_only_tail: beam=15
+collision_groups=9
+unsafe_collision_flag=False
+serialized_raw_to_canonical=440 -> 278
+serialized_reduction=36.8%
+decision=B
+```
+
+Interpretation: current expanded-pool canonicalization helps but is not enough.
+The next useful diagnostic is normalized drift-only admission, not naive global
+beam/top-k expansion and not formal eval.
 
 Do not launch formal eval from these diagnostics. Exact-tail admission alone is
 weak and expensive-looking because all exact hits are rank-30 beam cases.

@@ -50,9 +50,15 @@ already present for `17/17`. A follow-up JSON-only admission and
 constant-folding diagnostic found that exact-tail admission alone projects only
 `+3` oracle coverage (`18/32`), but narrow constant-chain folding matches
 `15/17` drift-only candidates and explains all `12/12` linear/sin exact misses;
-the two polynomial-like cases remain missing. Decision `B`: do a helper-only or
-small-smoke candidate-normalization diagnostic before widening beam/top-k, and
-do not run formal eval.
+the two polynomial-like cases remain missing. A helper-only candidate
+normalization diagnostic now separates current expanded-pool normalization from
+drift-only tail admission: current expanded-pool folding projects `23/32`
+oracle coverage (`+8`), exact-tail admission projects `18/32` (`+3`), and
+drift-only tail plus folding projects `30/32` (`+15`). Observed collisions are
+constant-chain-only, with no unsafe `pow2`/linear or `sin`/linear overmerge,
+and serialized drift candidates reduce from `440` to `278` (`36.8%`). Decision
+`B`: run one small coverage-only smoke/admission diagnostic with normalized
+drift-only candidates before widening beam/top-k, and do not run formal eval.
 
 ## Last Updated
 
@@ -307,6 +313,22 @@ do not run formal eval.
   diagnostic-only canonicalized ceiling of `30/32`; polynomial-like samples
   `16` and `28` remain missing. Decision `B`: test candidate normalization /
   constant-chain folding before widening beam/top-k, and do not run formal eval.
+- Added
+  [scripts/analyze_candidate_normalization_constant_folding.py](/Users/lzhang/Documents/GenSR_SDE/scripts/analyze_candidate_normalization_constant_folding.py)
+  and wrote
+  [candidate_normalization_constant_folding_diagnostics.md](/Users/lzhang/Documents/GenSR_SDE/candidate_normalization_constant_folding_diagnostics.md)
+  /
+  [candidate_normalization_constant_folding_diagnostics.json](/Users/lzhang/Documents/GenSR_SDE/candidate_normalization_constant_folding_diagnostics.json).
+  This helper parsed existing JSON only and applied the same narrow
+  constant-chain canonicalizer at the candidate-normalization level. Current
+  expanded-pool folding projects `23/32` oracle coverage (`+8`, samples
+  `1,3,4,9,10,14,20,22`), exact-tail admission projects `18/32` (`+3`,
+  samples `2,25,29`), and drift-only tail plus folding projects `30/32`
+  (`+15`, all targets except polynomial-like samples `16` and `28`). Collision
+  checks found no unsafe `pow2`/linear or `sin`/linear overmerge, and
+  serialized drift candidates reduce `440 -> 278` (`36.8%`). Decision `B`: run
+  one small coverage-only normalized drift-only admission diagnostic; do not run
+  formal eval.
 - Logged validated experiments in
   [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md).
 
@@ -314,9 +336,10 @@ do not run formal eval.
 
 - Transitioning from "can the model learn the fingerprint?" to "can we decode
   the right symbolic sequence?".
-- Planning a helper-only or small-smoke candidate-normalization diagnostic for
-  constant-chain folding before widening drift beam/top-k. Residual-debug
-  safety checks do not support continuing scorer-side normalization.
+- Planning one small coverage-only normalized drift-only admission diagnostic
+  before widening drift beam/top-k or changing production candidate-generation
+  defaults. Residual-debug safety checks do not support continuing scorer-side
+  normalization.
 - The 2000-step role-token checkpoint has been restored in `/private/tmp` and
   backed up under `checkpoints/`; model weights remain ignored by git.
 
@@ -346,10 +369,10 @@ do not run formal eval.
    expanded-pairing 16-sample smoke had 5 oracle samples, 0 selected hits, and
    0/5 offline miss rescues, so do not run a formal 32-sample eval for this
    scorer idea.
-9. Prefer a helper-only or small-smoke candidate-normalization diagnostic for
-   constant-chain folding before widening beam/top-k. The completed drift-only
-   smoke found exact-tail drift in only 3 rank-30 beam cases, while
-   constant-folded matching explains all 12 linear/sin exact misses.
+9. Prefer one small coverage-only normalized drift-only admission diagnostic
+   before widening beam/top-k. Current expanded-pool canonicalization alone
+   projects `23/32`, while drift-only tail plus canonicalization projects
+   `30/32`.
 10. Do not run formal eval from the drift-only or constant-folding diagnostics;
    they are oracle-coverage diagnostics, not selected-recovery evidence.
 11. Keep drift/diffusion pairing enabled and tune candidate pool size carefully
@@ -419,6 +442,15 @@ do not run formal eval.
 - Expanded pairing raises the oracle ceiling to `15/32`, but current scoring
   selected only `3/32`, so scorer/ranking is the immediate blocker for the
   expanded pool.
+- Drift-only exact-tail admission is weak: only 3 rank-30 beam nested-mul
+  linear cases are exact hits. Constant folding is stronger but still
+  diagnostic-only.
+- Current expanded-pool constant folding alone is not enough (`23/32`), while
+  drift-only tail plus folding projects `30/32`; this points to normalized
+  drift-only admission rather than naive global beam widening.
+- Constant-folding collision checks are token-structure-only; they did not flag
+  unsafe observed overmerge, but semantic fingerprint validation and
+  selected-rerank behavior remain untested.
 - The 32-sample constant-grid + pairing probe is CPU-expensive, so 64-sample
   expansion should be reserved for settings that first improve the 32-sample
   selected metrics.

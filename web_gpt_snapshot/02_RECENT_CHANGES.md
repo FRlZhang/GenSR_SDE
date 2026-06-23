@@ -2,6 +2,76 @@
 
 ## Last Codex Workflow
 
+Codex added a helper-only candidate-normalization diagnostic for narrow
+constant-chain folding:
+
+```text
+scripts/analyze_candidate_normalization_constant_folding.py
+candidate_normalization_constant_folding_diagnostics.md
+candidate_normalization_constant_folding_diagnostics.json
+```
+
+This parsed existing JSON only. No model decoding, candidate generation,
+fingerprint simulation, reranking, formal eval, 64-sample eval, grids,
+retraining, scorer changes, rerank-mode changes, checkpoint/data changes,
+target-format changes, fingerprint changes, or production candidate-generation
+default changes were run.
+
+Result:
+
+```text
+total_samples_analyzed=32
+target_oracle_absent_samples=17
+current_expanded_full_oracle=15/32
+canonicalized_expanded_pool_coverage=23/32
+current_expanded_pool_gain=+8
+exact_tail_admission_coverage=18/32
+exact_tail_admission_gain=+3
+canonicalized_drift_only_admission_coverage=30/32
+canonicalized_drift_only_admission_gain=+15
+current_expanded_pool_new_samples=1,3,4,9,10,14,20,22
+exact_tail_recovered_samples=2,25,29
+canonicalized_drift_only_recovered_samples=0,1,2,3,4,6,7,9,10,14,15,20,22,25,29
+polynomial_like_missing_after_normalization=16,28
+decision=B
+```
+
+Source/family/collision notes:
+
+```text
+current expanded-pool sources: beam+pair=7, both=1
+drift-only tail canonicalized sources: beam=15
+family gains from drift-only tail canonicalization:
+  linear=6
+  sin=6
+  nested-mul linear=3
+  polynomial-like=0
+collision_groups=9
+unsafe_collision_flag=False
+serialized_raw_to_canonical=440 -> 278
+serialized_reduction=36.8%
+```
+
+Interpretation: current expanded-pool canonicalization alone is useful but
+insufficient (`23/32`). The larger projected ceiling (`30/32`) requires
+admitting normalized drift-only tail candidates. The observed collisions are
+constant-chain-only and do not merge `pow2 x_0` with `x_0`, `mul CONSTANT pow2
+x_0` with `mul CONSTANT x_0`, or `sin x_0` with `x_0`; this remains
+token-structure-only evidence, not semantic selected-rerank validation.
+
+Recommendation: run one small coverage-only normalized drift-only admission
+diagnostic before widening beam/top-k. Do not run formal eval from this
+evidence.
+
+Validation:
+
+```text
+py_compile scripts/analyze_candidate_normalization_constant_folding.py: passed
+helper run: passed
+```
+
+## Previous Codex Workflow
+
 Codex recorded the user-completed drift-only candidate diversity smoke and added
 a JSON-only admission + constant-folding diagnostic:
 

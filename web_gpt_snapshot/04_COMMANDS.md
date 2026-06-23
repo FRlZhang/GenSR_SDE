@@ -294,6 +294,56 @@ Do not run formal eval from this diagnostic. Next step should be a helper-only
 or small-smoke candidate-normalization diagnostic for constant-chain folding
 before widening beam/top-k.
 
+## Candidate-Normalization Constant-Folding Diagnostic
+
+This parses existing JSON only and applies narrow multiplicative
+constant-chain folding at candidate-normalization / pairing diagnostic level.
+It does not run model decoding, candidate generation, fingerprint simulation,
+reranking, formal eval, 64-sample eval, grids, retraining, scorer changes,
+rerank-mode changes, checkpoint/data changes, target-format changes,
+fingerprint changes, or production candidate-generation default changes.
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 \
+/opt/miniconda3/envs/gensr/bin/python3 scripts/analyze_candidate_normalization_constant_folding.py \
+  --expanded-coverage-json candidate_coverage_pair_expanded.json \
+  --drift-only-json drift_only_candidate_diversity_smoke.json \
+  --constant-folding-json drift_only_admission_constant_folding_diagnostics.json \
+  --report candidate_normalization_constant_folding_diagnostics.md \
+  --json-output candidate_normalization_constant_folding_diagnostics.json \
+  > /private/tmp/gensr_sde_candidate_normalization_constant_folding.log 2>&1
+```
+
+Compile check:
+
+```bash
+PYTHONPYCACHEPREFIX=/private/tmp/gensr_pycache \
+/opt/miniconda3/envs/gensr/bin/python3 -m py_compile \
+  scripts/analyze_candidate_normalization_constant_folding.py
+```
+
+Latest result:
+
+```text
+current_expanded_full_oracle=15/32
+canonicalized_expanded_pool_coverage=23/32
+exact_tail_admission_coverage=18/32
+canonicalized_drift_only_admission_coverage=30/32
+current_expanded_pool_new_samples=1,3,4,9,10,14,20,22
+exact_tail_recovered_samples=2,25,29
+canonicalized_drift_only_recovered_samples=0,1,2,3,4,6,7,9,10,14,15,20,22,25,29
+polynomial_like_missing_after_normalization=16,28
+collision_groups=9
+unsafe_collision_flag=False
+serialized_raw_to_canonical=440 -> 278
+serialized_reduction=36.8%
+decision=B
+```
+
+Do not run formal eval from this diagnostic. Next step should be one small
+coverage-only normalized drift-only admission diagnostic before widening
+beam/top-k.
+
 ## Expanded Pairing Formal Eval Result
 
 The formal eval log is:
