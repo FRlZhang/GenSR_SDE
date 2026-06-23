@@ -1,0 +1,96 @@
+{
+  "status": "blocked_runtime_budget",
+  "metadata": {
+    "date": "2026-06-23",
+    "attempted_log": "/private/tmp/gensr_sde_drift_only_candidate_diversity_smoke.log",
+    "standalone_script": "scripts/run_drift_only_candidate_diversity_smoke.sh",
+    "checkpoint": "/private/tmp/gensr_sde_role_token_2000/role_token_2000.pth",
+    "target_source_json": "expanded_pairing_oracle_absent_drift_diversity.json",
+    "expanded_coverage_json": "candidate_coverage_pair_expanded.json",
+    "attempted_inside_codex": true,
+    "interrupted_after_exceeding_10_minute_budget": true
+  },
+  "target_samples": {
+    "count": 17,
+    "indices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      6,
+      7,
+      9,
+      10,
+      14,
+      15,
+      16,
+      20,
+      22,
+      25,
+      28,
+      29
+    ],
+    "known_exact_drift_missing_in_expanded_pool": 17,
+    "known_exact_diffusion_present_in_expanded_pool": 17,
+    "known_pairing_missing": 0,
+    "known_diffusion_missing": 0,
+    "known_nearest_drift_right_family": 9
+  },
+  "drift_family_breakdown": {
+    "linear drift": 6,
+    "sin drift": 6,
+    "nested-mul linear drift": 3,
+    "polynomial-like drift": 2,
+    "constant drift": 0,
+    "other / unknown": 0
+  },
+  "smoke_result": {
+    "target_samples_analyzed": 0,
+    "exact_truth_drift_found": null,
+    "exact_truth_drift_found_by_source": {
+      "beam": null,
+      "sampling": null,
+      "both": null,
+      "neither": null
+    },
+    "recovered_by_family": null,
+    "missing_by_family": null,
+    "exact_diffusion_present_for_target_samples": 17,
+    "main_reason_exact_drift_missing": "blocked; drift-only tail/rank evidence was not produced within the Codex runtime budget",
+    "logs_sufficient": false
+  },
+  "standalone_settings": {
+    "batch_size": 2,
+    "drift_max_len": 16,
+    "drift_beam_size": 16,
+    "drift_beam_candidates": 32,
+    "drift_sample_candidates": 48,
+    "sample_temperatures": [
+      0.8,
+      1.0,
+      1.2
+    ],
+    "sample_top_k": 8,
+    "sample_top_p": 0.95
+  },
+  "missing_fields_until_standalone_script_finishes": [
+    "exact truth drift found count",
+    "exact truth drift rank",
+    "exact truth drift found by beam/sampling/both/neither",
+    "recovered/missing split by drift family",
+    "drift-only nearest candidate per sample",
+    "beam versus sampling unique drift diversity",
+    "sampling under-diversity evidence from emitted drift-only candidates",
+    "grammar-collapse counts from nearest drift-only candidates"
+  ],
+  "fields_not_available_without_more_invasive_instrumentation": [
+    "token logits or entropy",
+    "raw unconstrained grammar rejection counts"
+  ],
+  "decision": {
+    "choice": "D",
+    "label": "Logs are still insufficient",
+    "recommended_next_action": "Run scripts/run_drift_only_candidate_diversity_smoke.sh before choosing between wider drift admission, drift sampling, role-conditioned drift decoding, or template-family seeding. Do not run formal eval."
+  }
+}

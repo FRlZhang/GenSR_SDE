@@ -40,7 +40,10 @@ exact-drift misses with exact diffusion already present; pairing-missing and
 diffusion-missing are both `0/17`. The next direction should be one
 diagnostic-only drift-only candidate diversity smoke that logs drift-span
 ranks/sources before any rerank, formal-eval, or candidate-generation default
-change.
+change. A helper for that smoke now exists, but the first Codex-run attempt
+exceeded the 10-minute budget and was interrupted before sample metrics were
+produced. Run the standalone script before deciding whether the exact drifts
+are hidden in wider tails or absent from current drift-only beam/sampling.
 
 ## Last Updated
 
@@ -262,6 +265,22 @@ change.
   drift is absent from all logged sources, while nearest logged drifts are
   often nearby over-nested or constant-heavy templates; decision `A`
   recommends one future diagnostic-only drift-only candidate diversity smoke.
+- Added
+  [scripts/analyze_drift_only_candidate_diversity.py](/Users/lzhang/Documents/GenSR_SDE/scripts/analyze_drift_only_candidate_diversity.py)
+  and
+  [scripts/run_drift_only_candidate_diversity_smoke.sh](/Users/lzhang/Documents/GenSR_SDE/scripts/run_drift_only_candidate_diversity_smoke.sh)
+  for a model-backed drift-only candidate diversity smoke over the 17
+  expanded-pairing oracle-absent samples. The helper compiles and is
+  diagnostic-only: it loads the current checkpoint, generates drift-only
+  constrained beam/sampling candidates, and writes
+  [drift_only_candidate_diversity_smoke.md](/Users/lzhang/Documents/GenSR_SDE/drift_only_candidate_diversity_smoke.md)
+  /
+  [drift_only_candidate_diversity_smoke.json](/Users/lzhang/Documents/GenSR_SDE/drift_only_candidate_diversity_smoke.json).
+  The first Codex-run attempt exceeded the 10-minute budget and was interrupted,
+  so the report is cleanly blocked with decision `D`; no formal eval, 64-sample
+  eval, grid, retraining, scorer change, rerank-mode change, checkpoint change,
+  data change, target-format change, fingerprint change, or production
+  candidate-generation default change was run.
 - Logged validated experiments in
   [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md).
 
@@ -269,10 +288,10 @@ change.
 
 - Transitioning from "can the model learn the fingerprint?" to "can we decode
   the right symbolic sequence?".
-- Preparing a future drift-only candidate diversity smoke or helper that logs
-  drift span ranks/sources for the remaining expanded-pairing oracle-absent
-  cases. Residual-debug safety checks do not support continuing scorer-side
-  normalization.
+- Waiting for the standalone drift-only candidate diversity smoke to finish and
+  populate drift-only tail/rank evidence for the 17 expanded-pairing
+  oracle-absent cases. Residual-debug safety checks do not support continuing
+  scorer-side normalization.
 - The 2000-step role-token checkpoint has been restored in `/private/tmp` and
   backed up under `checkpoints/`; model weights remain ignored by git.
 
@@ -307,9 +326,13 @@ change.
    the truth diffusion but miss the truth drift. Existing logs do not include
    unlogged beam/sampling tail ranks, token entropy/logits, or grammar
    rejection counts.
-10. Keep drift/diffusion pairing enabled and tune candidate pool size carefully
+10. Run `scripts/run_drift_only_candidate_diversity_smoke.sh` before choosing
+   between wider drift admission, drift sampling, role-conditioned drift
+   decoding, or template-family seeding. Do not run formal eval from the
+   blocked smoke report.
+11. Keep drift/diffusion pairing enabled and tune candidate pool size carefully
    because fingerprint recomputation is CPU-expensive.
-11. Reuse the saved 2000-step checkpoint for decoding experiments instead of
+12. Reuse the saved 2000-step checkpoint for decoding experiments instead of
    retraining.
 12. Compare greedy, constrained beam, reranked, and oracle candidate metrics on the same
    held-out evaluation setup.

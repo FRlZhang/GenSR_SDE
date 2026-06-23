@@ -2,6 +2,81 @@
 
 ## Last Codex Workflow
 
+Codex added a model-backed drift-only candidate diversity helper and standalone
+smoke script:
+
+```text
+scripts/analyze_drift_only_candidate_diversity.py
+scripts/run_drift_only_candidate_diversity_smoke.sh
+drift_only_candidate_diversity_smoke.md
+drift_only_candidate_diversity_smoke.json
+```
+
+The helper targets only the 17 expanded-pairing oracle-absent samples from
+`expanded_pairing_oracle_absent_drift_diversity.json`, loads the current
+checkpoint, and generates drift-only constrained beam/sampling candidates. It
+does not run reranking, fingerprint scoring, formal eval, 64-sample eval,
+grids, retraining, scorer changes, rerank-mode changes, checkpoint/data
+changes, target-format changes, fingerprint changes, or production
+candidate-generation default changes.
+
+Codex attempted one smoke run, but it exceeded the 10-minute budget and was
+interrupted before sample-level metrics were produced. The blocked report is
+therefore decision `D`.
+
+Known pre-smoke facts:
+
+```text
+target_samples=17
+indices=0,1,2,3,4,6,7,9,10,14,15,16,20,22,25,28,29
+exact_drift_missing_in_expanded_pool=17/17
+exact_diffusion_present_in_expanded_pool=17/17
+pairing_missing=0/17
+diffusion_missing=0/17
+nearest_drift_right_family=9/17
+```
+
+Blocked fields:
+
+```text
+exact truth drift found count=unavailable
+exact truth drift rank=unavailable
+found by beam/sampling/both/neither=unavailable
+recovered/missing by drift family=unavailable
+drift-only nearest candidate per sample=unavailable
+beam vs sampling unique drift diversity=unavailable
+grammar-collapse counts=unavailable
+```
+
+Standalone command:
+
+```bash
+scripts/run_drift_only_candidate_diversity_smoke.sh
+```
+
+The standalone script uses lighter explicit settings:
+
+```text
+batch_size=2
+drift_max_len=16
+drift_beam_size=16
+drift_beam_candidates=32
+drift_sample_candidates=48
+sample_temperatures=0.8,1.0,1.2
+sample_top_k=8
+sample_top_p=0.95
+```
+
+Validation:
+
+```text
+py_compile sde_validation_probe.py scripts/analyze_drift_only_candidate_diversity.py: passed
+git diff --check: passed
+git diff --cached --check: passed
+```
+
+## Previous Codex Workflow
+
 Codex added an offline drift-diversity diagnostic for the 17 expanded-pairing
 oracle-absent samples:
 

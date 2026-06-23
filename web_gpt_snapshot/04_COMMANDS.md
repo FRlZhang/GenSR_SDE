@@ -188,6 +188,58 @@ exact_diffusion_present=17/17
 decision=A
 ```
 
+## Drift-Only Candidate Diversity Smoke
+
+This is diagnostic-only and targets the 17 expanded-pairing oracle-absent
+samples. It loads the current checkpoint and generates drift-only constrained
+beam/sampling candidates. It does not run reranking, fingerprint scoring,
+formal eval, 64-sample eval, grids, retraining, scorer changes, rerank-mode
+changes, checkpoint/data changes, target-format changes, fingerprint changes,
+or production candidate-generation default changes.
+
+Standalone command:
+
+```bash
+scripts/run_drift_only_candidate_diversity_smoke.sh
+```
+
+Equivalent explicit command:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/tmp/cache \
+/opt/miniconda3/envs/gensr/bin/python3 scripts/analyze_drift_only_candidate_diversity.py \
+  --drift-diversity-json expanded_pairing_oracle_absent_drift_diversity.json \
+  --expanded-coverage-json candidate_coverage_pair_expanded.json \
+  --load-checkpoint /private/tmp/gensr_sde_role_token_2000/role_token_2000.pth \
+  --checkpoint-backup checkpoints/gensr_sde_role_token_2000/role_token_2000.pth \
+  --report drift_only_candidate_diversity_smoke.md \
+  --json-output drift_only_candidate_diversity_smoke.json \
+  --batch-size 2 \
+  --drift-max-len 16 \
+  --drift-beam-size 16 \
+  --drift-beam-candidates 32 \
+  --drift-sample-candidates 48 \
+  --sample-temperatures 0.8,1.0,1.2 \
+  --sample-top-k 8 \
+  --sample-top-p 0.95 \
+  > /private/tmp/gensr_sde_drift_only_candidate_diversity_smoke.log 2>&1
+```
+
+Compile check:
+
+```bash
+PYTHONPYCACHEPREFIX=/private/tmp/gensr_pycache \
+/opt/miniconda3/envs/gensr/bin/python3 -m py_compile \
+  sde_validation_probe.py \
+  scripts/analyze_drift_only_candidate_diversity.py
+```
+
+Current status: the first Codex-run attempt exceeded the 10-minute budget and
+was interrupted before sample metrics were produced, so
+`drift_only_candidate_diversity_smoke.md/json` currently records decision `D`
+and blocked fields. Run the standalone command before choosing a
+candidate-generation intervention.
+
 ## Expanded Pairing Formal Eval Result
 
 The formal eval log is:

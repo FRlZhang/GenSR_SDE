@@ -2,7 +2,7 @@
 
 ## Current Goal
 
-Improve sequence-level SDE recovery after establishing that the current unified fingerprint and role-token target are learnable by GenSR. Candidate generation plus fingerprint-distance reranking is implemented; drift/diffusion pairing and role-wise constant-grid scoring now produce selected hits. The current strongest no-retraining selected-recovery setting remains `constant_grid_rolewise_no_multi_u0` with baseline pairing at selected exact/relaxed `5/32`. Expanded pairing raises oracle exact/relaxed to `15/32`, but selected exact/relaxed regressed to `3/32`, so expanded pairing is diagnostic-only for now. Residual-debug safety checks do not support scorer-side per-active-dimension normalization: the user-run expanded-pairing 16-sample smoke had oracle `5/16`, pair-oracle `4/16`, selected `0/16`, and normalization rescued `0/5` oracle-present misses. Expanded-pairing oracle-absent drift diversity diagnostics now show the remaining `17/32` oracle-absent samples are all exact-drift misses with exact diffusion present. Next direction: one diagnostic-only drift-only candidate diversity smoke that logs drift-span ranks/sources before any rerank, formal-eval, or candidate-generation default change.
+Improve sequence-level SDE recovery after establishing that the current unified fingerprint and role-token target are learnable by GenSR. Candidate generation plus fingerprint-distance reranking is implemented; drift/diffusion pairing and role-wise constant-grid scoring now produce selected hits. The current strongest no-retraining selected-recovery setting remains `constant_grid_rolewise_no_multi_u0` with baseline pairing at selected exact/relaxed `5/32`. Expanded pairing raises oracle exact/relaxed to `15/32`, but selected exact/relaxed regressed to `3/32`, so expanded pairing is diagnostic-only for now. Residual-debug safety checks do not support scorer-side per-active-dimension normalization: the user-run expanded-pairing 16-sample smoke had oracle `5/16`, pair-oracle `4/16`, selected `0/16`, and normalization rescued `0/5` oracle-present misses. Expanded-pairing oracle-absent drift diversity diagnostics show the remaining `17/32` oracle-absent samples are all exact-drift misses with exact diffusion present. A drift-only candidate diversity helper now exists, but the first Codex-run smoke exceeded the 10-minute budget and was interrupted before sample metrics were produced. Next direction: run the standalone drift-only smoke script, then decide whether exact drifts are in wider tails or absent from current drift-only beam/sampling.
 
 ## Completed
 
@@ -47,11 +47,12 @@ greedy_sequence_exact=0.015625
 - Offline active-residual ablation tested current logged score, clipped p90/p95, Huber p90, top-1/top-2 active removal, per-active-dimension normalization, and weak-only diagnostics. `per_active_dim_norm_plus_weak` flipped 6/12 misses and 4/7 oracle-only-pair misses with 0/3 debug top-2 hit harms, but it was calibrated only from miss residuals. Clipped/Huber/top-k variants flipped 3-5 misses but harmed one debug top-2 selected-hit check.
 - Added optional `--rerank-residual-debug-json` to `sde_validation_probe.py` and `scripts/analyze_residual_debug_safety.py`. The baseline 16-sample smoke logged 201 candidates, 2 oracle samples, 1 selected hit, and 1 pair-oracle sample. The user-run expanded-pairing 16-sample smoke logged 350 candidates, 5 oracle samples, 4 pair-oracle samples, and 0 selected hits. Offline `per_active_dim_norm_plus_weak` rescued 0/5 oracle-present misses; oracle ranks under that score were 8, 6, 3, 3, and 11.
 - Added `scripts/analyze_expanded_pairing_oracle_absent_drift_diversity.py` and wrote `expanded_pairing_oracle_absent_drift_diversity.md/json`. This parsed existing coverage JSON only. The remaining 17 expanded-pairing oracle-absent samples are all exact-drift misses; exact diffusion is present in all 17. Drift-family breakdown is linear 6, sin 6, nested-mul linear 3, polynomial-like 2. Missing drifts are absent from all logged sources, with nearest logged drifts collapsing toward over-nested or constant-heavy templates. Decision `A`: run one future diagnostic-only drift-only candidate diversity smoke.
+- Added `scripts/analyze_drift_only_candidate_diversity.py` and `scripts/run_drift_only_candidate_diversity_smoke.sh`. The helper loads the current checkpoint and generates drift-only constrained beam/sampling candidates for the 17 expanded-pairing oracle-absent samples. The Codex-run smoke exceeded the 10-minute budget and was interrupted, so `drift_only_candidate_diversity_smoke.md/json` is a clean blocked report with decision `D`. No formal eval, 64-sample eval, grid, retraining, scorer change, rerank-mode change, checkpoint/data change, target-format change, fingerprint change, or production candidate-generation default change was run.
 
 ## In Progress
 
 - Transitioning from token recognition to full symbolic sequence recovery.
-- Preparing a diagnostic-only drift-only candidate diversity smoke for the 17 expanded-pairing oracle-absent samples.
+- Waiting for the standalone drift-only candidate diversity smoke to finish for the 17 expanded-pairing oracle-absent samples.
 - Checkpoint-dependent candidate regeneration is unblocked: the 2000-step checkpoint is present in `/private/tmp` and backed up under `checkpoints/`, which is ignored by git.
 
 ## Next Steps
@@ -64,8 +65,9 @@ greedy_sequence_exact=0.015625
 6. Do not add robust/clipped/per-dimension normalized active scoring as a rerank mode. The expanded-pairing 16-sample residual-debug safety smoke had 5 oracle samples, 0 selected hits, and 0/5 offline miss rescues, so no formal 32-sample eval is justified for this scorer idea.
 7. Do not add a robust-scoring rerank mode from the current offline ablation alone: mild variants rescued 0/4 and the only flip required aggressive clipping.
 8. Keep comparing greedy, constrained beam, reranked, oracle, and oracle-miss metrics on the same held-out setup.
-9. Do drift-span diversity next: exact drift is missing in all 17 expanded-pairing oracle-absent samples, while exact diffusion is present in all 17.
-10. Only revisit fingerprint design after candidate diversity and scoring have been tested more thoroughly.
+9. Run `scripts/run_drift_only_candidate_diversity_smoke.sh` next; exact drift is missing in all 17 expanded-pairing oracle-absent samples, while exact diffusion is present in all 17.
+10. Do not choose wider drift admission, drift sampling, role-conditioned drift decoding, or template-family seeding until the drift-only smoke produces tail/rank evidence.
+11. Only revisit fingerprint design after candidate diversity and scoring have been tested more thoroughly.
 
 ## Open Questions
 
@@ -90,6 +92,7 @@ greedy_sequence_exact=0.015625
 - Candidate generation remains a ceiling: only 9/32 samples had any oracle candidate.
 - Expanded pairing raises oracle coverage to `15/32`, but current scoring selected only `3/32`, so ranking of paired oracles is an immediate blocker.
 - Expanded pairing leaves 17 oracle-absent samples; all 17 are exact-drift misses with exact diffusion present, so further oracle-ceiling work needs drift span diversity rather than pairing cap/top-k changes.
+- Drift-only tail/rank evidence is still blocked: the first Codex-run smoke exceeded the 10-minute budget and should be rerun via the standalone script.
 - Constant-grid + pairing rerank is CPU-expensive; reserve 64-sample expansion for settings that first improve the 32-sample selected metrics.
 - The best checkpoint is available at `/private/tmp/gensr_sde_role_token_2000/role_token_2000.pth` and backed up at `checkpoints/gensr_sde_role_token_2000/role_token_2000.pth`.
 - `environment.yml` is upstream/Linux-oriented; recent work used the local macOS `gensr` conda env.

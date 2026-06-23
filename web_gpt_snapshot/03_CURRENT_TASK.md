@@ -2,9 +2,11 @@
 
 ## Next Engineering Task
 
-Plan one diagnostic-only drift-only candidate diversity smoke for the
-expanded-pairing oracle-absent samples. The drift diversity report is complete:
-the remaining 17 oracle-absent samples are all exact-drift misses with exact
+Run the standalone diagnostic-only drift-only candidate diversity smoke for the
+expanded-pairing oracle-absent samples. The helper exists, but the first
+Codex-run attempt exceeded the 10-minute budget and was interrupted before
+sample metrics were produced. The drift diversity report is complete: the
+remaining 17 oracle-absent samples are all exact-drift misses with exact
 diffusion present. Residual-debug safety checks do not support continuing
 scorer-side normalization or adding a new rerank mode.
 
@@ -162,6 +164,33 @@ insufficient to distinguish unlogged beam/sampling tail misses from model or
 grammar distribution misses because they lack unlogged tail ranks, token
 logits/entropy, and grammar rejection counts.
 
+Drift-only candidate diversity helper:
+
+```text
+script=scripts/analyze_drift_only_candidate_diversity.py
+standalone=scripts/run_drift_only_candidate_diversity_smoke.sh
+blocked_report=drift_only_candidate_diversity_smoke.md
+blocked_json=drift_only_candidate_diversity_smoke.json
+status=blocked inside Codex after exceeding 10-minute budget
+decision=D
+```
+
+Standalone smoke settings:
+
+```text
+batch_size=2
+drift_max_len=16
+drift_beam_size=16
+drift_beam_candidates=32
+drift_sample_candidates=48
+sample_temperatures=0.8,1.0,1.2
+sample_top_k=8
+sample_top_p=0.95
+```
+
+Run this script next, then inspect `drift_only_candidate_diversity_smoke.md/json`.
+Do not launch formal eval from the blocked report.
+
 Role-wise constants rescued one shared-constant miss, sample 17, by allowing
 drift constant `1.0` and diffusion constant `0.5`. The active-heavy `2:1` and
 weak-downweighted `1:0.5` variants both regressed to `3/32`, so do not continue
@@ -245,14 +274,14 @@ cap; its combined pair rank was 24.
 
 ## Primary File To Modify
 
-No primary source file needs to change unless the next task explicitly adds a
-drift-only candidate diversity smoke/helper. Prefer a narrow helper under
-`scripts/` and existing log/data paths before modifying `sde_validation_probe.py`.
+No primary source file needs to change for the next step. The drift-only helper
+and standalone script already exist. Do not modify `sde_validation_probe.py`
+unless the standalone run reveals a concrete narrow logging bug.
 
-Likely next additions:
+Likely next actions:
 
-- one diagnostic-only drift-only candidate diversity smoke that logs drift-span
-  ranks/sources for the 17 expanded-pairing oracle-absent samples;
+- run `scripts/run_drift_only_candidate_diversity_smoke.sh`;
+- inspect `drift_only_candidate_diversity_smoke.md/json` after it completes;
 - do not add `per_active_dim_norm_plus_weak` or any robust/clipped normalized
   active scorer mode from current evidence;
 - do not run a formal 32-sample eval for this scorer idea or from the drift
