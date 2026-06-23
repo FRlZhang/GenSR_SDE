@@ -2,6 +2,75 @@
 
 ## Last Codex Workflow
 
+Codex recorded the user-completed drift-only candidate diversity smoke and added
+a JSON-only admission + constant-folding diagnostic:
+
+```text
+drift_only_candidate_diversity_smoke.md
+drift_only_candidate_diversity_smoke.json
+scripts/analyze_drift_only_admission_and_constant_folding.py
+drift_only_admission_constant_folding_diagnostics.md
+drift_only_admission_constant_folding_diagnostics.json
+```
+
+No model decoding, candidate generation, fingerprint simulation, reranking,
+formal eval, 64-sample eval, grids, retraining, scorer changes, rerank-mode
+changes, checkpoint/data changes, target-format changes, fingerprint changes,
+or production candidate-generation default changes were run by Codex.
+
+User-run drift-only smoke result:
+
+```text
+target_samples=17
+exact_truth_drift_found=3/17
+exact_truth_drift_missing=14/17
+exact_diffusion_present=17/17
+found_by_source: beam=3, sampling=0, both=0, neither=14
+recovered_family: nested-mul linear=3/3
+missing_family: linear=6/6, sin=6/6, polynomial-like=2/2
+exact_hit_samples=2,25,29
+exact_hit_ranks=beam rank 30 for all three
+```
+
+Offline admission + constant-folding result:
+
+```text
+current_expanded_full_oracle=15/32
+exact_tail_projected_gain=+3
+exact_tail_projected_coverage=18/32
+canonicalized_drift_matches=15/17
+exact_missing_cases_become_canonical_matches=12
+canonicalized_projected_gain=+15
+canonicalized_projected_coverage=30/32
+linear_sin_canonical_matches=12/12
+polynomial_like_missing_after_canonical=2/2
+decision=B
+```
+
+Interpretation: exact-tail admission alone can rescue only the three rank-30
+beam nested-mul linear cases, so naive top-k expansion to 30/32 should not
+become a default. Constant-chain folding explains all linear and sin misses:
+`mul mul CONSTANT CONSTANT x_0` canonicalizes to `mul CONSTANT x_0`, and
+`mul mul CONSTANT CONSTANT sin x_0` canonicalizes to
+`mul CONSTANT sin x_0`. Polynomial-like samples `16` and `28` remain genuinely
+missing because `pow2 x_0` is preserved and does not match the linear-like
+candidate.
+
+Recommendation: run a future helper-only or small-smoke candidate-normalization
+diagnostic for constant-chain folding before widening beam/top-k. Do not run
+formal eval from this evidence.
+
+Validation:
+
+```text
+py_compile scripts/analyze_drift_only_admission_and_constant_folding.py: passed
+helper run: passed
+git diff --check: passed
+git diff --cached --check: passed
+```
+
+## Previous Codex Workflow
+
 Codex added a model-backed drift-only candidate diversity helper and standalone
 smoke script:
 

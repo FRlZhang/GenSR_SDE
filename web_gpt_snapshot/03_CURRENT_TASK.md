@@ -2,13 +2,13 @@
 
 ## Next Engineering Task
 
-Run the standalone diagnostic-only drift-only candidate diversity smoke for the
-expanded-pairing oracle-absent samples. The helper exists, but the first
-Codex-run attempt exceeded the 10-minute budget and was interrupted before
-sample metrics were produced. The drift diversity report is complete: the
-remaining 17 oracle-absent samples are all exact-drift misses with exact
-diffusion present. Residual-debug safety checks do not support continuing
-scorer-side normalization or adding a new rerank mode.
+Plan a helper-only or small-smoke candidate-normalization diagnostic for
+constant-chain folding before widening drift beam/top-k. The drift-only smoke is
+complete: exact drift appears in only `3/17` targets, all beam rank-30
+nested-mul linear cases, while constant folding matches `15/17` drift-only
+candidates and explains all linear/sin exact misses. Residual-debug safety
+checks do not support continuing scorer-side normalization or adding a new
+rerank mode.
 
 Current strongest no-retraining decoding setting:
 
@@ -171,8 +171,8 @@ script=scripts/analyze_drift_only_candidate_diversity.py
 standalone=scripts/run_drift_only_candidate_diversity_smoke.sh
 blocked_report=drift_only_candidate_diversity_smoke.md
 blocked_json=drift_only_candidate_diversity_smoke.json
-status=blocked inside Codex after exceeding 10-minute budget
-decision=D
+status=user completed standalone smoke
+decision=A
 ```
 
 Standalone smoke settings:
@@ -188,8 +188,39 @@ sample_top_k=8
 sample_top_p=0.95
 ```
 
-Run this script next, then inspect `drift_only_candidate_diversity_smoke.md/json`.
-Do not launch formal eval from the blocked report.
+Completed drift-only smoke result:
+
+```text
+target_samples=17
+exact_truth_drift_found=3/17
+found_by_source: beam=3, sampling=0, both=0, neither=14
+exact_hit_samples=2,25,29
+exact_hit_rank=30 for all three
+recovered_family: nested-mul linear=3/3
+missing_family: linear=6/6, sin=6/6, polynomial-like=2/2
+exact_diffusion_present=17/17
+```
+
+Admission + constant-folding diagnostic:
+
+```text
+script=scripts/analyze_drift_only_admission_and_constant_folding.py
+report=drift_only_admission_constant_folding_diagnostics.md
+json=drift_only_admission_constant_folding_diagnostics.json
+exact_tail_projected_gain=+3
+exact_tail_projected_coverage=18/32
+canonicalized_drift_matches=15/17
+exact_missing_cases_become_canonical_matches=12
+canonicalized_projected_gain=+15
+canonicalized_projected_coverage=30/32
+linear_sin_canonical_matches=12/12
+polynomial_like_missing_after_canonical=2/2
+decision=B
+```
+
+Do not launch formal eval from these diagnostics. Exact-tail admission alone is
+weak and expensive-looking because all exact hits are rank-30 beam cases.
+Constant-chain folding is the stronger offline signal.
 
 Role-wise constants rescued one shared-constant miss, sample 17, by allowing
 drift constant `1.0` and diffusion constant `0.5`. The active-heavy `2:1` and
@@ -274,22 +305,24 @@ cap; its combined pair rank was 24.
 
 ## Primary File To Modify
 
-No primary source file needs to change for the next step. The drift-only helper
-and standalone script already exist. Do not modify `sde_validation_probe.py`
-unless the standalone run reveals a concrete narrow logging bug.
+No primary source file needs to change for a pure offline follow-up. The
+candidate-normalization question should be tested in helper-only mode first. Do
+not modify `sde_validation_probe.py` unless a concrete narrow logging or
+diagnostic hook is proven necessary.
 
 Likely next actions:
 
-- run `scripts/run_drift_only_candidate_diversity_smoke.sh`;
-- inspect `drift_only_candidate_diversity_smoke.md/json` after it completes;
+- design a helper-only candidate-normalization diagnostic for constant-chain
+  folding before pairing/admission;
+- avoid naive global beam top-k expansion to 30/32 as a default from this
+  evidence alone;
 - do not add `per_active_dim_norm_plus_weak` or any robust/clipped normalized
   active scorer mode from current evidence;
-- do not run a formal 32-sample eval for this scorer idea or from the drift
-  diversity report alone;
+- do not run a formal 32-sample eval from the drift-only or constant-folding
+  diagnostics alone;
 - keep role-wise constant diagnostics in every rerank experiment;
-- consider candidate-generation changes only after a drift-only diagnostic shows
-  whether exact drift is below unlogged top-k/sampling tails or absent from the
-  current model/grammar distribution.
+- consider production candidate-generation changes only after the
+  constant-folding idea is validated as a candidate-normalization diagnostic.
 
 ## Supporting Files If Needed
 

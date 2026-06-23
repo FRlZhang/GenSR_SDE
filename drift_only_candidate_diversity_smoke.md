@@ -2,122 +2,90 @@
 
 Date: 2026-06-23
 
-Status: blocked by runtime budget inside Codex.
+Scope: diagnostic-only drift-role beam/sampling smoke for the 17 expanded-pairing oracle-absent samples. It loads the current checkpoint and generates drift-only candidates, but does not run reranking, fingerprint scoring, formal eval, 64-sample eval, grids, retraining, scorer changes, or production candidate-generation changes.
 
-Scope: diagnostic-only drift-role beam/sampling smoke for the 17 expanded-pairing
-oracle-absent samples. The helper was added and compiled, but the model-backed
-run exceeded the 10-minute Codex budget and was interrupted before sample-level
-metrics were produced. No formal eval, 64-sample eval, grid, retraining,
-scorer change, rerank-mode change, checkpoint change, data change, target-format
-change, fingerprint change, or production candidate-generation default change
-was run.
+## Executive Summary
 
-## What Was Added
+- Target samples analyzed: `17`.
+- Exact truth drift found in drift-only candidates: `3/17`.
+- Exact truth drift missing from drift-only beam+sampling: `14/17`.
+- Exact diffusion was already present in previous expanded coverage for `17/17` samples.
+- Nearest drift-only candidate has the right family in `9/17` samples.
+- Decision: `A` - Exact drifts appear in drift-only tails.
 
-- `scripts/analyze_drift_only_candidate_diversity.py`
-- `scripts/run_drift_only_candidate_diversity_smoke.sh`
+## Exact Drift Recovery By Source
 
-The helper reuses the validation probe setup and current checkpoint, generates
-drift-only constrained beam and stochastic sampling candidates for the target
-sample indices, and writes this report plus
-`drift_only_candidate_diversity_smoke.json` when it completes.
-
-## Target Set
-
-Target sample indices from
-`expanded_pairing_oracle_absent_drift_diversity.json`:
-
-```text
-0, 1, 2, 3, 4, 6, 7, 9, 10, 14, 15, 16, 20, 22, 25, 28, 29
-```
-
-Known pre-smoke facts:
-
-```text
-target_samples=17
-exact_drift_missing_in_expanded_pool=17/17
-exact_diffusion_present_in_expanded_pool=17/17
-pairing_missing=0/17
-diffusion_missing=0/17
-nearest_drift_right_family=9/17
-```
-
-Drift-family breakdown:
-
-| Family | Count |
+| Source bucket | Count |
 | --- | ---: |
-| linear drift | 6 |
-| sin drift | 6 |
-| nested-mul linear drift | 3 |
-| polynomial-like drift | 2 |
-| constant drift | 0 |
-| other / unknown | 0 |
+| beam | 3 |
+| sampling | 0 |
+| both | 0 |
+| neither | 14 |
 
-## Runtime Blocker
+## Drift-Family Recovery
 
-The initial smoke command was:
+| Family | Recovered | Missing |
+| --- | ---: | ---: |
+| linear drift | 0 | 6 |
+| sin drift | 0 | 6 |
+| nested-mul linear drift | 3 | 0 |
+| polynomial-like drift | 0 | 2 |
+| constant drift | 0 | 0 |
+| other / unknown | 0 | 0 |
 
-```bash
-PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/tmp/cache \
-/opt/miniconda3/envs/gensr/bin/python3 scripts/analyze_drift_only_candidate_diversity.py \
-  > /private/tmp/gensr_sde_drift_only_candidate_diversity_smoke.log 2>&1
-```
+## Diversity And Collapse
 
-It loaded the checkpoint successfully and began drift-only beam generation, but
-was still running after the 10-minute budget. The run was interrupted. The log
-is at:
+- Unique beam drift candidates summed over samples: `544`.
+- Unique sampling drift candidates summed over samples: `34`.
+- Beam contributes more new drift diversity than sampling if its summed unique count is higher; sampling remains under-diverse if it mostly duplicates the same few templates and does not recover exact drifts.
+- Grammar rejection counts and token entropy/logits are unavailable without more invasive instrumentation. Constrained decoding emitted parse-valid drift-role candidates, so raw grammar rejection versus low-probability absence cannot be separated here.
 
-```text
-/private/tmp/gensr_sde_drift_only_candidate_diversity_smoke.log
-```
+Collapse labels on nearest drift-only candidates:
 
-The helper defaults and standalone script were then reduced to a lighter
-diagnostic setting:
+| Collapse label | Count |
+| --- | ---: |
+| other | 3 |
+| over-nested template | 14 |
+| sin over-nesting | 6 |
 
-```text
-batch_size=2
-drift_max_len=16
-drift_beam_size=16
-drift_beam_candidates=32
-drift_sample_candidates=48
-sample_temperatures=0.8,1.0,1.2
-sample_top_k=8
-sample_top_p=0.95
-```
+## Per-Sample Diagnostics
 
-## Fields Not Yet Available
+| Sample | Family | Truth drift | Exact found | Source bucket | Exact rank | Nearest drift-only candidate | Nearest right family | Collapse labels | Unique beam | Unique sampling |
+| ---: | --- | --- | --- | --- | ---: | --- | --- | --- | ---: | ---: |
+| 0 | linear drift | `mul CONSTANT x_0` | False | neither | - | `mul mul CONSTANT CONSTANT x_0` | False | over-nested template | 32 | 2 |
+| 1 | sin drift | `mul CONSTANT sin x_0` | False | neither | - | `mul mul CONSTANT CONSTANT sin x_0` | True | over-nested template,sin over-nesting | 32 | 2 |
+| 2 | nested-mul linear drift | `mul mul CONSTANT CONSTANT x_0` | True | beam | 30 | `mul mul CONSTANT CONSTANT x_0` | True | other | 32 | 2 |
+| 3 | linear drift | `mul CONSTANT x_0` | False | neither | - | `mul mul CONSTANT CONSTANT x_0` | False | over-nested template | 32 | 2 |
+| 4 | sin drift | `mul CONSTANT sin x_0` | False | neither | - | `mul mul CONSTANT CONSTANT sin x_0` | True | over-nested template,sin over-nesting | 32 | 2 |
+| 6 | linear drift | `mul CONSTANT x_0` | False | neither | - | `mul mul CONSTANT CONSTANT x_0` | False | over-nested template | 32 | 2 |
+| 7 | linear drift | `mul CONSTANT x_0` | False | neither | - | `mul mul CONSTANT CONSTANT x_0` | False | over-nested template | 32 | 2 |
+| 9 | sin drift | `mul CONSTANT sin x_0` | False | neither | - | `mul mul CONSTANT CONSTANT sin x_0` | True | over-nested template,sin over-nesting | 32 | 2 |
+| 10 | sin drift | `mul CONSTANT sin x_0` | False | neither | - | `mul mul CONSTANT CONSTANT sin x_0` | True | over-nested template,sin over-nesting | 32 | 2 |
+| 14 | sin drift | `mul CONSTANT sin x_0` | False | neither | - | `mul mul CONSTANT CONSTANT sin x_0` | True | over-nested template,sin over-nesting | 32 | 2 |
+| 15 | linear drift | `mul CONSTANT x_0` | False | neither | - | `mul mul CONSTANT CONSTANT x_0` | False | over-nested template | 32 | 2 |
+| 16 | polynomial-like drift | `mul mul CONSTANT CONSTANT pow2 x_0` | False | neither | - | `mul mul CONSTANT CONSTANT mul CONSTANT x_0` | False | over-nested template | 32 | 2 |
+| 20 | sin drift | `mul CONSTANT sin x_0` | False | neither | - | `mul mul CONSTANT CONSTANT sin x_0` | True | over-nested template,sin over-nesting | 32 | 2 |
+| 22 | linear drift | `mul CONSTANT x_0` | False | neither | - | `mul mul CONSTANT CONSTANT x_0` | False | over-nested template | 32 | 2 |
+| 25 | nested-mul linear drift | `mul mul CONSTANT CONSTANT x_0` | True | beam | 30 | `mul mul CONSTANT CONSTANT x_0` | True | other | 32 | 2 |
+| 28 | polynomial-like drift | `mul mul CONSTANT CONSTANT pow2 x_0` | False | neither | - | `mul mul CONSTANT CONSTANT mul CONSTANT x_0` | False | over-nested template | 32 | 2 |
+| 29 | nested-mul linear drift | `mul mul CONSTANT CONSTANT x_0` | True | beam | 30 | `mul mul CONSTANT CONSTANT x_0` | True | other | 32 | 2 |
 
-Because the smoke did not complete, these requested fields remain unavailable:
+## Required Conclusions
 
-- exact truth drift found count;
-- exact truth drift rank;
-- exact truth drift found by beam/sampling/both/neither;
-- recovered/missing split by drift family;
-- drift-only nearest candidate per sample;
-- beam versus sampling unique drift diversity;
-- sampling under-diversity evidence from emitted drift-only candidates;
-- grammar-collapse counts from nearest drift-only candidates.
+1. The report analyzes only the 17 expanded-pairing oracle-absent samples.
+2. Exact truth drift found count: `3/17`.
+3. Source split is shown above for beam, sampling, both, and neither.
+4. Family recovery/missing split is shown above for linear, sin, nested-mul linear, polynomial-like, constant, and other/unknown.
+5. Whether exact drifts are below current top-k or absent entirely is decided from the drift-only tail result: recovered cases are below/admission misses; missing cases remain absent from this drift-only beam+sampling smoke.
+6. Beam versus sampling diversity is summarized by unique drift candidate counts and exact recovery source.
+7. Sampling under-diversity is inferred from emitted candidates only because logits/entropy are unavailable.
+8. Grammar-constrained decoding collapse is summarized by nearest-candidate collapse labels; raw rejection counts are unavailable.
+9. Next intervention: Run a future candidate-coverage-only top-k / drift-only admission diagnostic; do not run formal eval.
 
-The following fields would still be unavailable even after the helper completes,
-unless more invasive instrumentation is added:
+## Missing Fields
 
-- token logits or entropy;
-- raw unconstrained grammar rejection counts.
+- `token_logits_or_raw_sampling_entropy`: unavailable
+- `raw_grammar_rejection_counts`: unavailable
+- `invalid_unconstrained_candidates`: unavailable
 
-The helper uses grammar-constrained drift-only decoding, so invalid emitted rows
-can be counted, but raw rejection/unreachable-token statistics are not exposed.
-
-## Decision
-
-`D. Logs are still insufficient`: the helper exists, but the model-backed smoke
-did not finish within the Codex runtime budget. Run the standalone script before
-choosing between wider drift admission, drift sampling, role-conditioned drift
-decoding, or template-family seeding.
-
-Suggested command:
-
-```bash
-scripts/run_drift_only_candidate_diversity_smoke.sh
-```
-
-Do not run formal eval from this blocked report.
+No formal eval is recommended from this smoke.

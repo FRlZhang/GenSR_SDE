@@ -1,0 +1,1885 @@
+{
+  "decision": {
+    "choice": "B",
+    "label": "Constant-folding explains most misses",
+    "recommended_next_action": "Run a future helper-only or small smoke candidate-normalization diagnostic for constant-chain folding before widening beam/top-k. Do not run formal eval."
+  },
+  "family_breakdown": {
+    "canonical_match_by_family": {
+      "constant drift": 0,
+      "linear drift": 6,
+      "nested-mul linear drift": 3,
+      "other / unknown": 0,
+      "polynomial-like drift": 0,
+      "sin drift": 6
+    },
+    "canonical_missing_by_family": {
+      "constant drift": 0,
+      "linear drift": 0,
+      "nested-mul linear drift": 0,
+      "other / unknown": 0,
+      "polynomial-like drift": 2,
+      "sin drift": 0
+    },
+    "exact_found_by_family": {
+      "constant drift": 0,
+      "linear drift": 0,
+      "nested-mul linear drift": 3,
+      "other / unknown": 0,
+      "polynomial-like drift": 0,
+      "sin drift": 0
+    },
+    "exact_missing_by_family": {
+      "constant drift": 0,
+      "linear drift": 6,
+      "nested-mul linear drift": 0,
+      "other / unknown": 0,
+      "polynomial-like drift": 2,
+      "sin drift": 6
+    }
+  },
+  "metadata": {
+    "current_expanded_full_oracle_present": 15,
+    "serialized_candidate_coverage_note": "drift_only_candidate_diversity_smoke.json stores nearest candidates, exact occurrences, and serialized top beam/sampling candidates; canonical matching is therefore JSON-only over available serialized candidates, not a new model run.",
+    "target_samples": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      6,
+      7,
+      9,
+      10,
+      14,
+      15,
+      16,
+      20,
+      22,
+      25,
+      28,
+      29
+    ]
+  },
+  "samples": [
+    {
+      "canonical_match": true,
+      "canonical_match_best_candidate": {
+        "candidate_bucket": "beam_candidates",
+        "canonical_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "normalized_score": -1.5980338261055549,
+        "source": "beam",
+        "source_rank": 5
+      },
+      "canonical_match_from_exact_missing": true,
+      "canonical_nearest_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "canonical_truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "drift_family": "linear drift",
+      "exact_diffusion_present_previous_coverage": true,
+      "exact_truth_drift_found": false,
+      "exact_truth_drift_occurrences": [],
+      "exact_truth_drift_rank": null,
+      "exact_truth_drift_source_bucket": "neither",
+      "nearest_drift_only_tokens": [
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "x_0"
+      ],
+      "previous_current_pool_nearest": {
+        "best_occurrence": {
+          "candidate_rank": 6,
+          "source": "beam",
+          "source_rank": 6
+        },
+        "distance": 1,
+        "family": "constant drift",
+        "occurrences": [
+          {
+            "candidate_rank": 6,
+            "source": "beam",
+            "source_rank": 6
+          },
+          {
+            "candidate_rank": 14,
+            "source": "pair",
+            "source_rank": 4
+          },
+          {
+            "candidate_rank": 16,
+            "source": "pair",
+            "source_rank": 6
+          },
+          {
+            "candidate_rank": 17,
+            "source": "pair",
+            "source_rank": 7
+          },
+          {
+            "candidate_rank": 18,
+            "source": "pair",
+            "source_rank": 8
+          }
+        ],
+        "right_family": false,
+        "sources": [
+          "beam",
+          "pair"
+        ],
+        "tokens": [
+          "mul",
+          "CONSTANT",
+          "CONSTANT"
+        ]
+      },
+      "sample_index": 0,
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ]
+    },
+    {
+      "canonical_match": true,
+      "canonical_match_best_candidate": {
+        "candidate_bucket": "nearest_drift_only_candidate",
+        "canonical_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "drift_tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "normalized_score": -2.1162060694020375,
+        "source": "beam",
+        "source_rank": 15
+      },
+      "canonical_match_from_exact_missing": true,
+      "canonical_nearest_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ],
+      "canonical_truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ],
+      "drift_family": "sin drift",
+      "exact_diffusion_present_previous_coverage": true,
+      "exact_truth_drift_found": false,
+      "exact_truth_drift_occurrences": [],
+      "exact_truth_drift_rank": null,
+      "exact_truth_drift_source_bucket": "neither",
+      "nearest_drift_only_tokens": [
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ],
+      "previous_current_pool_nearest": {
+        "best_occurrence": {
+          "candidate_rank": 1,
+          "source": "beam",
+          "source_rank": 1
+        },
+        "distance": 1,
+        "family": "sin drift",
+        "occurrences": [
+          {
+            "candidate_rank": 1,
+            "source": "beam",
+            "source_rank": 1
+          },
+          {
+            "candidate_rank": 3,
+            "source": "beam",
+            "source_rank": 3
+          },
+          {
+            "candidate_rank": 10,
+            "source": "pair",
+            "source_rank": 1
+          },
+          {
+            "candidate_rank": 12,
+            "source": "pair",
+            "source_rank": 3
+          },
+          {
+            "candidate_rank": 13,
+            "source": "pair",
+            "source_rank": 4
+          }
+        ],
+        "right_family": true,
+        "sources": [
+          "beam",
+          "pair"
+        ],
+        "tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ]
+      },
+      "sample_index": 1,
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ]
+    },
+    {
+      "canonical_match": true,
+      "canonical_match_best_candidate": {
+        "candidate_bucket": "beam_candidates",
+        "canonical_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "normalized_score": -1.5979823518945964,
+        "source": "beam",
+        "source_rank": 5
+      },
+      "canonical_match_from_exact_missing": false,
+      "canonical_nearest_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "canonical_truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "drift_family": "nested-mul linear drift",
+      "exact_diffusion_present_previous_coverage": true,
+      "exact_truth_drift_found": true,
+      "exact_truth_drift_occurrences": [
+        {
+          "drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "x_0"
+          ],
+          "normalized_score": -2.6024693444207783,
+          "source": "beam",
+          "source_rank": 30
+        }
+      ],
+      "exact_truth_drift_rank": 30,
+      "exact_truth_drift_source_bucket": "beam",
+      "nearest_drift_only_tokens": [
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "x_0"
+      ],
+      "previous_current_pool_nearest": {
+        "best_occurrence": {
+          "candidate_rank": 2,
+          "source": "beam",
+          "source_rank": 2
+        },
+        "distance": 1,
+        "family": "nested-mul linear drift",
+        "occurrences": [
+          {
+            "candidate_rank": 2,
+            "source": "beam",
+            "source_rank": 2
+          },
+          {
+            "candidate_rank": 4,
+            "source": "beam",
+            "source_rank": 4
+          },
+          {
+            "candidate_rank": 5,
+            "source": "beam",
+            "source_rank": 5
+          },
+          {
+            "candidate_rank": 12,
+            "source": "pair",
+            "source_rank": 2
+          },
+          {
+            "candidate_rank": 10,
+            "source": "sampling",
+            "source_rank": 2
+          }
+        ],
+        "right_family": true,
+        "sources": [
+          "beam",
+          "pair",
+          "sampling"
+        ],
+        "tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "CONSTANT"
+        ]
+      },
+      "sample_index": 2,
+      "truth_drift_tokens": [
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "x_0"
+      ]
+    },
+    {
+      "canonical_match": true,
+      "canonical_match_best_candidate": {
+        "candidate_bucket": "beam_candidates",
+        "canonical_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "normalized_score": -1.597008806592736,
+        "source": "beam",
+        "source_rank": 5
+      },
+      "canonical_match_from_exact_missing": true,
+      "canonical_nearest_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "canonical_truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "drift_family": "linear drift",
+      "exact_diffusion_present_previous_coverage": true,
+      "exact_truth_drift_found": false,
+      "exact_truth_drift_occurrences": [],
+      "exact_truth_drift_rank": null,
+      "exact_truth_drift_source_bucket": "neither",
+      "nearest_drift_only_tokens": [
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "x_0"
+      ],
+      "previous_current_pool_nearest": {
+        "best_occurrence": {
+          "candidate_rank": 7,
+          "source": "beam",
+          "source_rank": 7
+        },
+        "distance": 1,
+        "family": "constant drift",
+        "occurrences": [
+          {
+            "candidate_rank": 7,
+            "source": "beam",
+            "source_rank": 7
+          },
+          {
+            "candidate_rank": 15,
+            "source": "pair",
+            "source_rank": 6
+          },
+          {
+            "candidate_rank": 18,
+            "source": "pair",
+            "source_rank": 9
+          },
+          {
+            "candidate_rank": 22,
+            "source": "pair",
+            "source_rank": 13
+          },
+          {
+            "candidate_rank": 23,
+            "source": "pair",
+            "source_rank": 14
+          }
+        ],
+        "right_family": false,
+        "sources": [
+          "beam",
+          "pair"
+        ],
+        "tokens": [
+          "mul",
+          "CONSTANT",
+          "CONSTANT"
+        ]
+      },
+      "sample_index": 3,
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ]
+    },
+    {
+      "canonical_match": true,
+      "canonical_match_best_candidate": {
+        "candidate_bucket": "nearest_drift_only_candidate",
+        "canonical_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "drift_tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "normalized_score": -2.1159500385578642,
+        "source": "beam",
+        "source_rank": 15
+      },
+      "canonical_match_from_exact_missing": true,
+      "canonical_nearest_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ],
+      "canonical_truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ],
+      "drift_family": "sin drift",
+      "exact_diffusion_present_previous_coverage": true,
+      "exact_truth_drift_found": false,
+      "exact_truth_drift_occurrences": [],
+      "exact_truth_drift_rank": null,
+      "exact_truth_drift_source_bucket": "neither",
+      "nearest_drift_only_tokens": [
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ],
+      "previous_current_pool_nearest": {
+        "best_occurrence": {
+          "candidate_rank": 2,
+          "source": "beam",
+          "source_rank": 2
+        },
+        "distance": 1,
+        "family": "sin drift",
+        "occurrences": [
+          {
+            "candidate_rank": 2,
+            "source": "beam",
+            "source_rank": 2
+          },
+          {
+            "candidate_rank": 3,
+            "source": "beam",
+            "source_rank": 3
+          },
+          {
+            "candidate_rank": 11,
+            "source": "pair",
+            "source_rank": 2
+          },
+          {
+            "candidate_rank": 13,
+            "source": "pair",
+            "source_rank": 4
+          },
+          {
+            "candidate_rank": 15,
+            "source": "pair",
+            "source_rank": 6
+          }
+        ],
+        "right_family": true,
+        "sources": [
+          "beam",
+          "pair"
+        ],
+        "tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ]
+      },
+      "sample_index": 4,
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ]
+    },
+    {
+      "canonical_match": true,
+      "canonical_match_best_candidate": {
+        "candidate_bucket": "beam_candidates",
+        "canonical_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "normalized_score": -1.5986748193646096,
+        "source": "beam",
+        "source_rank": 5
+      },
+      "canonical_match_from_exact_missing": true,
+      "canonical_nearest_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "canonical_truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "drift_family": "linear drift",
+      "exact_diffusion_present_previous_coverage": true,
+      "exact_truth_drift_found": false,
+      "exact_truth_drift_occurrences": [],
+      "exact_truth_drift_rank": null,
+      "exact_truth_drift_source_bucket": "neither",
+      "nearest_drift_only_tokens": [
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "x_0"
+      ],
+      "previous_current_pool_nearest": {
+        "best_occurrence": {
+          "candidate_rank": 6,
+          "source": "beam",
+          "source_rank": 6
+        },
+        "distance": 1,
+        "family": "constant drift",
+        "occurrences": [
+          {
+            "candidate_rank": 6,
+            "source": "beam",
+            "source_rank": 6
+          },
+          {
+            "candidate_rank": 14,
+            "source": "pair",
+            "source_rank": 4
+          },
+          {
+            "candidate_rank": 16,
+            "source": "pair",
+            "source_rank": 6
+          },
+          {
+            "candidate_rank": 17,
+            "source": "pair",
+            "source_rank": 7
+          },
+          {
+            "candidate_rank": 18,
+            "source": "pair",
+            "source_rank": 8
+          }
+        ],
+        "right_family": false,
+        "sources": [
+          "beam",
+          "pair"
+        ],
+        "tokens": [
+          "mul",
+          "CONSTANT",
+          "CONSTANT"
+        ]
+      },
+      "sample_index": 6,
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ]
+    },
+    {
+      "canonical_match": true,
+      "canonical_match_best_candidate": {
+        "candidate_bucket": "beam_candidates",
+        "canonical_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "normalized_score": -1.600384295993471,
+        "source": "beam",
+        "source_rank": 5
+      },
+      "canonical_match_from_exact_missing": true,
+      "canonical_nearest_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "canonical_truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "drift_family": "linear drift",
+      "exact_diffusion_present_previous_coverage": true,
+      "exact_truth_drift_found": false,
+      "exact_truth_drift_occurrences": [],
+      "exact_truth_drift_rank": null,
+      "exact_truth_drift_source_bucket": "neither",
+      "nearest_drift_only_tokens": [
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "x_0"
+      ],
+      "previous_current_pool_nearest": {
+        "best_occurrence": {
+          "candidate_rank": 6,
+          "source": "beam",
+          "source_rank": 6
+        },
+        "distance": 1,
+        "family": "constant drift",
+        "occurrences": [
+          {
+            "candidate_rank": 6,
+            "source": "beam",
+            "source_rank": 6
+          },
+          {
+            "candidate_rank": 14,
+            "source": "pair",
+            "source_rank": 4
+          },
+          {
+            "candidate_rank": 16,
+            "source": "pair",
+            "source_rank": 6
+          },
+          {
+            "candidate_rank": 17,
+            "source": "pair",
+            "source_rank": 7
+          },
+          {
+            "candidate_rank": 18,
+            "source": "pair",
+            "source_rank": 8
+          }
+        ],
+        "right_family": false,
+        "sources": [
+          "beam",
+          "pair"
+        ],
+        "tokens": [
+          "mul",
+          "CONSTANT",
+          "CONSTANT"
+        ]
+      },
+      "sample_index": 7,
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ]
+    },
+    {
+      "canonical_match": true,
+      "canonical_match_best_candidate": {
+        "candidate_bucket": "nearest_drift_only_candidate",
+        "canonical_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "drift_tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "normalized_score": -2.114306635789627,
+        "source": "beam",
+        "source_rank": 15
+      },
+      "canonical_match_from_exact_missing": true,
+      "canonical_nearest_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ],
+      "canonical_truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ],
+      "drift_family": "sin drift",
+      "exact_diffusion_present_previous_coverage": true,
+      "exact_truth_drift_found": false,
+      "exact_truth_drift_occurrences": [],
+      "exact_truth_drift_rank": null,
+      "exact_truth_drift_source_bucket": "neither",
+      "nearest_drift_only_tokens": [
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ],
+      "previous_current_pool_nearest": {
+        "best_occurrence": {
+          "candidate_rank": 2,
+          "source": "beam",
+          "source_rank": 2
+        },
+        "distance": 1,
+        "family": "sin drift",
+        "occurrences": [
+          {
+            "candidate_rank": 2,
+            "source": "beam",
+            "source_rank": 2
+          },
+          {
+            "candidate_rank": 3,
+            "source": "beam",
+            "source_rank": 3
+          },
+          {
+            "candidate_rank": 12,
+            "source": "pair",
+            "source_rank": 2
+          },
+          {
+            "candidate_rank": 13,
+            "source": "pair",
+            "source_rank": 3
+          },
+          {
+            "candidate_rank": 10,
+            "source": "sampling",
+            "source_rank": 2
+          }
+        ],
+        "right_family": true,
+        "sources": [
+          "beam",
+          "pair",
+          "sampling"
+        ],
+        "tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ]
+      },
+      "sample_index": 9,
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ]
+    },
+    {
+      "canonical_match": true,
+      "canonical_match_best_candidate": {
+        "candidate_bucket": "nearest_drift_only_candidate",
+        "canonical_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "drift_tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "normalized_score": -2.1182961929332196,
+        "source": "beam",
+        "source_rank": 15
+      },
+      "canonical_match_from_exact_missing": true,
+      "canonical_nearest_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ],
+      "canonical_truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ],
+      "drift_family": "sin drift",
+      "exact_diffusion_present_previous_coverage": true,
+      "exact_truth_drift_found": false,
+      "exact_truth_drift_occurrences": [],
+      "exact_truth_drift_rank": null,
+      "exact_truth_drift_source_bucket": "neither",
+      "nearest_drift_only_tokens": [
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ],
+      "previous_current_pool_nearest": {
+        "best_occurrence": {
+          "candidate_rank": 2,
+          "source": "beam",
+          "source_rank": 2
+        },
+        "distance": 1,
+        "family": "sin drift",
+        "occurrences": [
+          {
+            "candidate_rank": 2,
+            "source": "beam",
+            "source_rank": 2
+          },
+          {
+            "candidate_rank": 3,
+            "source": "beam",
+            "source_rank": 3
+          },
+          {
+            "candidate_rank": 11,
+            "source": "pair",
+            "source_rank": 2
+          },
+          {
+            "candidate_rank": 12,
+            "source": "pair",
+            "source_rank": 3
+          },
+          {
+            "candidate_rank": 13,
+            "source": "pair",
+            "source_rank": 4
+          }
+        ],
+        "right_family": true,
+        "sources": [
+          "beam",
+          "pair"
+        ],
+        "tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ]
+      },
+      "sample_index": 10,
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ]
+    },
+    {
+      "canonical_match": true,
+      "canonical_match_best_candidate": {
+        "candidate_bucket": "nearest_drift_only_candidate",
+        "canonical_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "drift_tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "normalized_score": -2.112544135897838,
+        "source": "beam",
+        "source_rank": 15
+      },
+      "canonical_match_from_exact_missing": true,
+      "canonical_nearest_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ],
+      "canonical_truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ],
+      "drift_family": "sin drift",
+      "exact_diffusion_present_previous_coverage": true,
+      "exact_truth_drift_found": false,
+      "exact_truth_drift_occurrences": [],
+      "exact_truth_drift_rank": null,
+      "exact_truth_drift_source_bucket": "neither",
+      "nearest_drift_only_tokens": [
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ],
+      "previous_current_pool_nearest": {
+        "best_occurrence": {
+          "candidate_rank": 2,
+          "source": "beam",
+          "source_rank": 2
+        },
+        "distance": 1,
+        "family": "sin drift",
+        "occurrences": [
+          {
+            "candidate_rank": 2,
+            "source": "beam",
+            "source_rank": 2
+          },
+          {
+            "candidate_rank": 3,
+            "source": "beam",
+            "source_rank": 3
+          },
+          {
+            "candidate_rank": 11,
+            "source": "pair",
+            "source_rank": 2
+          },
+          {
+            "candidate_rank": 13,
+            "source": "pair",
+            "source_rank": 4
+          },
+          {
+            "candidate_rank": 14,
+            "source": "pair",
+            "source_rank": 5
+          }
+        ],
+        "right_family": true,
+        "sources": [
+          "beam",
+          "pair"
+        ],
+        "tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ]
+      },
+      "sample_index": 14,
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ]
+    },
+    {
+      "canonical_match": true,
+      "canonical_match_best_candidate": {
+        "candidate_bucket": "beam_candidates",
+        "canonical_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "normalized_score": -1.597020966891644,
+        "source": "beam",
+        "source_rank": 5
+      },
+      "canonical_match_from_exact_missing": true,
+      "canonical_nearest_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "canonical_truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "drift_family": "linear drift",
+      "exact_diffusion_present_previous_coverage": true,
+      "exact_truth_drift_found": false,
+      "exact_truth_drift_occurrences": [],
+      "exact_truth_drift_rank": null,
+      "exact_truth_drift_source_bucket": "neither",
+      "nearest_drift_only_tokens": [
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "x_0"
+      ],
+      "previous_current_pool_nearest": {
+        "best_occurrence": {
+          "candidate_rank": 6,
+          "source": "beam",
+          "source_rank": 6
+        },
+        "distance": 1,
+        "family": "constant drift",
+        "occurrences": [
+          {
+            "candidate_rank": 6,
+            "source": "beam",
+            "source_rank": 6
+          },
+          {
+            "candidate_rank": 14,
+            "source": "pair",
+            "source_rank": 6
+          },
+          {
+            "candidate_rank": 16,
+            "source": "pair",
+            "source_rank": 8
+          },
+          {
+            "candidate_rank": 17,
+            "source": "pair",
+            "source_rank": 9
+          },
+          {
+            "candidate_rank": 18,
+            "source": "pair",
+            "source_rank": 10
+          }
+        ],
+        "right_family": false,
+        "sources": [
+          "beam",
+          "pair"
+        ],
+        "tokens": [
+          "mul",
+          "CONSTANT",
+          "CONSTANT"
+        ]
+      },
+      "sample_index": 15,
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ]
+    },
+    {
+      "canonical_match": false,
+      "canonical_match_best_candidate": null,
+      "canonical_match_from_exact_missing": false,
+      "canonical_nearest_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "canonical_truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "pow2",
+        "x_0"
+      ],
+      "drift_family": "polynomial-like drift",
+      "exact_diffusion_present_previous_coverage": true,
+      "exact_truth_drift_found": false,
+      "exact_truth_drift_occurrences": [],
+      "exact_truth_drift_rank": null,
+      "exact_truth_drift_source_bucket": "neither",
+      "nearest_drift_only_tokens": [
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "previous_current_pool_nearest": {
+        "best_occurrence": {
+          "candidate_rank": 1,
+          "source": "beam",
+          "source_rank": 1
+        },
+        "distance": 1,
+        "family": "sin drift",
+        "occurrences": [
+          {
+            "candidate_rank": 1,
+            "source": "beam",
+            "source_rank": 1
+          },
+          {
+            "candidate_rank": 3,
+            "source": "beam",
+            "source_rank": 3
+          },
+          {
+            "candidate_rank": 11,
+            "source": "pair",
+            "source_rank": 1
+          },
+          {
+            "candidate_rank": 14,
+            "source": "pair",
+            "source_rank": 4
+          },
+          {
+            "candidate_rank": 10,
+            "source": "sampling",
+            "source_rank": 2
+          }
+        ],
+        "right_family": false,
+        "sources": [
+          "beam",
+          "pair",
+          "sampling"
+        ],
+        "tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ]
+      },
+      "sample_index": 16,
+      "truth_drift_tokens": [
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "pow2",
+        "x_0"
+      ]
+    },
+    {
+      "canonical_match": true,
+      "canonical_match_best_candidate": {
+        "candidate_bucket": "nearest_drift_only_candidate",
+        "canonical_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "drift_tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "normalized_score": -2.114148418375308,
+        "source": "beam",
+        "source_rank": 15
+      },
+      "canonical_match_from_exact_missing": true,
+      "canonical_nearest_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ],
+      "canonical_truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ],
+      "drift_family": "sin drift",
+      "exact_diffusion_present_previous_coverage": true,
+      "exact_truth_drift_found": false,
+      "exact_truth_drift_occurrences": [],
+      "exact_truth_drift_rank": null,
+      "exact_truth_drift_source_bucket": "neither",
+      "nearest_drift_only_tokens": [
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ],
+      "previous_current_pool_nearest": {
+        "best_occurrence": {
+          "candidate_rank": 1,
+          "source": "beam",
+          "source_rank": 1
+        },
+        "distance": 1,
+        "family": "sin drift",
+        "occurrences": [
+          {
+            "candidate_rank": 1,
+            "source": "beam",
+            "source_rank": 1
+          },
+          {
+            "candidate_rank": 3,
+            "source": "beam",
+            "source_rank": 3
+          },
+          {
+            "candidate_rank": 10,
+            "source": "pair",
+            "source_rank": 1
+          },
+          {
+            "candidate_rank": 12,
+            "source": "pair",
+            "source_rank": 3
+          },
+          {
+            "candidate_rank": 13,
+            "source": "pair",
+            "source_rank": 4
+          }
+        ],
+        "right_family": true,
+        "sources": [
+          "beam",
+          "pair"
+        ],
+        "tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ]
+      },
+      "sample_index": 20,
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ]
+    },
+    {
+      "canonical_match": true,
+      "canonical_match_best_candidate": {
+        "candidate_bucket": "beam_candidates",
+        "canonical_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "normalized_score": -1.6009840732301162,
+        "source": "beam",
+        "source_rank": 5
+      },
+      "canonical_match_from_exact_missing": true,
+      "canonical_nearest_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "canonical_truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "drift_family": "linear drift",
+      "exact_diffusion_present_previous_coverage": true,
+      "exact_truth_drift_found": false,
+      "exact_truth_drift_occurrences": [],
+      "exact_truth_drift_rank": null,
+      "exact_truth_drift_source_bucket": "neither",
+      "nearest_drift_only_tokens": [
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "x_0"
+      ],
+      "previous_current_pool_nearest": {
+        "best_occurrence": {
+          "candidate_rank": 7,
+          "source": "beam",
+          "source_rank": 7
+        },
+        "distance": 1,
+        "family": "constant drift",
+        "occurrences": [
+          {
+            "candidate_rank": 7,
+            "source": "beam",
+            "source_rank": 7
+          },
+          {
+            "candidate_rank": 15,
+            "source": "pair",
+            "source_rank": 6
+          },
+          {
+            "candidate_rank": 18,
+            "source": "pair",
+            "source_rank": 9
+          },
+          {
+            "candidate_rank": 22,
+            "source": "pair",
+            "source_rank": 13
+          },
+          {
+            "candidate_rank": 23,
+            "source": "pair",
+            "source_rank": 14
+          }
+        ],
+        "right_family": false,
+        "sources": [
+          "beam",
+          "pair"
+        ],
+        "tokens": [
+          "mul",
+          "CONSTANT",
+          "CONSTANT"
+        ]
+      },
+      "sample_index": 22,
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ]
+    },
+    {
+      "canonical_match": true,
+      "canonical_match_best_candidate": {
+        "candidate_bucket": "beam_candidates",
+        "canonical_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "normalized_score": -1.5961377945835769,
+        "source": "beam",
+        "source_rank": 5
+      },
+      "canonical_match_from_exact_missing": false,
+      "canonical_nearest_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "canonical_truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "drift_family": "nested-mul linear drift",
+      "exact_diffusion_present_previous_coverage": true,
+      "exact_truth_drift_found": true,
+      "exact_truth_drift_occurrences": [
+        {
+          "drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "x_0"
+          ],
+          "normalized_score": -2.6005486752459426,
+          "source": "beam",
+          "source_rank": 30
+        }
+      ],
+      "exact_truth_drift_rank": 30,
+      "exact_truth_drift_source_bucket": "beam",
+      "nearest_drift_only_tokens": [
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "x_0"
+      ],
+      "previous_current_pool_nearest": {
+        "best_occurrence": {
+          "candidate_rank": 1,
+          "source": "beam",
+          "source_rank": 1
+        },
+        "distance": 1,
+        "family": "nested-mul linear drift",
+        "occurrences": [
+          {
+            "candidate_rank": 1,
+            "source": "beam",
+            "source_rank": 1
+          },
+          {
+            "candidate_rank": 4,
+            "source": "beam",
+            "source_rank": 4
+          },
+          {
+            "candidate_rank": 5,
+            "source": "beam",
+            "source_rank": 5
+          },
+          {
+            "candidate_rank": 11,
+            "source": "pair",
+            "source_rank": 1
+          },
+          {
+            "candidate_rank": 9,
+            "source": "sampling",
+            "source_rank": 1
+          }
+        ],
+        "right_family": true,
+        "sources": [
+          "beam",
+          "pair",
+          "sampling"
+        ],
+        "tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "CONSTANT"
+        ]
+      },
+      "sample_index": 25,
+      "truth_drift_tokens": [
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "x_0"
+      ]
+    },
+    {
+      "canonical_match": false,
+      "canonical_match_best_candidate": null,
+      "canonical_match_from_exact_missing": false,
+      "canonical_nearest_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "canonical_truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "pow2",
+        "x_0"
+      ],
+      "drift_family": "polynomial-like drift",
+      "exact_diffusion_present_previous_coverage": true,
+      "exact_truth_drift_found": false,
+      "exact_truth_drift_occurrences": [],
+      "exact_truth_drift_rank": null,
+      "exact_truth_drift_source_bucket": "neither",
+      "nearest_drift_only_tokens": [
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "previous_current_pool_nearest": {
+        "best_occurrence": {
+          "candidate_rank": 2,
+          "source": "beam",
+          "source_rank": 2
+        },
+        "distance": 1,
+        "family": "sin drift",
+        "occurrences": [
+          {
+            "candidate_rank": 2,
+            "source": "beam",
+            "source_rank": 2
+          },
+          {
+            "candidate_rank": 3,
+            "source": "beam",
+            "source_rank": 3
+          },
+          {
+            "candidate_rank": 12,
+            "source": "pair",
+            "source_rank": 2
+          },
+          {
+            "candidate_rank": 14,
+            "source": "pair",
+            "source_rank": 4
+          },
+          {
+            "candidate_rank": 10,
+            "source": "sampling",
+            "source_rank": 2
+          }
+        ],
+        "right_family": false,
+        "sources": [
+          "beam",
+          "pair",
+          "sampling"
+        ],
+        "tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ]
+      },
+      "sample_index": 28,
+      "truth_drift_tokens": [
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "pow2",
+        "x_0"
+      ]
+    },
+    {
+      "canonical_match": true,
+      "canonical_match_best_candidate": {
+        "candidate_bucket": "beam_candidates",
+        "canonical_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "normalized_score": -1.6020143860120808,
+        "source": "beam",
+        "source_rank": 5
+      },
+      "canonical_match_from_exact_missing": false,
+      "canonical_nearest_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "canonical_truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "drift_family": "nested-mul linear drift",
+      "exact_diffusion_present_previous_coverage": true,
+      "exact_truth_drift_found": true,
+      "exact_truth_drift_occurrences": [
+        {
+          "drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "x_0"
+          ],
+          "normalized_score": -2.6034832568262574,
+          "source": "beam",
+          "source_rank": 30
+        }
+      ],
+      "exact_truth_drift_rank": 30,
+      "exact_truth_drift_source_bucket": "beam",
+      "nearest_drift_only_tokens": [
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "x_0"
+      ],
+      "previous_current_pool_nearest": {
+        "best_occurrence": {
+          "candidate_rank": 1,
+          "source": "beam",
+          "source_rank": 1
+        },
+        "distance": 1,
+        "family": "nested-mul linear drift",
+        "occurrences": [
+          {
+            "candidate_rank": 1,
+            "source": "beam",
+            "source_rank": 1
+          },
+          {
+            "candidate_rank": 4,
+            "source": "beam",
+            "source_rank": 4
+          },
+          {
+            "candidate_rank": 5,
+            "source": "beam",
+            "source_rank": 5
+          },
+          {
+            "candidate_rank": 10,
+            "source": "pair",
+            "source_rank": 1
+          },
+          {
+            "candidate_rank": 12,
+            "source": "pair",
+            "source_rank": 3
+          }
+        ],
+        "right_family": true,
+        "sources": [
+          "beam",
+          "pair"
+        ],
+        "tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "CONSTANT"
+        ]
+      },
+      "sample_index": 29,
+      "truth_drift_tokens": [
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "x_0"
+      ]
+    }
+  ],
+  "summary": {
+    "canonicalized_drift_match_count": 15,
+    "canonicalized_drift_match_indices": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      6,
+      7,
+      9,
+      10,
+      14,
+      15,
+      20,
+      22,
+      25,
+      29
+    ],
+    "canonicalized_projected_full_oracle_coverage": 30,
+    "canonicalized_projected_gain": 15,
+    "exact_diffusion_present_for_canonical_matches": 15,
+    "exact_diffusion_present_for_exact_tail_hits": 3,
+    "exact_missing_canonical_match_indices": [
+      0,
+      1,
+      3,
+      4,
+      6,
+      7,
+      9,
+      10,
+      14,
+      15,
+      20,
+      22
+    ],
+    "exact_missing_cases_become_canonical_matches": 12,
+    "exact_tail_projected_full_oracle_coverage": 18,
+    "exact_tail_projected_gain": 3,
+    "exact_truth_drift_found_by_source_bucket": {
+      "beam": 3,
+      "both": 0,
+      "neither": 0,
+      "sampling": 0
+    },
+    "exact_truth_drift_found_count": 3,
+    "exact_truth_drift_found_indices": [
+      2,
+      25,
+      29
+    ],
+    "linear_sin_canonical_matches": 12,
+    "linear_sin_total": 12,
+    "polynomial_like_missing_after_canonical": 2,
+    "polynomial_like_total": 2,
+    "target_samples_analyzed": 17
+  }
+}

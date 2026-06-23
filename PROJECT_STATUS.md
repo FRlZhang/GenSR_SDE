@@ -43,7 +43,16 @@ ranks/sources before any rerank, formal-eval, or candidate-generation default
 change. A helper for that smoke now exists, but the first Codex-run attempt
 exceeded the 10-minute budget and was interrupted before sample metrics were
 produced. Run the standalone script before deciding whether the exact drifts
-are hidden in wider tails or absent from current drift-only beam/sampling.
+are hidden in wider tails or absent from current drift-only beam/sampling. The
+user-run standalone smoke found exact drifts in only `3/17` drift-only
+candidates, all beam rank-30 nested-mul linear cases, while exact diffusion was
+already present for `17/17`. A follow-up JSON-only admission and
+constant-folding diagnostic found that exact-tail admission alone projects only
+`+3` oracle coverage (`18/32`), but narrow constant-chain folding matches
+`15/17` drift-only candidates and explains all `12/12` linear/sin exact misses;
+the two polynomial-like cases remain missing. Decision `B`: do a helper-only or
+small-smoke candidate-normalization diagnostic before widening beam/top-k, and
+do not run formal eval.
 
 ## Last Updated
 
@@ -277,10 +286,27 @@ are hidden in wider tails or absent from current drift-only beam/sampling.
   /
   [drift_only_candidate_diversity_smoke.json](/Users/lzhang/Documents/GenSR_SDE/drift_only_candidate_diversity_smoke.json).
   The first Codex-run attempt exceeded the 10-minute budget and was interrupted,
-  so the report is cleanly blocked with decision `D`; no formal eval, 64-sample
-  eval, grid, retraining, scorer change, rerank-mode change, checkpoint change,
-  data change, target-format change, fingerprint change, or production
-  candidate-generation default change was run.
+  but the user later ran the standalone script successfully. The completed
+  smoke found exact drift in `3/17` targets, all beam-only rank-30 nested-mul
+  linear cases (`2`, `25`, `29`); sampling recovered `0/17`, exact drift stayed
+  missing for all linear, sin, and polynomial-like cases, and exact diffusion
+  was already present for all `17/17` targets.
+- Added
+  [scripts/analyze_drift_only_admission_and_constant_folding.py](/Users/lzhang/Documents/GenSR_SDE/scripts/analyze_drift_only_admission_and_constant_folding.py)
+  and wrote
+  [drift_only_admission_constant_folding_diagnostics.md](/Users/lzhang/Documents/GenSR_SDE/drift_only_admission_constant_folding_diagnostics.md)
+  /
+  [drift_only_admission_constant_folding_diagnostics.json](/Users/lzhang/Documents/GenSR_SDE/drift_only_admission_constant_folding_diagnostics.json).
+  This was JSON-only; it did not run model decoding, candidate generation,
+  fingerprint simulation, reranking, formal eval, 64-sample eval, grids,
+  retraining, scorer changes, rerank-mode changes, checkpoint/data changes,
+  target-format changes, fingerprint changes, or production default changes.
+  Exact-tail admission projects only `+3` full-oracle coverage, from `15/32` to
+  `18/32`, and all exact hits are beam rank 30. Constant-chain folding matches
+  `15/17` drift-only candidates, including all linear and sin misses, for a
+  diagnostic-only canonicalized ceiling of `30/32`; polynomial-like samples
+  `16` and `28` remain missing. Decision `B`: test candidate normalization /
+  constant-chain folding before widening beam/top-k, and do not run formal eval.
 - Logged validated experiments in
   [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md).
 
@@ -288,10 +314,9 @@ are hidden in wider tails or absent from current drift-only beam/sampling.
 
 - Transitioning from "can the model learn the fingerprint?" to "can we decode
   the right symbolic sequence?".
-- Waiting for the standalone drift-only candidate diversity smoke to finish and
-  populate drift-only tail/rank evidence for the 17 expanded-pairing
-  oracle-absent cases. Residual-debug safety checks do not support continuing
-  scorer-side normalization.
+- Planning a helper-only or small-smoke candidate-normalization diagnostic for
+  constant-chain folding before widening drift beam/top-k. Residual-debug
+  safety checks do not support continuing scorer-side normalization.
 - The 2000-step role-token checkpoint has been restored in `/private/tmp` and
   backed up under `checkpoints/`; model weights remain ignored by git.
 
@@ -321,22 +346,19 @@ are hidden in wider tails or absent from current drift-only beam/sampling.
    expanded-pairing 16-sample smoke had 5 oracle samples, 0 selected hits, and
    0/5 offline miss rescues, so do not run a formal 32-sample eval for this
    scorer idea.
-9. Shift candidate-generation work toward diagnostic-only drift span diversity:
-   after expanded pairing, the remaining 17 oracle-absent samples all contain
-   the truth diffusion but miss the truth drift. Existing logs do not include
-   unlogged beam/sampling tail ranks, token entropy/logits, or grammar
-   rejection counts.
-10. Run `scripts/run_drift_only_candidate_diversity_smoke.sh` before choosing
-   between wider drift admission, drift sampling, role-conditioned drift
-   decoding, or template-family seeding. Do not run formal eval from the
-   blocked smoke report.
+9. Prefer a helper-only or small-smoke candidate-normalization diagnostic for
+   constant-chain folding before widening beam/top-k. The completed drift-only
+   smoke found exact-tail drift in only 3 rank-30 beam cases, while
+   constant-folded matching explains all 12 linear/sin exact misses.
+10. Do not run formal eval from the drift-only or constant-folding diagnostics;
+   they are oracle-coverage diagnostics, not selected-recovery evidence.
 11. Keep drift/diffusion pairing enabled and tune candidate pool size carefully
    because fingerprint recomputation is CPU-expensive.
 12. Reuse the saved 2000-step checkpoint for decoding experiments instead of
    retraining.
-12. Compare greedy, constrained beam, reranked, and oracle candidate metrics on the same
+13. Compare greedy, constrained beam, reranked, and oracle candidate metrics on the same
    held-out evaluation setup.
-13. Only revisit fingerprint design after candidate diversity and scoring have
+14. Only revisit fingerprint design after candidate diversity and scoring have
    been tested more thoroughly.
 
 ## Open Questions

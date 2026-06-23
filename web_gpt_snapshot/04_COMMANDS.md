@@ -234,11 +234,65 @@ PYTHONPYCACHEPREFIX=/private/tmp/gensr_pycache \
   scripts/analyze_drift_only_candidate_diversity.py
 ```
 
-Current status: the first Codex-run attempt exceeded the 10-minute budget and
-was interrupted before sample metrics were produced, so
-`drift_only_candidate_diversity_smoke.md/json` currently records decision `D`
-and blocked fields. Run the standalone command before choosing a
-candidate-generation intervention.
+Latest result:
+
+```text
+target_samples=17
+exact_truth_drift_found=3/17
+found_by_source: beam=3, sampling=0, both=0, neither=14
+exact_hit_samples=2,25,29
+exact_hit_rank=30 for all three
+recovered_family: nested-mul linear=3/3
+missing_family: linear=6/6, sin=6/6, polynomial-like=2/2
+exact_diffusion_present=17/17
+decision=A
+```
+
+## Drift-Only Admission + Constant-Folding Diagnostic
+
+This parses existing JSON only. It does not run model decoding, candidate
+generation, fingerprint simulation, reranking, formal eval, 64-sample eval,
+grids, retraining, scorer changes, rerank-mode changes, checkpoint/data
+changes, target-format changes, fingerprint changes, or production
+candidate-generation default changes.
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 \
+/opt/miniconda3/envs/gensr/bin/python3 scripts/analyze_drift_only_admission_and_constant_folding.py \
+  --drift-only-json drift_only_candidate_diversity_smoke.json \
+  --expanded-coverage-json candidate_coverage_pair_expanded.json \
+  --previous-diversity-json expanded_pairing_oracle_absent_drift_diversity.json \
+  --report drift_only_admission_constant_folding_diagnostics.md \
+  --json-output drift_only_admission_constant_folding_diagnostics.json \
+  > /private/tmp/gensr_sde_drift_only_admission_constant_folding.log 2>&1
+```
+
+Compile check:
+
+```bash
+PYTHONPYCACHEPREFIX=/private/tmp/gensr_pycache \
+/opt/miniconda3/envs/gensr/bin/python3 -m py_compile \
+  scripts/analyze_drift_only_admission_and_constant_folding.py
+```
+
+Latest result:
+
+```text
+current_expanded_full_oracle=15/32
+exact_tail_projected_gain=+3
+exact_tail_projected_coverage=18/32
+canonicalized_drift_matches=15/17
+exact_missing_cases_become_canonical_matches=12
+canonicalized_projected_gain=+15
+canonicalized_projected_coverage=30/32
+linear_sin_canonical_matches=12/12
+polynomial_like_missing_after_canonical=2/2
+decision=B
+```
+
+Do not run formal eval from this diagnostic. Next step should be a helper-only
+or small-smoke candidate-normalization diagnostic for constant-chain folding
+before widening beam/top-k.
 
 ## Expanded Pairing Formal Eval Result
 
