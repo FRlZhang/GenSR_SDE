@@ -75,7 +75,14 @@ keeps only samples `16` and `28` missing, and reduces target pair count to
 truth-aware upper bound `320`. Sampling can be dropped in this diagnostic
 without losing recovered canonical drifts. Decision `A`: use
 `P2_one_per_family` for a future small coverage-only implementation hook; no
-formal eval yet.
+formal eval yet. That hook now exists as a reusable JSON-only module and runner:
+`scripts/normalized_drift_admission.py` and
+`scripts/run_p2_normalized_admission_coverage.py`. The runner reproduces the
+diagnostic numbers exactly (`15/32` current expanded, `23/32` current canonical,
+`30/32` P2 admission, pair count `340`, newly recovered
+`0,2,6,7,15,25,29`, remaining `16,28`) with strict self-checks passing and no
+sampling contribution. This remains coverage-only evidence; do not run formal
+eval or change production defaults from this hook alone.
 
 ## Last Updated
 
@@ -379,6 +386,19 @@ formal eval yet.
   pairs above the diagnostic lower bound. Sampling can be dropped; collision
   safety remains clean. Decision `A`: use `P2_one_per_family` for a future small
   coverage-only implementation hook; no formal eval.
+- Added the reusable coverage-only P2 admission hook in
+  [scripts/normalized_drift_admission.py](/Users/lzhang/Documents/GenSR_SDE/scripts/normalized_drift_admission.py)
+  and the runner
+  [scripts/run_p2_normalized_admission_coverage.py](/Users/lzhang/Documents/GenSR_SDE/scripts/run_p2_normalized_admission_coverage.py),
+  producing
+  [candidate_coverage_p2_normalized_admission.md](/Users/lzhang/Documents/GenSR_SDE/candidate_coverage_p2_normalized_admission.md)
+  /
+  [candidate_coverage_p2_normalized_admission.json](/Users/lzhang/Documents/GenSR_SDE/candidate_coverage_p2_normalized_admission.json).
+  The runner is JSON-only and coverage-only. It reproduces the capped diagnostic:
+  current expanded `15/32`, canonical expanded `23/32`, P2 normalized admission
+  `30/32`, P2 pair count `340`, newly recovered samples `0,2,6,7,15,25,29`,
+  remaining missing `16,28`, source `beam=15`, and sampling recovered canonical
+  drifts `0`. Required canonicalization and mismatch self-checks passed.
 - Logged validated experiments in
   [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md).
 
@@ -386,10 +406,10 @@ formal eval yet.
 
 - Transitioning from "can the model learn the fingerprint?" to "can we decode
   the right symbolic sequence?".
-- Planning a small coverage-only implementation hook for capped normalized
-  drift-only admission with `P2_one_per_family` before widening drift beam/top-k
-  or changing production candidate-generation defaults. Residual-debug safety
-  checks do not support continuing scorer-side normalization.
+- Planning a next coverage-only integration diagnostic around the reusable
+  `P2_one_per_family` hook before widening drift beam/top-k or changing
+  production candidate-generation defaults. Residual-debug safety checks do not
+  support continuing scorer-side normalization.
 - The 2000-step role-token checkpoint has been restored in `/private/tmp` and
   backed up under `checkpoints/`; model weights remain ignored by git.
 
@@ -419,10 +439,9 @@ formal eval yet.
    expanded-pairing 16-sample smoke had 5 oracle samples, 0 selected hits, and
    0/5 offline miss rescues, so do not run a formal 32-sample eval for this
    scorer idea.
-9. Prefer a small coverage-only implementation hook for
-   `P2_one_per_family` capped normalized drift-only admission before widening
-   beam/top-k. It preserves the `30/32` diagnostic ceiling with target pair
-   count `340`, versus `1105` for full normalized admission.
+9. Prefer coverage-only validation of the reusable `P2_one_per_family` hook
+   before widening beam/top-k. It preserves the `30/32` diagnostic ceiling with
+   target pair count `340`, versus `1105` for full normalized admission.
 10. Do not run formal eval from the drift-only or constant-folding diagnostics;
    they are oracle-coverage diagnostics, not selected-recovery evidence.
 11. Keep drift/diffusion pairing enabled and tune candidate pool size carefully

@@ -449,6 +449,49 @@ decision=A
 Do not run formal eval from this diagnostic. Next step should be a small
 coverage-only implementation hook for `P2_one_per_family`.
 
+## P2 Normalized Drift Admission Coverage Hook
+
+This parses existing JSON only and applies the reusable P2 admission hook. It
+does not run model decoding, candidate generation, fingerprint simulation,
+reranking, formal eval, 64-sample eval, grids, retraining, scorer changes,
+rerank-mode changes, checkpoint/data changes, target-format changes,
+fingerprint changes, or production default changes.
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 \
+/opt/miniconda3/envs/gensr/bin/python3 scripts/run_p2_normalized_admission_coverage.py \
+  --expanded-coverage-json candidate_coverage_pair_expanded.json \
+  --drift-only-json drift_only_candidate_diversity_smoke.json \
+  --report candidate_coverage_p2_normalized_admission.md \
+  --json-output candidate_coverage_p2_normalized_admission.json \
+  > /private/tmp/gensr_sde_p2_normalized_admission_coverage.log 2>&1
+```
+
+Compile check:
+
+```bash
+PYTHONPYCACHEPREFIX=/private/tmp/gensr_pycache \
+/opt/miniconda3/envs/gensr/bin/python3 -m py_compile \
+  scripts/normalized_drift_admission.py \
+  scripts/run_p2_normalized_admission_coverage.py
+```
+
+Latest result:
+
+```text
+current_expanded_full_oracle=15/32
+canonicalized_expanded_pool_coverage=23/32
+P2_normalized_admission_coverage=30/32
+P2_pair_count=340
+newly_recovered=0,2,6,7,15,25,29
+remaining_missing=16,28
+sampling_excluded=True
+sampling_recovered_canonical_drift_count=0
+self_check_failures=0
+```
+
+No formal eval is recommended from this hook alone.
+
 ## Expanded Pairing Formal Eval Result
 
 The formal eval log is:

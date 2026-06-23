@@ -2,16 +2,17 @@
 
 ## Next Engineering Task
 
-Plan a small coverage-only implementation hook for `P2_one_per_family` capped
-normalized drift-only admission before widening drift beam/top-k or changing
-production candidate-generation defaults. The drift-only smoke is complete:
-exact drift appears in only `3/17` targets, all beam rank-30 nested-mul linear
-cases. Candidate-normalization folding is complete in helper-only mode:
-current expanded-pool folding projects `23/32`, exact-tail admission projects
-`18/32`, full normalized drift-only admission projects `30/32` with pair count
-`1105`, and capped `P2_one_per_family` preserves `30/32` with pair count `340`.
-Residual-debug safety checks do not support continuing scorer-side
-normalization or adding a new rerank mode.
+Plan coverage-only validation of the reusable `P2_one_per_family` normalized
+drift admission hook before widening drift beam/top-k or changing production
+candidate-generation defaults. The drift-only smoke is complete: exact drift
+appears in only `3/17` targets, all beam rank-30 nested-mul linear cases.
+Candidate-normalization folding is complete in helper-only mode: current
+expanded-pool folding projects `23/32`, exact-tail admission projects `18/32`,
+full normalized drift-only admission projects `30/32` with pair count `1105`,
+capped `P2_one_per_family` preserves `30/32` with pair count `340`, and the
+reusable hook reproduces those numbers with strict self-checks. Residual-debug
+safety checks do not support continuing scorer-side normalization or adding a
+new rerank mode.
 
 Current strongest no-retraining decoding setting:
 
@@ -293,11 +294,33 @@ unsafe_collision_flag=False
 decision=A
 ```
 
+Reusable P2 normalized admission hook:
+
+```text
+module=scripts/normalized_drift_admission.py
+runner=scripts/run_p2_normalized_admission_coverage.py
+report=candidate_coverage_p2_normalized_admission.md
+json=candidate_coverage_p2_normalized_admission.json
+current_expanded_full_oracle=15/32
+canonicalized_expanded_pool_coverage=23/32
+P2_normalized_admission_coverage=30/32
+P2_pair_count=340
+full_normalized_admission_pair_count=1105
+truth_aware_upper_bound_pair_count=320
+newly_recovered=0,2,6,7,15,25,29
+remaining_missing=16,28
+source_breakdown: beam=15
+sampling_excluded=True
+sampling_recovered_canonical_drift_count=0
+self_check_failures=0
+```
+
 Interpretation: current expanded-pool canonicalization helps but is not enough,
 full normalized drift-only admission is too high-pressure to adopt wholesale,
 and `P2_one_per_family` preserves the coverage ceiling with much lower pair
-pressure. The next useful step is a small coverage-only implementation hook for
-that capped policy, not naive global beam/top-k expansion and not formal eval.
+pressure. The hook exists and is still coverage-only; the next useful step is
+coverage-only validation/integration around that hook, not naive global
+beam/top-k expansion and not formal eval.
 
 Do not launch formal eval from these diagnostics. Exact-tail admission alone is
 weak and expensive-looking because all exact hits are rank-30 beam cases.

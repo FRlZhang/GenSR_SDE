@@ -2,6 +2,69 @@
 
 ## Last Codex Workflow
 
+Codex added a reusable coverage-only P2 normalized drift admission hook:
+
+```text
+scripts/normalized_drift_admission.py
+scripts/run_p2_normalized_admission_coverage.py
+candidate_coverage_p2_normalized_admission.md
+candidate_coverage_p2_normalized_admission.json
+```
+
+This parsed existing JSON only. No model decoding, candidate generation,
+fingerprint simulation, reranking, formal eval, 64-sample eval, grids,
+retraining, scorer changes, rerank-mode changes, checkpoint/data changes,
+target-format changes, fingerprint changes, or production default changes were
+run.
+
+Hook result:
+
+```text
+current_expanded_full_oracle=15/32
+canonicalized_expanded_pool_coverage=23/32
+P2_normalized_admission_coverage=30/32
+full_normalized_admission_coverage=30/32
+P2_pair_count=340
+full_normalized_admission_pair_count=1105
+truth_aware_upper_bound_pair_count=320
+newly_recovered=0,2,6,7,15,25,29
+remaining_missing=16,28
+source_breakdown: beam=15
+family_breakdown: linear=6, sin=6, nested-mul linear=3, polynomial-like=0
+sampling_excluded=True
+sampling_recovered_canonical_drift_count=0
+self_check_failures=0
+```
+
+The hook exposes:
+
+```text
+canonicalize_constant_chains(tokens_or_string)
+classify_drift_family(canonical_tokens_or_string)
+select_p2_one_per_family(drift_candidates)
+build_p2_normalized_admission_pool(expanded_coverage_json, drift_only_json)
+```
+
+Required canonicalizer safety checks passed:
+
+```text
+canonicalize(pow2 x_0) != canonicalize(x_0)
+canonicalize(mul CONSTANT pow2 x_0) != canonicalize(mul CONSTANT x_0)
+canonicalize(sin x_0) != canonicalize(x_0)
+```
+
+Interpretation: the reusable P2 hook reproduces the capped diagnostic exactly
+and remains coverage-only. No formal eval is recommended from this hook alone.
+
+Validation:
+
+```text
+py_compile scripts/normalized_drift_admission.py scripts/run_p2_normalized_admission_coverage.py: passed
+runner self-checks: passed
+```
+
+## Previous Codex Workflow
+
 Codex added a capped normalized drift admission diagnostic:
 
 ```text
