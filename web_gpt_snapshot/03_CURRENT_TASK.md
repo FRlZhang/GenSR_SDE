@@ -2,14 +2,15 @@
 
 ## Next Engineering Task
 
-Plan one small coverage-only normalized drift-only admission diagnostic before
+Plan a capped normalized drift-only admission coverage diagnostic before
 widening drift beam/top-k or changing production candidate-generation defaults.
 The drift-only smoke is complete: exact drift appears in only `3/17` targets,
 all beam rank-30 nested-mul linear cases. Candidate-normalization folding is
 also complete in helper-only mode: current expanded-pool folding projects
-`23/32`, exact-tail admission projects `18/32`, and drift-only tail plus folding
-projects `30/32`. Residual-debug safety checks do not support continuing
-scorer-side normalization or adding a new rerank mode.
+`23/32`, exact-tail admission projects `18/32`, and full normalized drift-only
+admission projects `30/32`, but pair pressure rises from `370` to `1105`
+estimated target-sample pairs. Residual-debug safety checks do not support
+continuing scorer-side normalization or adding a new rerank mode.
 
 Current strongest no-retraining decoding setting:
 
@@ -243,9 +244,34 @@ serialized_reduction=36.8%
 decision=B
 ```
 
-Interpretation: current expanded-pool canonicalization helps but is not enough.
-The next useful diagnostic is normalized drift-only admission, not naive global
-beam/top-k expansion and not formal eval.
+Normalized drift-only admission coverage diagnostic:
+
+```text
+script=scripts/analyze_normalized_drift_only_admission_coverage.py
+report=normalized_drift_only_admission_coverage_diagnostics.md
+json=normalized_drift_only_admission_coverage_diagnostics.json
+current_expanded_full_oracle=15/32
+canonicalized_expanded_pool_coverage=23/32
+exact_tail_admission_coverage=18/32
+normalized_drift_only_admission_coverage=30/32
+newly_recovered_beyond_current_expanded_canonical_pool=0,2,6,7,15,25,29
+remaining_missing_samples=16,28
+drift_only_tail_normalized_sources: beam=15
+sampling_contributes_recovered_canonical_drift=False
+raw_expanded_drift_count_sum_targets=74
+canonical_drift_only_admitted_count_sum=221
+pair_count_before_raw_sum=370
+pair_count_after_canonical_sum=1105
+pair_count_canonical_increase=+735 (+198.6%)
+tail_canonical_dedup_reduction=39.6%
+unsafe_collision_flag=False
+decision=B
+```
+
+Interpretation: current expanded-pool canonicalization helps but is not enough,
+and full normalized drift-only admission is too high-pressure to adopt
+wholesale. The next useful diagnostic is a capped normalized admission rule, not
+naive global beam/top-k expansion and not formal eval.
 
 Do not launch formal eval from these diagnostics. Exact-tail admission alone is
 weak and expensive-looking because all exact hits are rank-30 beam cases.

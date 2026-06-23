@@ -59,6 +59,15 @@ constant-chain-only, with no unsafe `pow2`/linear or `sin`/linear overmerge,
 and serialized drift candidates reduce from `440` to `278` (`36.8%`). Decision
 `B`: run one small coverage-only smoke/admission diagnostic with normalized
 drift-only candidates before widening beam/top-k, and do not run formal eval.
+That normalized-admission diagnostic is now complete: it preserves the projected
+`30/32` oracle ceiling, adds 7 samples beyond current expanded-pool
+canonicalization (`0,2,6,7,15,25,29`), leaves only polynomial-like samples
+`16` and `28` missing, and finds all admitted canonical matches from beam. It
+also shows pair pressure is high even after folding: target-sample pair-count
+estimate rises from `370` raw current pairs to `1105` canonical admitted pairs
+(`+198.6%`), while drift-only tail canonicalization reduces admitted drift
+templates by `39.6%`. Decision remains `B`: use a capped/smaller normalized
+admission rule in a future coverage-only diagnostic; no formal eval yet.
 
 ## Last Updated
 
@@ -329,6 +338,23 @@ drift-only candidates before widening beam/top-k, and do not run formal eval.
   serialized drift candidates reduce `440 -> 278` (`36.8%`). Decision `B`: run
   one small coverage-only normalized drift-only admission diagnostic; do not run
   formal eval.
+- Added
+  [scripts/analyze_normalized_drift_only_admission_coverage.py](/Users/lzhang/Documents/GenSR_SDE/scripts/analyze_normalized_drift_only_admission_coverage.py)
+  and wrote
+  [normalized_drift_only_admission_coverage_diagnostics.md](/Users/lzhang/Documents/GenSR_SDE/normalized_drift_only_admission_coverage_diagnostics.md)
+  /
+  [normalized_drift_only_admission_coverage_diagnostics.json](/Users/lzhang/Documents/GenSR_SDE/normalized_drift_only_admission_coverage_diagnostics.json).
+  This helper parsed existing JSON only and simulated a diagnostic pool equal to
+  current expanded pairing plus normalized drift-only tail candidates for the 17
+  oracle-absent samples. It reproduced current expanded `15/32`, current
+  expanded canonical `23/32`, exact-tail `18/32`, and normalized drift-only
+  admission `30/32`. Newly recovered samples beyond current expanded
+  canonicalization are `0,2,6,7,15,25,29`; samples `16` and `28` remain missing.
+  All recovered admitted canonical drifts come from beam and already have exact
+  diffusion present. Collision safety remains clean, but pair pressure is high:
+  target-sample pair estimates rise `370 -> 1105` after canonical admission.
+  Decision `B`: use a smaller/capped normalized admission rule in coverage-only
+  diagnostics; do not run formal eval.
 - Logged validated experiments in
   [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md).
 
@@ -336,8 +362,8 @@ drift-only candidates before widening beam/top-k, and do not run formal eval.
 
 - Transitioning from "can the model learn the fingerprint?" to "can we decode
   the right symbolic sequence?".
-- Planning one small coverage-only normalized drift-only admission diagnostic
-  before widening drift beam/top-k or changing production candidate-generation
+- Planning a capped normalized drift-only admission coverage diagnostic before
+  widening drift beam/top-k or changing production candidate-generation
   defaults. Residual-debug safety checks do not support continuing scorer-side
   normalization.
 - The 2000-step role-token checkpoint has been restored in `/private/tmp` and
@@ -369,10 +395,9 @@ drift-only candidates before widening beam/top-k, and do not run formal eval.
    expanded-pairing 16-sample smoke had 5 oracle samples, 0 selected hits, and
    0/5 offline miss rescues, so do not run a formal 32-sample eval for this
    scorer idea.
-9. Prefer one small coverage-only normalized drift-only admission diagnostic
-   before widening beam/top-k. Current expanded-pool canonicalization alone
-   projects `23/32`, while drift-only tail plus canonicalization projects
-   `30/32`.
+9. Prefer a capped normalized drift-only admission coverage diagnostic before
+   widening beam/top-k. Full normalized admission projects `30/32`, but raises
+   estimated target-sample pair pressure from `370` to `1105`.
 10. Do not run formal eval from the drift-only or constant-folding diagnostics;
    they are oracle-coverage diagnostics, not selected-recovery evidence.
 11. Keep drift/diffusion pairing enabled and tune candidate pool size carefully
@@ -448,6 +473,9 @@ drift-only candidates before widening beam/top-k, and do not run formal eval.
 - Current expanded-pool constant folding alone is not enough (`23/32`), while
   drift-only tail plus folding projects `30/32`; this points to normalized
   drift-only admission rather than naive global beam widening.
+- Full normalized drift-only admission is coverage-positive but high-pressure:
+  canonicalization deduplicates the drift-only tail by `39.6%`, yet estimated
+  target-sample pair count still rises by `198.6%`.
 - Constant-folding collision checks are token-structure-only; they did not flag
   unsafe observed overmerge, but semantic fingerprint validation and
   selected-rerank behavior remain untested.

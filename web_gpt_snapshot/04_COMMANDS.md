@@ -344,6 +344,59 @@ Do not run formal eval from this diagnostic. Next step should be one small
 coverage-only normalized drift-only admission diagnostic before widening
 beam/top-k.
 
+## Normalized Drift-Only Admission Coverage Diagnostic
+
+This parses existing JSON only and simulates the diagnostic candidate pool:
+
+```text
+current expanded-pairing candidate pool
++ normalized drift-only tail candidates for the 17 target samples
+```
+
+It does not run model decoding, candidate generation, fingerprint simulation,
+reranking, formal eval, 64-sample eval, grids, retraining, scorer changes,
+rerank-mode changes, checkpoint/data changes, target-format changes,
+fingerprint changes, or production candidate-generation default changes.
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 \
+/opt/miniconda3/envs/gensr/bin/python3 scripts/analyze_normalized_drift_only_admission_coverage.py \
+  --expanded-coverage-json candidate_coverage_pair_expanded.json \
+  --drift-only-json drift_only_candidate_diversity_smoke.json \
+  --normalization-json candidate_normalization_constant_folding_diagnostics.json \
+  --report normalized_drift_only_admission_coverage_diagnostics.md \
+  --json-output normalized_drift_only_admission_coverage_diagnostics.json \
+  > /private/tmp/gensr_sde_normalized_drift_only_admission_coverage.log 2>&1
+```
+
+Compile check:
+
+```bash
+PYTHONPYCACHEPREFIX=/private/tmp/gensr_pycache \
+/opt/miniconda3/envs/gensr/bin/python3 -m py_compile \
+  scripts/analyze_normalized_drift_only_admission_coverage.py
+```
+
+Latest result:
+
+```text
+current_expanded_full_oracle=15/32
+canonicalized_expanded_pool_coverage=23/32
+exact_tail_admission_coverage=18/32
+normalized_drift_only_admission_coverage=30/32
+newly_recovered_beyond_current_expanded_canonical_pool=0,2,6,7,15,25,29
+remaining_missing_samples=16,28
+drift_only_tail_normalized_sources: beam=15
+pair_count_before_raw_sum=370
+pair_count_after_canonical_sum=1105
+pair_count_canonical_increase=+735 (+198.6%)
+unsafe_collision_flag=False
+decision=B
+```
+
+Do not run formal eval from this diagnostic. Next step should be a capped
+normalized drift-only admission coverage diagnostic.
+
 ## Expanded Pairing Formal Eval Result
 
 The formal eval log is:

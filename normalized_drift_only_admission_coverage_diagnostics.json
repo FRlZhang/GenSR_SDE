@@ -1,0 +1,2180 @@
+{
+  "collision_safety": {
+    "collision_group_count": 9,
+    "largest_collision_groups": [
+      {
+        "canonical_drift_tokens": [
+          "CONSTANT"
+        ],
+        "occurrence_examples": [
+          {
+            "drift_tokens": [
+              "mul",
+              "CONSTANT",
+              "CONSTANT"
+            ],
+            "sample_index": 0,
+            "source": "beam+pair",
+            "source_family": "current_expanded_pool"
+          },
+          {
+            "drift_tokens": [
+              "mul",
+              "mul",
+              "CONSTANT",
+              "CONSTANT",
+              "CONSTANT"
+            ],
+            "sample_index": 0,
+            "source": "both",
+            "source_family": "current_expanded_pool"
+          },
+          {
+            "drift_tokens": [
+              "mul",
+              "mul",
+              "CONSTANT",
+              "CONSTANT",
+              "mul",
+              "CONSTANT",
+              "CONSTANT"
+            ],
+            "sample_index": null,
+            "source": "beam",
+            "source_family": "drift_only_tail"
+          },
+          {
+            "drift_tokens": [
+              "mul",
+              "mul",
+              "CONSTANT",
+              "CONSTANT",
+              "CONSTANT"
+            ],
+            "sample_index": null,
+            "source": "sampling",
+            "source_family": "drift_only_tail"
+          },
+          {
+            "drift_tokens": [
+              "mul",
+              "CONSTANT",
+              "CONSTANT"
+            ],
+            "sample_index": 1,
+            "source": "beam+pair",
+            "source_family": "current_expanded_pool"
+          }
+        ],
+        "raw_count": 3,
+        "raw_examples": [
+          [
+            "mul",
+            "CONSTANT",
+            "CONSTANT"
+          ],
+          [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "CONSTANT"
+          ],
+          [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "mul",
+            "CONSTANT",
+            "CONSTANT"
+          ]
+        ]
+      },
+      {
+        "canonical_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "occurrence_examples": [
+          {
+            "drift_tokens": [
+              "mul",
+              "mul",
+              "CONSTANT",
+              "CONSTANT",
+              "x_0"
+            ],
+            "sample_index": null,
+            "source": "beam",
+            "source_family": "drift_only_tail"
+          },
+          {
+            "drift_tokens": [
+              "mul",
+              "mul",
+              "CONSTANT",
+              "CONSTANT",
+              "mul",
+              "CONSTANT",
+              "x_0"
+            ],
+            "sample_index": null,
+            "source": "beam",
+            "source_family": "drift_only_tail"
+          },
+          {
+            "drift_tokens": [
+              "mul",
+              "mul",
+              "CONSTANT",
+              "CONSTANT",
+              "mul",
+              "CONSTANT",
+              "x_0"
+            ],
+            "sample_index": null,
+            "source": "beam",
+            "source_family": "drift_only_tail"
+          },
+          {
+            "drift_tokens": [
+              "mul",
+              "mul",
+              "CONSTANT",
+              "CONSTANT",
+              "x_0"
+            ],
+            "sample_index": null,
+            "source": "beam",
+            "source_family": "drift_only_tail"
+          },
+          {
+            "drift_tokens": [
+              "mul",
+              "mul",
+              "CONSTANT",
+              "CONSTANT",
+              "mul",
+              "CONSTANT",
+              "x_0"
+            ],
+            "sample_index": null,
+            "source": "beam",
+            "source_family": "drift_only_tail"
+          }
+        ],
+        "raw_count": 2,
+        "raw_examples": [
+          [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "x_0"
+          ]
+        ]
+      },
+      {
+        "canonical_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0"
+        ],
+        "occurrence_examples": [
+          {
+            "drift_tokens": [
+              "mul",
+              "CONSTANT",
+              "mul",
+              "x_0",
+              "sub",
+              "CONSTANT",
+              "x_0"
+            ],
+            "sample_index": 0,
+            "source": "beam+pair",
+            "source_family": "current_expanded_pool"
+          },
+          {
+            "drift_tokens": [
+              "mul",
+              "mul",
+              "CONSTANT",
+              "CONSTANT",
+              "mul",
+              "x_0",
+              "sub",
+              "CONSTANT",
+              "x_0"
+            ],
+            "sample_index": null,
+            "source": "beam",
+            "source_family": "drift_only_tail"
+          },
+          {
+            "drift_tokens": [
+              "mul",
+              "CONSTANT",
+              "mul",
+              "x_0",
+              "sub",
+              "CONSTANT",
+              "x_0"
+            ],
+            "sample_index": null,
+            "source": "beam",
+            "source_family": "drift_only_tail"
+          },
+          {
+            "drift_tokens": [
+              "mul",
+              "CONSTANT",
+              "mul",
+              "x_0",
+              "sub",
+              "CONSTANT",
+              "x_0"
+            ],
+            "sample_index": 1,
+            "source": "beam+pair",
+            "source_family": "current_expanded_pool"
+          },
+          {
+            "drift_tokens": [
+              "mul",
+              "mul",
+              "CONSTANT",
+              "CONSTANT",
+              "mul",
+              "x_0",
+              "sub",
+              "CONSTANT",
+              "x_0"
+            ],
+            "sample_index": null,
+            "source": "beam",
+            "source_family": "drift_only_tail"
+          }
+        ],
+        "raw_count": 2,
+        "raw_examples": [
+          [
+            "mul",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "x_0"
+          ],
+          [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "x_0"
+          ]
+        ]
+      },
+      {
+        "canonical_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "sqrt",
+          "sqrt",
+          "abs",
+          "x_0"
+        ],
+        "occurrence_examples": [
+          {
+            "drift_tokens": [
+              "mul",
+              "CONSTANT",
+              "mul",
+              "x_0",
+              "sub",
+              "CONSTANT",
+              "sqrt",
+              "sqrt",
+              "abs",
+              "x_0"
+            ],
+            "sample_index": null,
+            "source": "beam",
+            "source_family": "drift_only_tail"
+          },
+          {
+            "drift_tokens": [
+              "mul",
+              "mul",
+              "CONSTANT",
+              "CONSTANT",
+              "mul",
+              "x_0",
+              "sub",
+              "CONSTANT",
+              "sqrt",
+              "sqrt",
+              "abs",
+              "x_0"
+            ],
+            "sample_index": null,
+            "source": "beam",
+            "source_family": "drift_only_tail"
+          },
+          {
+            "drift_tokens": [
+              "mul",
+              "CONSTANT",
+              "mul",
+              "x_0",
+              "sub",
+              "CONSTANT",
+              "sqrt",
+              "sqrt",
+              "abs",
+              "x_0"
+            ],
+            "sample_index": null,
+            "source": "beam",
+            "source_family": "drift_only_tail"
+          },
+          {
+            "drift_tokens": [
+              "mul",
+              "mul",
+              "CONSTANT",
+              "CONSTANT",
+              "mul",
+              "x_0",
+              "sub",
+              "CONSTANT",
+              "sqrt",
+              "sqrt",
+              "abs",
+              "x_0"
+            ],
+            "sample_index": null,
+            "source": "beam",
+            "source_family": "drift_only_tail"
+          },
+          {
+            "drift_tokens": [
+              "mul",
+              "CONSTANT",
+              "mul",
+              "x_0",
+              "sub",
+              "CONSTANT",
+              "sqrt",
+              "sqrt",
+              "abs",
+              "x_0"
+            ],
+            "sample_index": null,
+            "source": "beam",
+            "source_family": "drift_only_tail"
+          }
+        ],
+        "raw_count": 2,
+        "raw_examples": [
+          [
+            "mul",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "sqrt",
+            "sqrt",
+            "abs",
+            "x_0"
+          ],
+          [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "sqrt",
+            "sqrt",
+            "abs",
+            "x_0"
+          ]
+        ]
+      },
+      {
+        "canonical_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ],
+        "occurrence_examples": [
+          {
+            "drift_tokens": [
+              "mul",
+              "CONSTANT",
+              "mul",
+              "x_0",
+              "sub",
+              "CONSTANT",
+              "sqrt",
+              "abs",
+              "x_0"
+            ],
+            "sample_index": null,
+            "source": "beam",
+            "source_family": "drift_only_tail"
+          },
+          {
+            "drift_tokens": [
+              "mul",
+              "mul",
+              "CONSTANT",
+              "CONSTANT",
+              "mul",
+              "x_0",
+              "sub",
+              "CONSTANT",
+              "sqrt",
+              "abs",
+              "x_0"
+            ],
+            "sample_index": null,
+            "source": "beam",
+            "source_family": "drift_only_tail"
+          },
+          {
+            "drift_tokens": [
+              "mul",
+              "CONSTANT",
+              "mul",
+              "x_0",
+              "sub",
+              "CONSTANT",
+              "sqrt",
+              "abs",
+              "x_0"
+            ],
+            "sample_index": null,
+            "source": "beam",
+            "source_family": "drift_only_tail"
+          },
+          {
+            "drift_tokens": [
+              "mul",
+              "mul",
+              "CONSTANT",
+              "CONSTANT",
+              "mul",
+              "x_0",
+              "sub",
+              "CONSTANT",
+              "sqrt",
+              "abs",
+              "x_0"
+            ],
+            "sample_index": null,
+            "source": "beam",
+            "source_family": "drift_only_tail"
+          },
+          {
+            "drift_tokens": [
+              "mul",
+              "CONSTANT",
+              "mul",
+              "x_0",
+              "sub",
+              "CONSTANT",
+              "sqrt",
+              "abs",
+              "x_0"
+            ],
+            "sample_index": null,
+            "source": "beam",
+            "source_family": "drift_only_tail"
+          }
+        ],
+        "raw_count": 2,
+        "raw_examples": [
+          [
+            "mul",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "sqrt",
+            "abs",
+            "x_0"
+          ],
+          [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "sqrt",
+            "abs",
+            "x_0"
+          ]
+        ]
+      },
+      {
+        "canonical_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "occurrence_examples": [
+          {
+            "drift_tokens": [
+              "mul",
+              "CONSTANT",
+              "mul",
+              "x_0",
+              "sub",
+              "CONSTANT",
+              "mul",
+              "CONSTANT",
+              "x_0"
+            ],
+            "sample_index": null,
+            "source": "beam",
+            "source_family": "drift_only_tail"
+          },
+          {
+            "drift_tokens": [
+              "mul",
+              "mul",
+              "CONSTANT",
+              "CONSTANT",
+              "mul",
+              "x_0",
+              "sub",
+              "CONSTANT",
+              "mul",
+              "CONSTANT",
+              "x_0"
+            ],
+            "sample_index": null,
+            "source": "beam",
+            "source_family": "drift_only_tail"
+          },
+          {
+            "drift_tokens": [
+              "mul",
+              "CONSTANT",
+              "mul",
+              "x_0",
+              "sub",
+              "CONSTANT",
+              "mul",
+              "CONSTANT",
+              "x_0"
+            ],
+            "sample_index": null,
+            "source": "beam",
+            "source_family": "drift_only_tail"
+          },
+          {
+            "drift_tokens": [
+              "mul",
+              "mul",
+              "CONSTANT",
+              "CONSTANT",
+              "mul",
+              "x_0",
+              "sub",
+              "CONSTANT",
+              "mul",
+              "CONSTANT",
+              "x_0"
+            ],
+            "sample_index": null,
+            "source": "beam",
+            "source_family": "drift_only_tail"
+          },
+          {
+            "drift_tokens": [
+              "mul",
+              "CONSTANT",
+              "mul",
+              "x_0",
+              "sub",
+              "CONSTANT",
+              "mul",
+              "CONSTANT",
+              "x_0"
+            ],
+            "sample_index": null,
+            "source": "beam",
+            "source_family": "drift_only_tail"
+          }
+        ],
+        "raw_count": 2,
+        "raw_examples": [
+          [
+            "mul",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ]
+        ]
+      },
+      {
+        "canonical_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ],
+        "occurrence_examples": [
+          {
+            "drift_tokens": [
+              "mul",
+              "CONSTANT",
+              "mul",
+              "x_0",
+              "sub",
+              "CONSTANT",
+              "mul",
+              "CONSTANT",
+              "sqrt",
+              "abs",
+              "x_0"
+            ],
+            "sample_index": null,
+            "source": "beam",
+            "source_family": "drift_only_tail"
+          },
+          {
+            "drift_tokens": [
+              "mul",
+              "mul",
+              "CONSTANT",
+              "CONSTANT",
+              "mul",
+              "x_0",
+              "sub",
+              "CONSTANT",
+              "mul",
+              "CONSTANT",
+              "sqrt",
+              "abs",
+              "x_0"
+            ],
+            "sample_index": null,
+            "source": "beam",
+            "source_family": "drift_only_tail"
+          },
+          {
+            "drift_tokens": [
+              "mul",
+              "CONSTANT",
+              "mul",
+              "x_0",
+              "sub",
+              "CONSTANT",
+              "mul",
+              "CONSTANT",
+              "sqrt",
+              "abs",
+              "x_0"
+            ],
+            "sample_index": null,
+            "source": "beam",
+            "source_family": "drift_only_tail"
+          },
+          {
+            "drift_tokens": [
+              "mul",
+              "mul",
+              "CONSTANT",
+              "CONSTANT",
+              "mul",
+              "x_0",
+              "sub",
+              "CONSTANT",
+              "mul",
+              "CONSTANT",
+              "sqrt",
+              "abs",
+              "x_0"
+            ],
+            "sample_index": null,
+            "source": "beam",
+            "source_family": "drift_only_tail"
+          },
+          {
+            "drift_tokens": [
+              "mul",
+              "CONSTANT",
+              "mul",
+              "x_0",
+              "sub",
+              "CONSTANT",
+              "mul",
+              "CONSTANT",
+              "sqrt",
+              "abs",
+              "x_0"
+            ],
+            "sample_index": null,
+            "source": "beam",
+            "source_family": "drift_only_tail"
+          }
+        ],
+        "raw_count": 2,
+        "raw_examples": [
+          [
+            "mul",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "mul",
+            "CONSTANT",
+            "sqrt",
+            "abs",
+            "x_0"
+          ],
+          [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "mul",
+            "CONSTANT",
+            "sqrt",
+            "abs",
+            "x_0"
+          ]
+        ]
+      },
+      {
+        "canonical_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ],
+        "occurrence_examples": [
+          {
+            "drift_tokens": [
+              "mul",
+              "mul",
+              "CONSTANT",
+              "CONSTANT",
+              "mul",
+              "x_0",
+              "sub",
+              "CONSTANT",
+              "abs",
+              "x_0"
+            ],
+            "sample_index": null,
+            "source": "beam",
+            "source_family": "drift_only_tail"
+          },
+          {
+            "drift_tokens": [
+              "mul",
+              "CONSTANT",
+              "mul",
+              "x_0",
+              "sub",
+              "CONSTANT",
+              "abs",
+              "x_0"
+            ],
+            "sample_index": null,
+            "source": "beam",
+            "source_family": "drift_only_tail"
+          },
+          {
+            "drift_tokens": [
+              "mul",
+              "mul",
+              "CONSTANT",
+              "CONSTANT",
+              "mul",
+              "x_0",
+              "sub",
+              "CONSTANT",
+              "abs",
+              "x_0"
+            ],
+            "sample_index": null,
+            "source": "beam",
+            "source_family": "drift_only_tail"
+          },
+          {
+            "drift_tokens": [
+              "mul",
+              "CONSTANT",
+              "mul",
+              "x_0",
+              "sub",
+              "CONSTANT",
+              "abs",
+              "x_0"
+            ],
+            "sample_index": null,
+            "source": "beam",
+            "source_family": "drift_only_tail"
+          },
+          {
+            "drift_tokens": [
+              "mul",
+              "mul",
+              "CONSTANT",
+              "CONSTANT",
+              "mul",
+              "x_0",
+              "sub",
+              "CONSTANT",
+              "abs",
+              "x_0"
+            ],
+            "sample_index": null,
+            "source": "beam",
+            "source_family": "drift_only_tail"
+          }
+        ],
+        "raw_count": 2,
+        "raw_examples": [
+          [
+            "mul",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "abs",
+            "x_0"
+          ],
+          [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "abs",
+            "x_0"
+          ]
+        ]
+      }
+    ],
+    "nonconstant_structural_merge_detected": false,
+    "polynomial_like_truth_collides_with_linear_like": false,
+    "serialized_canonical_drift_expression_count": 13,
+    "serialized_raw_drift_expression_count": 23,
+    "unsafe_checks": {
+      "const_pow2_not_const_x0": true,
+      "pow2_x0_not_x0": true,
+      "sin_x0_not_x0": true
+    },
+    "unsafe_collision_flag": false
+  },
+  "decision": {
+    "choice": "B",
+    "label": "Normalized admission is coverage-positive but pair pressure is high",
+    "recommended_next_action": "Use a smaller coverage-only admission rule, such as one canonical representative per drift family/source/rank bucket or a per-sample cap. No formal eval."
+  },
+  "family_breakdown": {
+    "newly_recovered_beyond_current": {
+      "constant drift": 0,
+      "linear drift": 4,
+      "nested-mul linear drift": 3,
+      "other / unknown": 0,
+      "polynomial-like drift": 0,
+      "sin drift": 0
+    },
+    "normalized_recovered": {
+      "constant drift": 0,
+      "linear drift": 6,
+      "nested-mul linear drift": 3,
+      "other / unknown": 0,
+      "polynomial-like drift": 0,
+      "sin drift": 6
+    },
+    "remaining_missing": {
+      "constant drift": 0,
+      "linear drift": 0,
+      "nested-mul linear drift": 0,
+      "other / unknown": 0,
+      "polynomial-like drift": 2,
+      "sin drift": 0
+    }
+  },
+  "metadata": {
+    "normalization_reference_summary": {
+      "canonicalized_drift_only_admission_full_oracle_coverage": 30,
+      "canonicalized_drift_only_admission_gain": 15,
+      "canonicalized_drift_only_recovered_samples": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        6,
+        7,
+        9,
+        10,
+        14,
+        15,
+        20,
+        22,
+        25,
+        29
+      ],
+      "canonicalized_expanded_pool_full_oracle_coverage": 23,
+      "canonicalized_expanded_pool_gain": 8,
+      "current_expanded_full_oracle_coverage": 15,
+      "current_expanded_pool_new_samples": [
+        1,
+        3,
+        4,
+        9,
+        10,
+        14,
+        20,
+        22
+      ],
+      "exact_tail_admission_full_oracle_coverage": 18,
+      "exact_tail_admission_gain": 3,
+      "exact_tail_recovered_samples": [
+        2,
+        25,
+        29
+      ],
+      "polynomial_like_missing_after_normalization": [
+        16,
+        28
+      ],
+      "sampling_contributes_after_canonicalization": false,
+      "target_oracle_absent_samples": 17,
+      "total_samples_analyzed": 32
+    },
+    "note": "Current expanded-pool canonical counts use serialized raw drift rows available in the coverage JSON, primarily drift_nearest_detailed. Raw expanded counts use unique_drifts metadata."
+  },
+  "pair_pressure": {
+    "canonical_drift_only_admitted_count_sum": 221,
+    "canonical_expanded_drift_count_sum_serialized_targets": 57,
+    "combined_canonical_drift_count_sum": 221,
+    "combined_raw_drift_count_sum_estimate": 387,
+    "pair_count_after_canonical_sum": 1105,
+    "pair_count_after_raw_estimate_sum": 1935,
+    "pair_count_before_raw_sum": 370,
+    "pair_count_canonical_increase": 735,
+    "pair_count_canonical_increase_percent": 198.64864864864865,
+    "raw_drift_only_admitted_count_sum_serialized": 366,
+    "raw_expanded_drift_count_sum_targets": 74,
+    "tail_canonical_dedup_reduction_percent": 39.61748633879781,
+    "top_pair_count_increases": [
+      {
+        "after_canonical": 65,
+        "before_raw": 20,
+        "increase": 45,
+        "sample_index": 0
+      },
+      {
+        "after_canonical": 65,
+        "before_raw": 20,
+        "increase": 45,
+        "sample_index": 1
+      },
+      {
+        "after_canonical": 65,
+        "before_raw": 20,
+        "increase": 45,
+        "sample_index": 2
+      },
+      {
+        "after_canonical": 65,
+        "before_raw": 20,
+        "increase": 45,
+        "sample_index": 6
+      },
+      {
+        "after_canonical": 65,
+        "before_raw": 20,
+        "increase": 45,
+        "sample_index": 7
+      },
+      {
+        "after_canonical": 65,
+        "before_raw": 20,
+        "increase": 45,
+        "sample_index": 9
+      },
+      {
+        "after_canonical": 65,
+        "before_raw": 20,
+        "increase": 45,
+        "sample_index": 10
+      },
+      {
+        "after_canonical": 65,
+        "before_raw": 20,
+        "increase": 45,
+        "sample_index": 15
+      }
+    ]
+  },
+  "samples": [
+    {
+      "canonical_expanded_full_oracle": false,
+      "canonical_truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "combined_canonical_drift_count": 13,
+      "combined_raw_drift_count_estimate": 23,
+      "combined_source_bucket": "beam",
+      "current_canonical_drift_count_serialized": 3,
+      "current_expanded_full_oracle": false,
+      "current_expanded_source_bucket": "neither",
+      "current_raw_drift_count": 4,
+      "diffusion_raw_count": 5,
+      "drift_family": "linear drift",
+      "drift_only_best_match": {
+        "candidate_bucket": "beam_candidates",
+        "canonical_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "source": "beam",
+        "source_rank": 5,
+        "sources": [
+          "beam"
+        ]
+      },
+      "drift_only_canonical_admitted_count": 13,
+      "drift_only_raw_admitted_count_serialized": 22,
+      "drift_only_source_bucket": "beam",
+      "exact_diffusion_present": true,
+      "exact_tail_full_oracle": false,
+      "normalized_drift_only_admitted_full_oracle": true,
+      "pair_count_after_canonical": 65,
+      "pair_count_after_raw_estimate": 115,
+      "pair_count_before_canonical_serialized": 15,
+      "pair_count_before_raw": 20,
+      "pair_count_canonical_increase_vs_raw_before": 45,
+      "sample_index": 0,
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "sqrt",
+        "abs",
+        "x_0"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ]
+    },
+    {
+      "canonical_expanded_full_oracle": true,
+      "canonical_truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ],
+      "combined_canonical_drift_count": 13,
+      "combined_raw_drift_count_estimate": 22,
+      "combined_source_bucket": "beam+pair",
+      "current_canonical_drift_count_serialized": 3,
+      "current_expanded_full_oracle": false,
+      "current_expanded_source_bucket": "beam+pair",
+      "current_raw_drift_count": 4,
+      "diffusion_raw_count": 5,
+      "drift_family": "sin drift",
+      "drift_only_best_match": {
+        "candidate_bucket": "nearest_drift_only_candidate",
+        "canonical_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "drift_tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "source": "beam",
+        "source_rank": 15,
+        "sources": [
+          "beam"
+        ]
+      },
+      "drift_only_canonical_admitted_count": 13,
+      "drift_only_raw_admitted_count_serialized": 21,
+      "drift_only_source_bucket": "beam",
+      "exact_diffusion_present": true,
+      "exact_tail_full_oracle": false,
+      "normalized_drift_only_admitted_full_oracle": true,
+      "pair_count_after_canonical": 65,
+      "pair_count_after_raw_estimate": 110,
+      "pair_count_before_canonical_serialized": 15,
+      "pair_count_before_raw": 20,
+      "pair_count_canonical_increase_vs_raw_before": 45,
+      "sample_index": 1,
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "sqrt",
+        "abs",
+        "x_0"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ]
+    },
+    {
+      "canonical_expanded_full_oracle": false,
+      "canonical_truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "combined_canonical_drift_count": 13,
+      "combined_raw_drift_count_estimate": 23,
+      "combined_source_bucket": "beam",
+      "current_canonical_drift_count_serialized": 3,
+      "current_expanded_full_oracle": false,
+      "current_expanded_source_bucket": "neither",
+      "current_raw_drift_count": 4,
+      "diffusion_raw_count": 5,
+      "drift_family": "nested-mul linear drift",
+      "drift_only_best_match": {
+        "candidate_bucket": "beam_candidates",
+        "canonical_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "source": "beam",
+        "source_rank": 5,
+        "sources": [
+          "beam"
+        ]
+      },
+      "drift_only_canonical_admitted_count": 13,
+      "drift_only_raw_admitted_count_serialized": 22,
+      "drift_only_source_bucket": "beam",
+      "exact_diffusion_present": true,
+      "exact_tail_full_oracle": true,
+      "normalized_drift_only_admitted_full_oracle": true,
+      "pair_count_after_canonical": 65,
+      "pair_count_after_raw_estimate": 115,
+      "pair_count_before_canonical_serialized": 15,
+      "pair_count_before_raw": 20,
+      "pair_count_canonical_increase_vs_raw_before": 45,
+      "sample_index": 2,
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "abs",
+        "x_0"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "x_0"
+      ]
+    },
+    {
+      "canonical_expanded_full_oracle": true,
+      "canonical_truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "combined_canonical_drift_count": 13,
+      "combined_raw_drift_count_estimate": 23,
+      "combined_source_bucket": "beam+pair",
+      "current_canonical_drift_count_serialized": 4,
+      "current_expanded_full_oracle": false,
+      "current_expanded_source_bucket": "beam+pair",
+      "current_raw_drift_count": 5,
+      "diffusion_raw_count": 5,
+      "drift_family": "linear drift",
+      "drift_only_best_match": {
+        "candidate_bucket": "beam_candidates",
+        "canonical_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "source": "beam",
+        "source_rank": 5,
+        "sources": [
+          "beam"
+        ]
+      },
+      "drift_only_canonical_admitted_count": 13,
+      "drift_only_raw_admitted_count_serialized": 22,
+      "drift_only_source_bucket": "beam",
+      "exact_diffusion_present": true,
+      "exact_tail_full_oracle": false,
+      "normalized_drift_only_admitted_full_oracle": true,
+      "pair_count_after_canonical": 65,
+      "pair_count_after_raw_estimate": 115,
+      "pair_count_before_canonical_serialized": 20,
+      "pair_count_before_raw": 25,
+      "pair_count_canonical_increase_vs_raw_before": 40,
+      "sample_index": 3,
+      "truth_diffusion_tokens": [
+        "add",
+        "CONSTANT",
+        "mul",
+        "CONSTANT",
+        "abs",
+        "x_0"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ]
+    },
+    {
+      "canonical_expanded_full_oracle": true,
+      "canonical_truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ],
+      "combined_canonical_drift_count": 13,
+      "combined_raw_drift_count_estimate": 23,
+      "combined_source_bucket": "beam+pair",
+      "current_canonical_drift_count_serialized": 4,
+      "current_expanded_full_oracle": false,
+      "current_expanded_source_bucket": "beam+pair",
+      "current_raw_drift_count": 5,
+      "diffusion_raw_count": 5,
+      "drift_family": "sin drift",
+      "drift_only_best_match": {
+        "candidate_bucket": "nearest_drift_only_candidate",
+        "canonical_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "drift_tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "source": "beam",
+        "source_rank": 15,
+        "sources": [
+          "beam"
+        ]
+      },
+      "drift_only_canonical_admitted_count": 13,
+      "drift_only_raw_admitted_count_serialized": 21,
+      "drift_only_source_bucket": "beam",
+      "exact_diffusion_present": true,
+      "exact_tail_full_oracle": false,
+      "normalized_drift_only_admitted_full_oracle": true,
+      "pair_count_after_canonical": 65,
+      "pair_count_after_raw_estimate": 115,
+      "pair_count_before_canonical_serialized": 20,
+      "pair_count_before_raw": 25,
+      "pair_count_canonical_increase_vs_raw_before": 40,
+      "sample_index": 4,
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "CONSTANT"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ]
+    },
+    {
+      "canonical_expanded_full_oracle": false,
+      "canonical_truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "combined_canonical_drift_count": 13,
+      "combined_raw_drift_count_estimate": 23,
+      "combined_source_bucket": "beam",
+      "current_canonical_drift_count_serialized": 3,
+      "current_expanded_full_oracle": false,
+      "current_expanded_source_bucket": "neither",
+      "current_raw_drift_count": 4,
+      "diffusion_raw_count": 5,
+      "drift_family": "linear drift",
+      "drift_only_best_match": {
+        "candidate_bucket": "beam_candidates",
+        "canonical_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "source": "beam",
+        "source_rank": 5,
+        "sources": [
+          "beam"
+        ]
+      },
+      "drift_only_canonical_admitted_count": 13,
+      "drift_only_raw_admitted_count_serialized": 22,
+      "drift_only_source_bucket": "beam",
+      "exact_diffusion_present": true,
+      "exact_tail_full_oracle": false,
+      "normalized_drift_only_admitted_full_oracle": true,
+      "pair_count_after_canonical": 65,
+      "pair_count_after_raw_estimate": 115,
+      "pair_count_before_canonical_serialized": 15,
+      "pair_count_before_raw": 20,
+      "pair_count_canonical_increase_vs_raw_before": 45,
+      "sample_index": 6,
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ]
+    },
+    {
+      "canonical_expanded_full_oracle": false,
+      "canonical_truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "combined_canonical_drift_count": 13,
+      "combined_raw_drift_count_estimate": 23,
+      "combined_source_bucket": "beam",
+      "current_canonical_drift_count_serialized": 3,
+      "current_expanded_full_oracle": false,
+      "current_expanded_source_bucket": "neither",
+      "current_raw_drift_count": 4,
+      "diffusion_raw_count": 5,
+      "drift_family": "linear drift",
+      "drift_only_best_match": {
+        "candidate_bucket": "beam_candidates",
+        "canonical_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "source": "beam",
+        "source_rank": 5,
+        "sources": [
+          "beam"
+        ]
+      },
+      "drift_only_canonical_admitted_count": 13,
+      "drift_only_raw_admitted_count_serialized": 22,
+      "drift_only_source_bucket": "beam",
+      "exact_diffusion_present": true,
+      "exact_tail_full_oracle": false,
+      "normalized_drift_only_admitted_full_oracle": true,
+      "pair_count_after_canonical": 65,
+      "pair_count_after_raw_estimate": 115,
+      "pair_count_before_canonical_serialized": 15,
+      "pair_count_before_raw": 20,
+      "pair_count_canonical_increase_vs_raw_before": 45,
+      "sample_index": 7,
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "CONSTANT"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ]
+    },
+    {
+      "canonical_expanded_full_oracle": true,
+      "canonical_truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ],
+      "combined_canonical_drift_count": 13,
+      "combined_raw_drift_count_estimate": 22,
+      "combined_source_bucket": "both",
+      "current_canonical_drift_count_serialized": 3,
+      "current_expanded_full_oracle": false,
+      "current_expanded_source_bucket": "both",
+      "current_raw_drift_count": 4,
+      "diffusion_raw_count": 5,
+      "drift_family": "sin drift",
+      "drift_only_best_match": {
+        "candidate_bucket": "nearest_drift_only_candidate",
+        "canonical_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "drift_tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "source": "beam",
+        "source_rank": 15,
+        "sources": [
+          "beam"
+        ]
+      },
+      "drift_only_canonical_admitted_count": 13,
+      "drift_only_raw_admitted_count_serialized": 21,
+      "drift_only_source_bucket": "beam",
+      "exact_diffusion_present": true,
+      "exact_tail_full_oracle": false,
+      "normalized_drift_only_admitted_full_oracle": true,
+      "pair_count_after_canonical": 65,
+      "pair_count_after_raw_estimate": 110,
+      "pair_count_before_canonical_serialized": 15,
+      "pair_count_before_raw": 20,
+      "pair_count_canonical_increase_vs_raw_before": 45,
+      "sample_index": 9,
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "sqrt",
+        "abs",
+        "x_0"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ]
+    },
+    {
+      "canonical_expanded_full_oracle": true,
+      "canonical_truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ],
+      "combined_canonical_drift_count": 13,
+      "combined_raw_drift_count_estimate": 22,
+      "combined_source_bucket": "beam+pair",
+      "current_canonical_drift_count_serialized": 3,
+      "current_expanded_full_oracle": false,
+      "current_expanded_source_bucket": "beam+pair",
+      "current_raw_drift_count": 4,
+      "diffusion_raw_count": 5,
+      "drift_family": "sin drift",
+      "drift_only_best_match": {
+        "candidate_bucket": "nearest_drift_only_candidate",
+        "canonical_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "drift_tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "source": "beam",
+        "source_rank": 15,
+        "sources": [
+          "beam"
+        ]
+      },
+      "drift_only_canonical_admitted_count": 13,
+      "drift_only_raw_admitted_count_serialized": 21,
+      "drift_only_source_bucket": "beam",
+      "exact_diffusion_present": true,
+      "exact_tail_full_oracle": false,
+      "normalized_drift_only_admitted_full_oracle": true,
+      "pair_count_after_canonical": 65,
+      "pair_count_after_raw_estimate": 110,
+      "pair_count_before_canonical_serialized": 15,
+      "pair_count_before_raw": 20,
+      "pair_count_canonical_increase_vs_raw_before": 45,
+      "sample_index": 10,
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "abs",
+        "x_0"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ]
+    },
+    {
+      "canonical_expanded_full_oracle": true,
+      "canonical_truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ],
+      "combined_canonical_drift_count": 13,
+      "combined_raw_drift_count_estimate": 23,
+      "combined_source_bucket": "beam+pair",
+      "current_canonical_drift_count_serialized": 4,
+      "current_expanded_full_oracle": false,
+      "current_expanded_source_bucket": "beam+pair",
+      "current_raw_drift_count": 5,
+      "diffusion_raw_count": 5,
+      "drift_family": "sin drift",
+      "drift_only_best_match": {
+        "candidate_bucket": "nearest_drift_only_candidate",
+        "canonical_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "drift_tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "source": "beam",
+        "source_rank": 15,
+        "sources": [
+          "beam"
+        ]
+      },
+      "drift_only_canonical_admitted_count": 13,
+      "drift_only_raw_admitted_count_serialized": 21,
+      "drift_only_source_bucket": "beam",
+      "exact_diffusion_present": true,
+      "exact_tail_full_oracle": false,
+      "normalized_drift_only_admitted_full_oracle": true,
+      "pair_count_after_canonical": 65,
+      "pair_count_after_raw_estimate": 115,
+      "pair_count_before_canonical_serialized": 20,
+      "pair_count_before_raw": 25,
+      "pair_count_canonical_increase_vs_raw_before": 40,
+      "sample_index": 14,
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "abs",
+        "x_0"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ]
+    },
+    {
+      "canonical_expanded_full_oracle": false,
+      "canonical_truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "combined_canonical_drift_count": 13,
+      "combined_raw_drift_count_estimate": 23,
+      "combined_source_bucket": "beam",
+      "current_canonical_drift_count_serialized": 3,
+      "current_expanded_full_oracle": false,
+      "current_expanded_source_bucket": "neither",
+      "current_raw_drift_count": 4,
+      "diffusion_raw_count": 5,
+      "drift_family": "linear drift",
+      "drift_only_best_match": {
+        "candidate_bucket": "beam_candidates",
+        "canonical_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "source": "beam",
+        "source_rank": 5,
+        "sources": [
+          "beam"
+        ]
+      },
+      "drift_only_canonical_admitted_count": 13,
+      "drift_only_raw_admitted_count_serialized": 22,
+      "drift_only_source_bucket": "beam",
+      "exact_diffusion_present": true,
+      "exact_tail_full_oracle": false,
+      "normalized_drift_only_admitted_full_oracle": true,
+      "pair_count_after_canonical": 65,
+      "pair_count_after_raw_estimate": 115,
+      "pair_count_before_canonical_serialized": 15,
+      "pair_count_before_raw": 20,
+      "pair_count_canonical_increase_vs_raw_before": 45,
+      "sample_index": 15,
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ]
+    },
+    {
+      "canonical_expanded_full_oracle": false,
+      "canonical_truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "pow2",
+        "x_0"
+      ],
+      "combined_canonical_drift_count": 13,
+      "combined_raw_drift_count_estimate": 23,
+      "combined_source_bucket": "neither",
+      "current_canonical_drift_count_serialized": 4,
+      "current_expanded_full_oracle": false,
+      "current_expanded_source_bucket": "neither",
+      "current_raw_drift_count": 5,
+      "diffusion_raw_count": 5,
+      "drift_family": "polynomial-like drift",
+      "drift_only_best_match": null,
+      "drift_only_canonical_admitted_count": 13,
+      "drift_only_raw_admitted_count_serialized": 21,
+      "drift_only_source_bucket": "neither",
+      "exact_diffusion_present": true,
+      "exact_tail_full_oracle": false,
+      "normalized_drift_only_admitted_full_oracle": false,
+      "pair_count_after_canonical": 65,
+      "pair_count_after_raw_estimate": 115,
+      "pair_count_before_canonical_serialized": 20,
+      "pair_count_before_raw": 25,
+      "pair_count_canonical_increase_vs_raw_before": 40,
+      "sample_index": 16,
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "pow2",
+        "x_0"
+      ]
+    },
+    {
+      "canonical_expanded_full_oracle": true,
+      "canonical_truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ],
+      "combined_canonical_drift_count": 13,
+      "combined_raw_drift_count_estimate": 22,
+      "combined_source_bucket": "beam+pair",
+      "current_canonical_drift_count_serialized": 3,
+      "current_expanded_full_oracle": false,
+      "current_expanded_source_bucket": "beam+pair",
+      "current_raw_drift_count": 4,
+      "diffusion_raw_count": 5,
+      "drift_family": "sin drift",
+      "drift_only_best_match": {
+        "candidate_bucket": "nearest_drift_only_candidate",
+        "canonical_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "drift_tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "source": "beam",
+        "source_rank": 15,
+        "sources": [
+          "beam"
+        ]
+      },
+      "drift_only_canonical_admitted_count": 13,
+      "drift_only_raw_admitted_count_serialized": 21,
+      "drift_only_source_bucket": "beam",
+      "exact_diffusion_present": true,
+      "exact_tail_full_oracle": false,
+      "normalized_drift_only_admitted_full_oracle": true,
+      "pair_count_after_canonical": 65,
+      "pair_count_after_raw_estimate": 110,
+      "pair_count_before_canonical_serialized": 15,
+      "pair_count_before_raw": 20,
+      "pair_count_canonical_increase_vs_raw_before": 45,
+      "sample_index": 20,
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ]
+    },
+    {
+      "canonical_expanded_full_oracle": true,
+      "canonical_truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "combined_canonical_drift_count": 13,
+      "combined_raw_drift_count_estimate": 23,
+      "combined_source_bucket": "beam+pair",
+      "current_canonical_drift_count_serialized": 4,
+      "current_expanded_full_oracle": false,
+      "current_expanded_source_bucket": "beam+pair",
+      "current_raw_drift_count": 5,
+      "diffusion_raw_count": 5,
+      "drift_family": "linear drift",
+      "drift_only_best_match": {
+        "candidate_bucket": "beam_candidates",
+        "canonical_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "source": "beam",
+        "source_rank": 5,
+        "sources": [
+          "beam"
+        ]
+      },
+      "drift_only_canonical_admitted_count": 13,
+      "drift_only_raw_admitted_count_serialized": 22,
+      "drift_only_source_bucket": "beam",
+      "exact_diffusion_present": true,
+      "exact_tail_full_oracle": false,
+      "normalized_drift_only_admitted_full_oracle": true,
+      "pair_count_after_canonical": 65,
+      "pair_count_after_raw_estimate": 115,
+      "pair_count_before_canonical_serialized": 20,
+      "pair_count_before_raw": 25,
+      "pair_count_canonical_increase_vs_raw_before": 40,
+      "sample_index": 22,
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ]
+    },
+    {
+      "canonical_expanded_full_oracle": false,
+      "canonical_truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "combined_canonical_drift_count": 13,
+      "combined_raw_drift_count_estimate": 23,
+      "combined_source_bucket": "beam",
+      "current_canonical_drift_count_serialized": 3,
+      "current_expanded_full_oracle": false,
+      "current_expanded_source_bucket": "neither",
+      "current_raw_drift_count": 4,
+      "diffusion_raw_count": 5,
+      "drift_family": "nested-mul linear drift",
+      "drift_only_best_match": {
+        "candidate_bucket": "beam_candidates",
+        "canonical_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "source": "beam",
+        "source_rank": 5,
+        "sources": [
+          "beam"
+        ]
+      },
+      "drift_only_canonical_admitted_count": 13,
+      "drift_only_raw_admitted_count_serialized": 22,
+      "drift_only_source_bucket": "beam",
+      "exact_diffusion_present": true,
+      "exact_tail_full_oracle": true,
+      "normalized_drift_only_admitted_full_oracle": true,
+      "pair_count_after_canonical": 65,
+      "pair_count_after_raw_estimate": 115,
+      "pair_count_before_canonical_serialized": 15,
+      "pair_count_before_raw": 20,
+      "pair_count_canonical_increase_vs_raw_before": 45,
+      "sample_index": 25,
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "abs",
+        "x_0"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "x_0"
+      ]
+    },
+    {
+      "canonical_expanded_full_oracle": false,
+      "canonical_truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "pow2",
+        "x_0"
+      ],
+      "combined_canonical_drift_count": 13,
+      "combined_raw_drift_count_estimate": 23,
+      "combined_source_bucket": "neither",
+      "current_canonical_drift_count_serialized": 4,
+      "current_expanded_full_oracle": false,
+      "current_expanded_source_bucket": "neither",
+      "current_raw_drift_count": 5,
+      "diffusion_raw_count": 5,
+      "drift_family": "polynomial-like drift",
+      "drift_only_best_match": null,
+      "drift_only_canonical_admitted_count": 13,
+      "drift_only_raw_admitted_count_serialized": 21,
+      "drift_only_source_bucket": "neither",
+      "exact_diffusion_present": true,
+      "exact_tail_full_oracle": false,
+      "normalized_drift_only_admitted_full_oracle": false,
+      "pair_count_after_canonical": 65,
+      "pair_count_after_raw_estimate": 115,
+      "pair_count_before_canonical_serialized": 20,
+      "pair_count_before_raw": 25,
+      "pair_count_canonical_increase_vs_raw_before": 40,
+      "sample_index": 28,
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "sqrt",
+        "abs",
+        "x_0"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "pow2",
+        "x_0"
+      ]
+    },
+    {
+      "canonical_expanded_full_oracle": false,
+      "canonical_truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "combined_canonical_drift_count": 13,
+      "combined_raw_drift_count_estimate": 23,
+      "combined_source_bucket": "beam",
+      "current_canonical_drift_count_serialized": 3,
+      "current_expanded_full_oracle": false,
+      "current_expanded_source_bucket": "neither",
+      "current_raw_drift_count": 4,
+      "diffusion_raw_count": 5,
+      "drift_family": "nested-mul linear drift",
+      "drift_only_best_match": {
+        "candidate_bucket": "beam_candidates",
+        "canonical_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "source": "beam",
+        "source_rank": 5,
+        "sources": [
+          "beam"
+        ]
+      },
+      "drift_only_canonical_admitted_count": 13,
+      "drift_only_raw_admitted_count_serialized": 22,
+      "drift_only_source_bucket": "beam",
+      "exact_diffusion_present": true,
+      "exact_tail_full_oracle": true,
+      "normalized_drift_only_admitted_full_oracle": true,
+      "pair_count_after_canonical": 65,
+      "pair_count_after_raw_estimate": 115,
+      "pair_count_before_canonical_serialized": 15,
+      "pair_count_before_raw": 20,
+      "pair_count_canonical_increase_vs_raw_before": 45,
+      "sample_index": 29,
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "CONSTANT"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "x_0"
+      ]
+    }
+  ],
+  "source_breakdown": {
+    "current_expanded_canonical": {
+      "beam+pair": 7,
+      "both": 1
+    },
+    "drift_only_tail_normalized": {
+      "beam": 15
+    },
+    "newly_recovered_beyond_current": {
+      "beam": 7
+    }
+  },
+  "summary": {
+    "canonicalized_expanded_pool_coverage": 23,
+    "canonicalized_expanded_pool_gain": 8,
+    "current_expanded_full_oracle_coverage": 15,
+    "exact_diffusion_present_for_recovered_samples": 15,
+    "exact_tail_admission_coverage": 18,
+    "exact_tail_admission_gain": 3,
+    "newly_recovered_beyond_current_expanded_canonical_pool": [
+      0,
+      2,
+      6,
+      7,
+      15,
+      25,
+      29
+    ],
+    "normalized_drift_only_admission_coverage": 30,
+    "normalized_drift_only_admission_gain": 15,
+    "remaining_missing_samples": [
+      16,
+      28
+    ],
+    "sampling_contributes_recovered_canonical_drift": false,
+    "target_oracle_absent_samples_analyzed": 17,
+    "total_samples_analyzed": 32
+  }
+}

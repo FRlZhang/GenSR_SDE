@@ -2,6 +2,101 @@
 
 ## Last Codex Workflow
 
+Codex added a coverage-only normalized drift-only admission diagnostic:
+
+```text
+scripts/analyze_normalized_drift_only_admission_coverage.py
+normalized_drift_only_admission_coverage_diagnostics.md
+normalized_drift_only_admission_coverage_diagnostics.json
+```
+
+This parsed existing JSON only and simulated:
+
+```text
+diagnostic pool = current expanded-pairing candidate pool
+                + normalized drift-only tail candidates
+```
+
+No model decoding, candidate generation, fingerprint simulation, reranking,
+formal eval, 64-sample eval, grids, retraining, scorer changes, rerank-mode
+changes, checkpoint/data changes, target-format changes, fingerprint changes,
+or production candidate-generation default changes were run.
+
+Coverage result:
+
+```text
+total_samples_analyzed=32
+target_oracle_absent_samples_analyzed=17
+current_expanded_full_oracle=15/32
+canonicalized_expanded_pool_coverage=23/32
+exact_tail_admission_coverage=18/32
+normalized_drift_only_admission_coverage=30/32
+normalized_drift_only_admission_gain=+15
+newly_recovered_beyond_current_expanded_canonical_pool=0,2,6,7,15,25,29
+remaining_missing_samples=16,28
+exact_diffusion_present_for_recovered_samples=15/15
+sampling_contributes_recovered_canonical_drift=False
+decision=B
+```
+
+Source/family breakdown:
+
+```text
+current_expanded_canonical sources: beam+pair=7, both=1
+drift_only_tail_normalized sources: beam=15
+newly_recovered_beyond_current sources: beam=7
+normalized recovered families:
+  linear=6
+  sin=6
+  nested-mul linear=3
+  polynomial-like=0
+remaining missing families:
+  polynomial-like=2
+```
+
+Candidate/pair pressure:
+
+```text
+raw_expanded_drift_count_sum_targets=74
+canonical_expanded_drift_count_sum_serialized_targets=57
+raw_drift_only_admitted_count_sum_serialized=366
+canonical_drift_only_admitted_count_sum=221
+combined_raw_drift_count_sum_estimate=387
+combined_canonical_drift_count_sum=221
+pair_count_before_raw_sum=370
+pair_count_after_raw_estimate_sum=1935
+pair_count_after_canonical_sum=1105
+pair_count_canonical_increase=+735 (+198.6%)
+tail_canonical_dedup_reduction=39.6%
+```
+
+Collision safety:
+
+```text
+unsafe_collision_flag=False
+collision_groups=9
+nonconstant_structural_merge_detected=False
+polynomial_like_truth_collides_with_linear_like=False
+pow2_x0_not_x0=True
+const_pow2_not_const_x0=True
+sin_x0_not_x0=True
+```
+
+Interpretation: normalized drift-only admission is coverage-positive and keeps
+the diagnostic `30/32` ceiling, but full admission is high-pressure. The next
+step should be a smaller/capped coverage-only admission rule, such as one
+canonical representative per drift family/source/rank bucket or a per-sample
+cap. No formal eval is recommended.
+
+Validation:
+
+```text
+py_compile scripts/analyze_normalized_drift_only_admission_coverage.py: passed
+helper run: passed
+```
+
+## Previous Codex Workflow
+
 Codex added a helper-only candidate-normalization diagnostic for narrow
 constant-chain folding:
 
