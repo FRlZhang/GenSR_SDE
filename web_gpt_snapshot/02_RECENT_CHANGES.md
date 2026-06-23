@@ -2,6 +2,38 @@
 
 ## Last Codex Workflow
 
+Codex prepared, but did not run, the expanded-pairing 16-sample residual-debug
+smoke:
+
+```text
+scripts/run_expanded_pairing_residual_debug_smoke16.sh
+residual_debug_expanded_pairing_smoke16_report.md
+```
+
+Reason: the baseline 16-sample smoke took about 9.5 minutes with 201 logged
+candidates, and expanded pairing is expected to exceed the requested 10-minute
+Codex limit because it substantially increases the candidate pool. No formal
+32-sample eval, 64-sample eval, grid, retraining, scorer change, candidate
+generation change, or rerank mode was run.
+
+Local command:
+
+```bash
+bash scripts/run_expanded_pairing_residual_debug_smoke16.sh
+```
+
+The script runs exactly one expanded-pairing 16-sample smoke and one safety
+helper parse.
+
+Validation:
+
+```text
+py_compile sde_validation_probe.py scripts/analyze_residual_debug_safety.py: passed
+git diff --check: passed
+```
+
+## Previous Codex Workflow
+
 Codex ran one 16-sample residual-debug smoke and offline safety parse:
 
 ```text

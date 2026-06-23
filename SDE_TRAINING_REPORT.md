@@ -40,6 +40,15 @@ mode or running a formal 32-sample eval. If scorer safety needs one more check,
 use a future 16-sample expanded-pairing residual-debug smoke; otherwise return
 to drift span diversity or deeper fingerprint ambiguity diagnostics.
 
+An expanded-pairing 16-sample residual-debug smoke was requested next, but not
+run inside Codex because the baseline 16-sample smoke already took about
+9.5 minutes and expanded pairing is expected to exceed the 10-minute workflow
+limit. The standalone command is recorded in
+`scripts/run_expanded_pairing_residual_debug_smoke16.sh`. It runs exactly one
+expanded-pairing smoke and one safety-helper parse, writing
+`residual_debug_safety_expanded_pairing_smoke16.md` and the matching JSON if
+the user runs it locally.
+
 The 8-sample eval-only smoke used the restored 2000-step checkpoint and baseline
 pairing settings. It completed without parse or fingerprint failures and wrote:
 

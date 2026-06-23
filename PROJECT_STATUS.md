@@ -29,6 +29,10 @@ logging only; a follow-up 16-sample smoke logged 201 candidates with 2 oracle
 samples and 1 selected hit. Offline per-active-dimension normalization preserved
 that hit and harmed none, but rescued 0/1 oracle-present misses, so it still
 does not justify a new rerank mode or formal eval.
+The next requested expanded-pairing 16-sample residual-debug smoke was not run
+inside Codex because it was expected to exceed the 10-minute limit; a standalone
+local script was prepared instead:
+[scripts/run_expanded_pairing_residual_debug_smoke16.sh](/Users/lzhang/Documents/GenSR_SDE/scripts/run_expanded_pairing_residual_debug_smoke16.sh).
 
 ## Last Updated
 
@@ -236,7 +240,9 @@ does not justify a new rerank mode or formal eval.
   the right symbolic sequence?".
 - Using the residual-debug JSON export to check scorer safety offline before
   any formal scorer change; the 16-sample smoke gave limited no-harm evidence
-  but no miss rescue.
+  but no miss rescue. The expanded-pairing smoke is prepared as a local script
+  rather than run in Codex because its expected runtime exceeds the current
+  10-minute smoke budget.
 - The 2000-step role-token checkpoint has been restored in `/private/tmp` and
   backed up under `checkpoints/`; model weights remain ignored by git.
 
@@ -263,8 +269,8 @@ does not justify a new rerank mode or formal eval.
    pruning rule was found from existing logs/JSON.
 8. Do not add robust/clipped/per-dimension normalized active scoring as a rerank
    mode from the offline ablation or 16-sample safety smoke alone. If scorer
-   analysis continues, the smallest next check is a 16-sample residual-debug
-   smoke under expanded pairing, not a formal eval.
+   analysis continues, run the prepared local expanded-pairing 16-sample
+   residual-debug smoke script, not a formal eval.
 9. Shift candidate-generation work toward drift span diversity: after expanded
    pairing, the remaining 17 oracle-absent samples all contain the truth
    diffusion but miss the truth drift.

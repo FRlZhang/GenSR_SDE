@@ -6,7 +6,9 @@ Use residual-debug JSON output to check scorer safety offline before any scorer
 change. Expanded-pairing pruning diagnostics found no safe oracle-preserving
 pruning rule, and the offline scorer ablation is promising but not stable
 enough for a rerank mode. A 16-sample residual-debug smoke now provides limited
-no-harm evidence, but no miss rescue.
+no-harm evidence, but no miss rescue. The expanded-pairing 16-sample smoke was
+prepared as a local script because it is expected to exceed the 10-minute Codex
+budget.
 
 Current strongest no-retraining decoding setting:
 
@@ -97,6 +99,14 @@ pair oracle samples=1
 selected-hit harms under offline safety score=0
 oracle-present selected-miss rescues=0
 safety helper result=limited no-harm evidence, no rescue
+```
+
+Prepared expanded-pairing residual-debug smoke:
+
+```text
+script=scripts/run_expanded_pairing_residual_debug_smoke16.sh
+status=not run in Codex; expected to exceed 10-minute budget
+output if run=residual_debug_safety_expanded_pairing_smoke16.md/json
 ```
 
 Candidate-coverage-only result:
@@ -197,8 +207,8 @@ before modifying `sde_validation_probe.py`.
 
 Likely next additions:
 
-- if continuing scorer analysis, prefer one future 16-sample expanded-pairing
-  residual-debug smoke before testing a scorer mode;
+- if continuing scorer analysis, run the prepared local expanded-pairing
+  16-sample residual-debug smoke before testing a scorer mode;
 - do not add a rerank mode or formal eval from the offline ablation alone;
 - defer drift span diversity work until the expanded-pairing ranking failure is
   understood;

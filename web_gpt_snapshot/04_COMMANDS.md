@@ -339,6 +339,27 @@ oracle-present selected-miss rescues=0
 result=limited no-harm evidence, no formal eval justified
 ```
 
+## Expanded Pairing Residual Debug Smoke
+
+Prepared local script:
+
+```bash
+bash scripts/run_expanded_pairing_residual_debug_smoke16.sh
+```
+
+The script uses:
+
+```text
+pair_drift_diffusion_candidates=32
+pair_drift_topk=5
+pair_diffusion_topk=6
+rerank_residual_debug_json=/private/tmp/gensr_sde_residual_debug_expanded_pairing_smoke16.json
+safety_report=residual_debug_safety_expanded_pairing_smoke16.md
+```
+
+It was not run in Codex because the baseline 16-sample smoke took about
+9.5 minutes and expanded pairing is expected to exceed the 10-minute budget.
+
 ## Small Smoke Test
 
 ```bash
