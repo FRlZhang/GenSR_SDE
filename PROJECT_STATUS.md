@@ -82,7 +82,13 @@ diagnostic numbers exactly (`15/32` current expanded, `23/32` current canonical,
 `30/32` P2 admission, pair count `340`, newly recovered
 `0,2,6,7,15,25,29`, remaining `16,28`) with strict self-checks passing and no
 sampling contribution. This remains coverage-only evidence; do not run formal
-eval or change production defaults from this hook alone.
+eval or change production defaults from this hook alone. A JSON-only
+cross-validation helper now confirms the reusable P2 hook is internally
+consistent with the previous capped, normalized-admission, normalization,
+drift-only, and expanded-coverage diagnostics: all expected metrics match,
+schema is sufficient for future coverage-pipeline integration, canonicalizer
+safety checks pass, and decision `A` recommends a future optional coverage-only
+integration flag rather than formal eval.
 
 ## Last Updated
 
@@ -399,6 +405,15 @@ eval or change production defaults from this hook alone.
   `30/32`, P2 pair count `340`, newly recovered samples `0,2,6,7,15,25,29`,
   remaining missing `16,28`, source `beam=15`, and sampling recovered canonical
   drifts `0`. Required canonicalization and mismatch self-checks passed.
+- Added JSON-only P2 hook cross-validation in
+  [scripts/validate_p2_normalized_admission_hook.py](/Users/lzhang/Documents/GenSR_SDE/scripts/validate_p2_normalized_admission_hook.py)
+  and wrote
+  [p2_normalized_admission_hook_validation.md](/Users/lzhang/Documents/GenSR_SDE/p2_normalized_admission_hook_validation.md)
+  /
+  [p2_normalized_admission_hook_validation.json](/Users/lzhang/Documents/GenSR_SDE/p2_normalized_admission_hook_validation.json).
+  It validates six JSON reports, recomputes P2 from source JSON through the
+  reusable hook, and confirms metric cross-check status `ok`, schema status
+  `ok`, canonicalizer safety status `ok`, zero mismatches, and decision `A`.
 - Logged validated experiments in
   [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md).
 
@@ -406,10 +421,10 @@ eval or change production defaults from this hook alone.
 
 - Transitioning from "can the model learn the fingerprint?" to "can we decode
   the right symbolic sequence?".
-- Planning a next coverage-only integration diagnostic around the reusable
-  `P2_one_per_family` hook before widening drift beam/top-k or changing
-  production candidate-generation defaults. Residual-debug safety checks do not
-  support continuing scorer-side normalization.
+- Planning a future optional coverage-only candidate-coverage pipeline flag for
+  the validated reusable `P2_one_per_family` hook. Do not treat this as
+  selected-rerank evidence or a production default change. Residual-debug safety
+  checks do not support continuing scorer-side normalization.
 - The 2000-step role-token checkpoint has been restored in `/private/tmp` and
   backed up under `checkpoints/`; model weights remain ignored by git.
 
@@ -439,9 +454,10 @@ eval or change production defaults from this hook alone.
    expanded-pairing 16-sample smoke had 5 oracle samples, 0 selected hits, and
    0/5 offline miss rescues, so do not run a formal 32-sample eval for this
    scorer idea.
-9. Prefer coverage-only validation of the reusable `P2_one_per_family` hook
-   before widening beam/top-k. It preserves the `30/32` diagnostic ceiling with
-   target pair count `340`, versus `1105` for full normalized admission.
+9. Prefer a small coverage-only integration flag for the validated reusable
+   `P2_one_per_family` hook before widening beam/top-k. It preserves the
+   `30/32` diagnostic ceiling with target pair count `340`, versus `1105` for
+   full normalized admission.
 10. Do not run formal eval from the drift-only or constant-folding diagnostics;
    they are oracle-coverage diagnostics, not selected-recovery evidence.
 11. Keep drift/diffusion pairing enabled and tune candidate pool size carefully

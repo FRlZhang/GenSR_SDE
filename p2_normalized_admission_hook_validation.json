@@ -1,0 +1,788 @@
+{
+  "canonicalizer_checks": {
+    "const_chain_linear_matches": true,
+    "const_chain_sin_matches": true,
+    "const_pow2_not_const_x0": true,
+    "pow2_x0_not_x0": true,
+    "sin_x0_not_x0": true
+  },
+  "decision": {
+    "choice": "A",
+    "label": "Hook is internally consistent",
+    "recommended_next_action": "Add a future coverage-only candidate-coverage pipeline flag. No formal eval."
+  },
+  "metrics": {
+    "canonicalized_expanded_pool_coverage": {
+      "expected": 23,
+      "mismatches": [],
+      "ok": true,
+      "sources": [
+        {
+          "field": "summary.canonicalized_expanded_pool_coverage",
+          "ok": true,
+          "report": "p2",
+          "value": 23
+        },
+        {
+          "field": "metadata.baseline.canonicalized_expanded_pool_coverage",
+          "ok": true,
+          "report": "capped",
+          "value": 23
+        },
+        {
+          "field": "summary.canonicalized_expanded_pool_coverage",
+          "ok": true,
+          "report": "normalized_admission",
+          "value": 23
+        },
+        {
+          "field": "summary.canonicalized_expanded_pool_full_oracle_coverage",
+          "ok": true,
+          "report": "normalization",
+          "value": 23
+        },
+        {
+          "field": "derived",
+          "ok": true,
+          "report": "recomputed_hook",
+          "value": 23
+        }
+      ]
+    },
+    "current_expanded_full_oracle": {
+      "expected": 15,
+      "mismatches": [],
+      "ok": true,
+      "sources": [
+        {
+          "field": "summary.current_expanded_full_oracle",
+          "ok": true,
+          "report": "p2",
+          "value": 15
+        },
+        {
+          "field": "metadata.baseline.current_expanded_full_oracle_coverage",
+          "ok": true,
+          "report": "capped",
+          "value": 15
+        },
+        {
+          "field": "summary.current_expanded_full_oracle_coverage",
+          "ok": true,
+          "report": "normalized_admission",
+          "value": 15
+        },
+        {
+          "field": "summary.current_expanded_full_oracle_coverage",
+          "ok": true,
+          "report": "normalization",
+          "value": 15
+        },
+        {
+          "field": "derived sum(samples[].has_full)",
+          "ok": true,
+          "report": "expanded_coverage",
+          "value": 15
+        },
+        {
+          "field": "derived",
+          "ok": true,
+          "report": "recomputed_hook",
+          "value": 15
+        }
+      ]
+    },
+    "full_normalized_admission_coverage": {
+      "expected": 30,
+      "mismatches": [],
+      "ok": true,
+      "sources": [
+        {
+          "field": "summary.full_normalized_admission_coverage",
+          "ok": true,
+          "report": "p2",
+          "value": 30
+        },
+        {
+          "field": "metadata.baseline.full_normalized_drift_only_admission_coverage",
+          "ok": true,
+          "report": "capped",
+          "value": 30
+        },
+        {
+          "field": "summary.normalized_drift_only_admission_coverage",
+          "ok": true,
+          "report": "normalized_admission",
+          "value": 30
+        },
+        {
+          "field": "summary.canonicalized_drift_only_admission_full_oracle_coverage",
+          "ok": true,
+          "report": "normalization",
+          "value": 30
+        }
+      ]
+    },
+    "full_normalized_admission_pair_count": {
+      "expected": 1105,
+      "mismatches": [],
+      "ok": true,
+      "sources": [
+        {
+          "field": "summary.full_normalized_admission_pair_count",
+          "ok": true,
+          "report": "p2",
+          "value": 1105
+        },
+        {
+          "field": "metadata.baseline.full_normalized_admission_target_pair_count",
+          "ok": true,
+          "report": "capped",
+          "value": 1105
+        },
+        {
+          "field": "pair_pressure.pair_count_after_canonical_sum",
+          "ok": true,
+          "report": "normalized_admission",
+          "value": 1105
+        }
+      ]
+    },
+    "newly_recovered": {
+      "expected": [
+        0,
+        2,
+        6,
+        7,
+        15,
+        25,
+        29
+      ],
+      "mismatches": [],
+      "ok": true,
+      "sources": [
+        {
+          "field": "summary.newly_recovered_beyond_current",
+          "ok": true,
+          "report": "p2",
+          "value": [
+            0,
+            2,
+            6,
+            7,
+            15,
+            25,
+            29
+          ]
+        },
+        {
+          "field": "policies.P2_one_per_family.newly_recovered_beyond_current_expanded_canonical_pool",
+          "ok": true,
+          "report": "capped",
+          "value": [
+            0,
+            2,
+            6,
+            7,
+            15,
+            25,
+            29
+          ]
+        },
+        {
+          "field": "summary.newly_recovered_beyond_current_expanded_canonical_pool",
+          "ok": true,
+          "report": "normalized_admission",
+          "value": [
+            0,
+            2,
+            6,
+            7,
+            15,
+            25,
+            29
+          ]
+        },
+        {
+          "field": "derived",
+          "ok": true,
+          "report": "recomputed_hook",
+          "value": [
+            0,
+            2,
+            6,
+            7,
+            15,
+            25,
+            29
+          ]
+        }
+      ]
+    },
+    "p2_normalized_admission_coverage": {
+      "expected": 30,
+      "mismatches": [],
+      "ok": true,
+      "sources": [
+        {
+          "field": "summary.p2_normalized_admission_coverage",
+          "ok": true,
+          "report": "p2",
+          "value": 30
+        },
+        {
+          "field": "policies.P2_one_per_family.projected_full_oracle_coverage",
+          "ok": true,
+          "report": "capped",
+          "value": 30
+        },
+        {
+          "field": "derived",
+          "ok": true,
+          "report": "recomputed_hook",
+          "value": 30
+        }
+      ]
+    },
+    "p2_pair_count": {
+      "expected": 340,
+      "mismatches": [],
+      "ok": true,
+      "sources": [
+        {
+          "field": "summary.p2_pair_count",
+          "ok": true,
+          "report": "p2",
+          "value": 340
+        },
+        {
+          "field": "policies.P2_one_per_family.pair_count_after",
+          "ok": true,
+          "report": "capped",
+          "value": 340
+        },
+        {
+          "field": "derived",
+          "ok": true,
+          "report": "recomputed_hook",
+          "value": 340
+        }
+      ]
+    },
+    "p2_source_breakdown": {
+      "expected": {
+        "beam": 15
+      },
+      "mismatches": [],
+      "ok": true,
+      "sources": [
+        {
+          "field": "source_breakdown",
+          "ok": true,
+          "report": "p2",
+          "value": {
+            "beam": 15
+          }
+        },
+        {
+          "field": "policies.P2_one_per_family.source_breakdown",
+          "ok": true,
+          "report": "capped",
+          "value": {
+            "beam": 15
+          }
+        },
+        {
+          "field": "source_breakdown.drift_only_tail_normalized",
+          "ok": true,
+          "report": "normalized_admission",
+          "value": {
+            "beam": 15
+          }
+        },
+        {
+          "field": "derived",
+          "ok": true,
+          "report": "recomputed_hook",
+          "value": {
+            "beam": 15
+          }
+        }
+      ]
+    },
+    "remaining_missing": {
+      "expected": [
+        16,
+        28
+      ],
+      "mismatches": [],
+      "ok": true,
+      "sources": [
+        {
+          "field": "summary.remaining_missing_samples",
+          "ok": true,
+          "report": "p2",
+          "value": [
+            16,
+            28
+          ]
+        },
+        {
+          "field": "policies.P2_one_per_family.remaining_missing_samples",
+          "ok": true,
+          "report": "capped",
+          "value": [
+            16,
+            28
+          ]
+        },
+        {
+          "field": "summary.remaining_missing_samples",
+          "ok": true,
+          "report": "normalized_admission",
+          "value": [
+            16,
+            28
+          ]
+        },
+        {
+          "field": "derived",
+          "ok": true,
+          "report": "recomputed_hook",
+          "value": [
+            16,
+            28
+          ]
+        }
+      ]
+    },
+    "sampling_can_be_dropped": {
+      "expected": true,
+      "mismatches": [],
+      "ok": true,
+      "sources": [
+        {
+          "field": "summary.sampling_excluded",
+          "ok": true,
+          "report": "p2",
+          "value": true
+        },
+        {
+          "field": "summary.sampling_can_be_dropped_for_all_policies",
+          "ok": true,
+          "report": "capped",
+          "value": true
+        },
+        {
+          "field": "policies.P2_one_per_family.sampling_can_be_dropped",
+          "ok": true,
+          "report": "capped",
+          "value": true
+        },
+        {
+          "field": "not summary.sampling_contributes_recovered_canonical_drift",
+          "ok": true,
+          "report": "normalized_admission",
+          "value": true
+        }
+      ]
+    },
+    "sampling_recovered_canonical_drift_count": {
+      "expected": 0,
+      "mismatches": [],
+      "ok": true,
+      "sources": [
+        {
+          "field": "summary.sampling_recovered_canonical_drift_count",
+          "ok": true,
+          "report": "p2",
+          "value": 0
+        }
+      ]
+    },
+    "truth_aware_upper_bound_pair_count": {
+      "expected": 320,
+      "mismatches": [],
+      "ok": true,
+      "sources": [
+        {
+          "field": "summary.truth_aware_upper_bound_pair_count",
+          "ok": true,
+          "report": "p2",
+          "value": 320
+        },
+        {
+          "field": "truth_aware_upper_bound.pair_count_after",
+          "ok": true,
+          "report": "capped",
+          "value": 320
+        },
+        {
+          "field": "policies.P4_recovery_targeted_oracle_upper_bound.pair_count_after",
+          "ok": true,
+          "report": "capped",
+          "value": 320
+        }
+      ]
+    },
+    "unsafe_collision_flag": {
+      "expected": false,
+      "mismatches": [],
+      "ok": true,
+      "sources": [
+        {
+          "field": "safety.unsafe_collision_flag",
+          "ok": true,
+          "report": "p2",
+          "value": false
+        },
+        {
+          "field": "collision_safety.unsafe_collision_flag",
+          "ok": true,
+          "report": "capped",
+          "value": false
+        },
+        {
+          "field": "collision_safety.unsafe_collision_flag",
+          "ok": true,
+          "report": "normalized_admission",
+          "value": false
+        },
+        {
+          "field": "collision_risk.unsafe",
+          "ok": true,
+          "report": "normalization",
+          "value": false
+        }
+      ]
+    }
+  },
+  "mismatches": [],
+  "recomputed_p2": {
+    "canonicalized_expanded_pool_coverage": 23,
+    "current_expanded_full_oracle": 15,
+    "newly_recovered": [
+      0,
+      2,
+      6,
+      7,
+      15,
+      25,
+      29
+    ],
+    "p2_family_breakdown": {
+      "linear drift": 6,
+      "nested-mul linear drift": 3,
+      "other": 0,
+      "polynomial-like drift": 0,
+      "sin drift": 6
+    },
+    "p2_normalized_admission_coverage": 30,
+    "p2_pair_count": 340,
+    "p2_source_breakdown": {
+      "beam": 15
+    },
+    "remaining_missing": [
+      16,
+      28
+    ]
+  },
+  "schema": [
+    {
+      "field_aliases_used": [
+        {
+          "derived": false,
+          "field": "total sample count",
+          "path": "summary.total_samples_analyzed"
+        },
+        {
+          "derived": false,
+          "field": "target oracle-absent sample indices",
+          "path": "samples"
+        },
+        {
+          "derived": false,
+          "field": "current expanded oracle coverage",
+          "path": "summary.current_expanded_full_oracle"
+        },
+        {
+          "derived": false,
+          "field": "canonicalized expanded coverage",
+          "path": "summary.canonicalized_expanded_pool_coverage"
+        },
+        {
+          "derived": false,
+          "field": "full normalized admission coverage",
+          "path": "summary.full_normalized_admission_coverage"
+        },
+        {
+          "derived": false,
+          "field": "P2 coverage",
+          "path": "summary.p2_normalized_admission_coverage"
+        },
+        {
+          "derived": false,
+          "field": "P2 admitted candidates by sample",
+          "path": "admitted_candidates_by_sample"
+        },
+        {
+          "derived": false,
+          "field": "P2 family/source/rank metadata",
+          "path": "admitted_candidates_by_sample"
+        },
+        {
+          "derived": false,
+          "field": "exact diffusion presence",
+          "path": "samples"
+        },
+        {
+          "derived": false,
+          "field": "pair-count estimates",
+          "path": "summary.p2_pair_count"
+        },
+        {
+          "derived": false,
+          "field": "safety self-checks",
+          "path": "safety.self_checks"
+        }
+      ],
+      "missing_fields": [],
+      "report": "candidate_coverage_p2_normalized_admission.json",
+      "schema_status": "ok"
+    },
+    {
+      "field_aliases_used": [
+        {
+          "derived": false,
+          "field": "total sample count",
+          "path": "summary.total_samples_analyzed"
+        },
+        {
+          "derived": false,
+          "field": "target oracle-absent sample indices",
+          "path": "samples"
+        },
+        {
+          "derived": false,
+          "field": "current expanded oracle coverage",
+          "path": "metadata.baseline.current_expanded_full_oracle_coverage"
+        },
+        {
+          "derived": false,
+          "field": "canonicalized expanded coverage",
+          "path": "metadata.baseline.canonicalized_expanded_pool_coverage"
+        },
+        {
+          "derived": false,
+          "field": "full normalized admission coverage",
+          "path": "metadata.baseline.full_normalized_drift_only_admission_coverage"
+        },
+        {
+          "derived": false,
+          "field": "P2 coverage",
+          "path": "policies.P2_one_per_family.projected_full_oracle_coverage"
+        },
+        {
+          "derived": false,
+          "field": "P2 family/source/rank metadata",
+          "path": "policies.P2_one_per_family.source_breakdown"
+        },
+        {
+          "derived": false,
+          "field": "exact diffusion presence",
+          "path": "samples"
+        },
+        {
+          "derived": false,
+          "field": "pair-count estimates",
+          "path": "policies.P2_one_per_family.pair_count_after"
+        },
+        {
+          "derived": false,
+          "field": "safety self-checks",
+          "path": "collision_safety.unsafe_checks"
+        }
+      ],
+      "missing_fields": [
+        "P2 admitted candidates by sample"
+      ],
+      "report": "capped_normalized_drift_admission_diagnostics.json",
+      "schema_status": "partial"
+    },
+    {
+      "field_aliases_used": [
+        {
+          "derived": false,
+          "field": "total sample count",
+          "path": "summary.total_samples_analyzed"
+        },
+        {
+          "derived": false,
+          "field": "target oracle-absent sample indices",
+          "path": "samples"
+        },
+        {
+          "derived": false,
+          "field": "current expanded oracle coverage",
+          "path": "summary.current_expanded_full_oracle_coverage"
+        },
+        {
+          "derived": false,
+          "field": "canonicalized expanded coverage",
+          "path": "summary.canonicalized_expanded_pool_coverage"
+        },
+        {
+          "derived": false,
+          "field": "full normalized admission coverage",
+          "path": "summary.normalized_drift_only_admission_coverage"
+        },
+        {
+          "derived": false,
+          "field": "exact diffusion presence",
+          "path": "samples"
+        },
+        {
+          "derived": false,
+          "field": "pair-count estimates",
+          "path": "pair_pressure.pair_count_after_canonical_sum"
+        },
+        {
+          "derived": false,
+          "field": "safety self-checks",
+          "path": "collision_safety.unsafe_checks"
+        }
+      ],
+      "missing_fields": [
+        "P2 coverage",
+        "P2 admitted candidates by sample",
+        "P2 family/source/rank metadata"
+      ],
+      "report": "normalized_drift_only_admission_coverage_diagnostics.json",
+      "schema_status": "partial"
+    },
+    {
+      "field_aliases_used": [
+        {
+          "derived": false,
+          "field": "total sample count",
+          "path": "summary.total_samples_analyzed"
+        },
+        {
+          "derived": false,
+          "field": "target oracle-absent sample indices",
+          "path": "metadata.target_indices"
+        },
+        {
+          "derived": false,
+          "field": "current expanded oracle coverage",
+          "path": "summary.current_expanded_full_oracle_coverage"
+        },
+        {
+          "derived": false,
+          "field": "canonicalized expanded coverage",
+          "path": "summary.canonicalized_expanded_pool_full_oracle_coverage"
+        },
+        {
+          "derived": false,
+          "field": "full normalized admission coverage",
+          "path": "summary.canonicalized_drift_only_admission_full_oracle_coverage"
+        },
+        {
+          "derived": false,
+          "field": "exact diffusion presence",
+          "path": "samples"
+        },
+        {
+          "derived": false,
+          "field": "safety self-checks",
+          "path": "collision_risk.unsafe_checks"
+        }
+      ],
+      "missing_fields": [
+        "P2 coverage",
+        "P2 admitted candidates by sample",
+        "P2 family/source/rank metadata",
+        "pair-count estimates"
+      ],
+      "report": "candidate_normalization_constant_folding_diagnostics.json",
+      "schema_status": "partial"
+    },
+    {
+      "field_aliases_used": [
+        {
+          "derived": false,
+          "field": "target oracle-absent sample indices",
+          "path": "metadata.target_indices"
+        },
+        {
+          "derived": false,
+          "field": "P2 family/source/rank metadata",
+          "path": "samples"
+        },
+        {
+          "derived": false,
+          "field": "exact diffusion presence",
+          "path": "samples"
+        }
+      ],
+      "missing_fields": [
+        "total sample count",
+        "current expanded oracle coverage",
+        "canonicalized expanded coverage",
+        "full normalized admission coverage",
+        "P2 coverage",
+        "P2 admitted candidates by sample",
+        "pair-count estimates",
+        "safety self-checks"
+      ],
+      "report": "drift_only_candidate_diversity_smoke.json",
+      "schema_status": "partial"
+    },
+    {
+      "field_aliases_used": [
+        {
+          "derived": false,
+          "field": "total sample count",
+          "path": "samples"
+        },
+        {
+          "derived": true,
+          "field": "target oracle-absent sample indices",
+          "path": "samples where has_full is false"
+        },
+        {
+          "derived": true,
+          "field": "current expanded oracle coverage",
+          "path": "sum(samples[].has_full)"
+        },
+        {
+          "derived": false,
+          "field": "exact diffusion presence",
+          "path": "samples"
+        },
+        {
+          "derived": false,
+          "field": "pair-count estimates",
+          "path": "samples"
+        }
+      ],
+      "missing_fields": [
+        "canonicalized expanded coverage",
+        "full normalized admission coverage",
+        "P2 coverage",
+        "P2 admitted candidates by sample",
+        "P2 family/source/rank metadata",
+        "safety self-checks"
+      ],
+      "report": "candidate_coverage_pair_expanded.json",
+      "schema_status": "partial"
+    }
+  ],
+  "summary": {
+    "canonicalizer_safety_status": "ok",
+    "json_reports_validated": 6,
+    "metric_cross_check_status": "ok",
+    "mismatch_count": 0,
+    "schema_status": "ok"
+  }
+}
