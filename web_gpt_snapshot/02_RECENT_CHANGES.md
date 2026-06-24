@@ -2,6 +2,92 @@
 
 ## Last Codex Workflow
 
+Codex ran an all-32 offline shared-constant / fixed residual calibration smoke:
+
+```text
+scripts/analyze_p2_calibration_all32_smoke.py
+p2_scorer_ready_candidates_all32.json
+p2_calibration_all32_smoke.md
+p2_calibration_all32_smoke.json
+/private/tmp/gensr_sde_p2_scorer_ready_all32.log
+/private/tmp/gensr_sde_p2_calibration_all32_smoke.log
+```
+
+The all-32 sidecar was produced with the one allowed coverage-only
+`scripts/analyze_candidate_coverage.py` reconstruction command. The smoke then
+scored existing sidecar candidates only. It did not run `sde_validation_probe.py`,
+formal eval, 64-sample eval, retraining, scorer grids, active/weak grids,
+checkpoint/data changes, target-format changes, fingerprint schema changes,
+production default changes, or a new rerank mode.
+
+Result:
+
+```text
+samples_analyzed=32
+candidate_rows_analyzed=970
+valid_candidate_count=970
+parse_failures=0
+fingerprint_failures=0
+baseline_full_oracle=9/32
+current_expanded_full_oracle=15/32
+p2_normalized_admission_coverage=30/32
+
+V0_current_rolewise_no_multi_u0:
+  selected_exact=6/32
+  selected_relaxed=6/32
+  selected_p2_oracle=1
+  oracle_samples=9,10,14,17,18,21
+
+V11_shared_constants_only_best_of_grid:
+  selected_exact=4/32
+  selected_relaxed=4/32
+  selected_p2_oracle=1
+  rescues_vs_V0=1
+  harms_vs_V0=3
+  net_exact_delta=-2
+
+V3_active_without_dim_76:
+  selected_exact=7/32
+  selected_relaxed=7/32
+  selected_p2_oracle=3
+  rescues_vs_V0=2
+  harms_vs_V0=1
+  net_exact_delta=+1
+
+V4_active_without_dims_76_72_82_88:
+  selected_exact=9/32
+  selected_relaxed=9/32
+  selected_p2_oracle=2
+  rescues_vs_V0=5
+  harms_vs_V0=2
+  net_exact_delta=+3
+
+V6_active_and_weak_without_recurring_dims:
+  selected_exact=7/32
+  selected_relaxed=7/32
+  selected_p2_oracle=2
+  rescues_vs_V0=4
+  harms_vs_V0=3
+  net_exact_delta=+1
+
+decision=B
+```
+
+Interpretation: fixed residual variants can improve sidecar selected recovery,
+but every non-V0 variant harms at least one V0 hit, and V11 shared-constant
+regresses. Use this as scorer diagnostics only. Do not implement a rerank mode,
+integrate P2 into eval, or run formal eval from this evidence.
+
+Verification:
+
+```text
+py_compile scripts/analyze_p2_calibration_all32_smoke.py scripts/analyze_p2_residual_calibration_counterfactuals.py scripts/analyze_p2_oracle_score_miss_residuals.py scripts/analyze_p2_admitted_candidate_scoring.py scripts/analyze_candidate_coverage.py sde_fingerprint.py simulator_sde.py sde_dataset_generator.py: passed
+sidecar reconstruction: passed
+all-32 offline helper: passed
+```
+
+## Previous Codex Workflow
+
 Codex added an offline residual-calibration counterfactual diagnostic for the 7
 P2 oracle score misses:
 

@@ -1262,3 +1262,86 @@ decision=A
 Use this only to design at most one future small smoke around shared-constant /
 fixed residual calibration. Do not run formal eval or add a rerank mode from
 this offline diagnostic alone.
+
+## P2 Calibration All32 Smoke
+
+This produces an all-32 scorer-ready sidecar with the existing coverage-only
+candidate coverage helper, then scores existing sidecar candidates offline. It
+does not run `sde_validation_probe.py`, formal eval, 64-sample eval, retraining,
+scorer grids, active/weak grids, checkpoint/data changes, target-format
+changes, fingerprint schema changes, production default changes, or a new
+rerank mode.
+
+Sidecar reconstruction:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/tmp/cache \
+/opt/miniconda3/envs/gensr/bin/python3 scripts/analyze_candidate_coverage.py \
+  --source-log /private/tmp/gensr_sde_32_rolewise_no_multi_u0.log \
+  --report candidate_coverage_pair_expanded_p2_flag.md \
+  --json-output candidate_coverage_pair_expanded_p2_flag.json \
+  --pair-drift-topk 5 \
+  --pair-diffusion-topk 6 \
+  --pair-drift-diffusion-candidates 32 \
+  --normalized-drift-admission p2_one_per_family \
+  --normalized-drift-admission-source beam \
+  --drift-only-json drift_only_candidate_diversity_smoke.json \
+  --scorer-ready-target-samples 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31 \
+  --scorer-ready-json p2_scorer_ready_candidates_all32.json \
+  > /private/tmp/gensr_sde_p2_scorer_ready_all32.log 2>&1
+```
+
+Offline smoke:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/tmp/cache \
+/opt/miniconda3/envs/gensr/bin/python3 scripts/analyze_p2_calibration_all32_smoke.py \
+  --scorer-ready-json p2_scorer_ready_candidates_all32.json \
+  --p2-counterfactual-json p2_residual_calibration_counterfactuals.json \
+  --baseline-coverage-json candidate_coverage_diagnostics.json \
+  --p2-coverage-json candidate_coverage_pair_expanded_p2_flag.json \
+  --target-samples 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31 \
+  --report p2_calibration_all32_smoke.md \
+  --json-output p2_calibration_all32_smoke.json \
+  > /private/tmp/gensr_sde_p2_calibration_all32_smoke.log 2>&1
+```
+
+Compile check:
+
+```bash
+PYTHONPYCACHEPREFIX=/private/tmp/gensr_pycache \
+/opt/miniconda3/envs/gensr/bin/python3 -m py_compile \
+  scripts/analyze_p2_calibration_all32_smoke.py \
+  scripts/analyze_p2_residual_calibration_counterfactuals.py \
+  scripts/analyze_p2_oracle_score_miss_residuals.py \
+  scripts/analyze_p2_admitted_candidate_scoring.py \
+  scripts/analyze_candidate_coverage.py \
+  sde_fingerprint.py \
+  simulator_sde.py \
+  sde_dataset_generator.py
+```
+
+Latest result:
+
+```text
+samples_analyzed=32
+candidate_rows_analyzed=970
+valid_candidate_count=970
+parse_failures=0
+fingerprint_failures=0
+V0_selected_exact_relaxed=6/32
+V11_selected_exact_relaxed=4/32
+best_variant=V4_active_without_dims_76_72_82_88
+best_variant_selected_exact_relaxed=9/32
+best_variant_harms_vs_V0=2
+selected_p2_oracle:
+  V0=1
+  V11=1
+  V3=3
+  V4=2
+  V6=2
+decision=B
+```
+
+Use this as scorer diagnostics only. Do not implement a rerank mode, integrate
+P2 into eval, or run formal eval from this evidence.

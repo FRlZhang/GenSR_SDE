@@ -2,9 +2,8 @@
 
 ## Next Engineering Task
 
-Decide whether to run one future small smoke around shared-constant / fixed
-residual calibration after offline counterfactuals flipped several P2 score
-misses. Do not widen drift beam/top-k, run formal eval, add a rerank mode, or
+Interpret the all-32 fixed residual calibration smoke. Do not widen drift
+beam/top-k, run formal eval, add a rerank mode, integrate P2 into eval, or
 change production candidate-generation defaults from this diagnostic evidence
 alone.
 The drift-only smoke is complete: exact drift appears in only `3/17` targets,
@@ -32,15 +31,14 @@ The minimal logging gap has now been fixed:
 and `--scorer-ready-target-samples`, and `p2_scorer_ready_candidates.json`
 validates with decision `A`. Offline semantic scoring on that sidecar is now
 complete and selects 0/7 P2 oracle candidates.
-The targeted residual/segment diagnostic is now complete: classifications are
-active-trap 3, weak-trap 1, near-tie 2, current-candidate trap 1. The follow-up
-offline residual-calibration counterfactual diagnostic is also complete:
-baseline oracle wins remain 0/7, but fixed variants flip 5/7 cases.
-`V11_shared_constants_only_best_of_grid` flips 3/7, global recurring-dimension
-removals flip 2/7, per-sample top active removals flip 2/7, and constant
-counterfactuals flip 5/7. Decision `A`: one future small smoke focused on
-shared-constant / fixed residual calibration may be justified, but this does
-not support P2 eval integration yet.
+The targeted residual/segment diagnostic is complete, and the 7-sample
+counterfactual signal has now been checked in an all-32 offline smoke. The
+all-32 sidecar has 970 valid candidate rows and 0 parse/fingerprint failures.
+V0 current role-wise scoring selects 6 exact/relaxed samples and 1 P2 oracle;
+V11 shared-constant regresses to 4 exact/relaxed and harms 3 V0 hits. V4 reaches
+9 exact/relaxed and 2 P2 oracles, but harms 2 V0 hits. Decision `B`: use fixed
+residual calibration as scorer diagnostics only; do not implement a rerank mode,
+run formal eval, or integrate P2 into eval from this evidence.
 
 Current strongest no-retraining decoding setting:
 
@@ -434,6 +432,32 @@ weak_trap_samples_flipped=0
 decision=A
 ```
 
+All-32 fixed residual calibration smoke:
+
+```text
+script=scripts/analyze_p2_calibration_all32_smoke.py
+sidecar=p2_scorer_ready_candidates_all32.json
+report=p2_calibration_all32_smoke.md
+json=p2_calibration_all32_smoke.json
+samples_analyzed=32
+candidate_rows_analyzed=970
+valid_candidate_count=970
+parse_failures=0
+fingerprint_failures=0
+V0_selected_exact_relaxed=6/32
+V11_selected_exact_relaxed=4/32
+best_variant=V4_active_without_dims_76_72_82_88
+best_variant_selected_exact_relaxed=9/32
+best_variant_harms_vs_V0=2
+P2_oracle_selected_by_variant:
+  V0=1
+  V11=1
+  V3=3
+  V4=2
+  V6=2
+decision=B
+```
+
 Interpretation: current expanded-pool canonicalization helps but is not enough,
 full normalized drift-only admission is too high-pressure to adopt wholesale,
 and `P2_one_per_family` preserves the coverage ceiling with much lower pair
@@ -441,10 +465,11 @@ pressure. The hook is now cross-validated and integrated behind a default-off
 coverage-only candidate coverage flag, and the runtime path now matches the
 prior validation. A follow-up scorer-ready sidecar logging run now provides
 target fingerprint / `y_to_fit` fields and full candidate rows for the 7 P2
-newly recovered samples. Offline semantic scoring now shows all 7 P2 oracle
-candidates lose under the current scorer, so the next useful step is a targeted
-shared-constant / fixed residual calibration smoke, not naive global beam/top-k
-expansion or formal eval.
+newly recovered samples. Offline semantic scoring shows all 7 P2 oracle
+candidates lose under the current scorer. The all-32 fixed residual smoke found
+some selected-recovery rescues, but all non-V0 variants harm V0 hits; this
+points to scorer diagnostics only, not naive global beam/top-k expansion,
+formal eval, or implementation.
 
 Do not launch formal eval from these diagnostics. Exact-tail admission alone is
 weak and expensive-looking because all exact hits are rank-30 beam cases.
@@ -540,8 +565,8 @@ diagnostic hook is proven necessary.
 
 Likely next actions:
 
-- if continuing scorer work, design at most one small smoke around
-  shared-constant / fixed residual calibration;
+- use the all-32 calibration smoke only as diagnostic evidence for score
+  residual behavior;
 - avoid naive global beam top-k expansion to 30/32 as a default from this
   evidence alone;
 - do not add `per_active_dim_norm_plus_weak` or any robust/clipped normalized
@@ -592,7 +617,6 @@ Likely next actions:
 
 ## Success Standard
 
-The next useful scorer-side step, if any, is at most one small smoke focused on
-shared-constant / fixed residual calibration so full candidate-pool hit safety
-can be checked. Do not run formal eval or add a rerank mode from the offline
-counterfactual alone.
+The fixed residual calibration path is not implementation-ready: V4 improves
+sidecar selected exact/relaxed but harms V0 hits, and V11 regresses. Do not run
+formal eval or add a rerank mode from this smoke.

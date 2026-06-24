@@ -161,6 +161,17 @@ do 2 active-trap samples; the weak-trap case does not flip. Decision `A`: one
 future small smoke focused on shared-constant / fixed residual calibration may
 be justified, but this is still not formal-eval evidence and no rerank mode or
 production default should be added.
+The all-32 offline shared-constant / fixed residual calibration smoke is now
+complete on `p2_scorer_ready_candidates_all32.json`. It scored 970/970 sidecar
+candidate rows with 0 parse/fingerprint failures. In the all-32 sidecar pool,
+V0 current role-wise scoring selects 6 exact/relaxed samples and 1 P2 oracle;
+`V11_shared_constants_only_best_of_grid` regresses to 4 exact/relaxed and harms
+3 V0 hits. The strongest fixed residual variant,
+`V4_active_without_dims_76_72_82_88`, reaches 9 exact/relaxed and 2 P2
+oracles, but it also harms 2 V0 hits. `V3` and `V6` reach 7 exact/relaxed and
+also harm V0 hits. Decision `B`: use this as scorer diagnostics only; do not
+implement a rerank mode, integrate P2 into eval, or run formal eval from this
+evidence.
 
 ## Last Updated
 
@@ -602,6 +613,19 @@ production default should be added.
   `2/7`, and constant counterfactuals flipped `5/7`. Decision `A`: a future
   small smoke focused on fixed shared-constant / calibration behavior may be
   justified, but no formal eval or rerank-mode implementation is recommended.
+- Added
+  [scripts/analyze_p2_calibration_all32_smoke.py](/Users/lzhang/Documents/GenSR_SDE/scripts/analyze_p2_calibration_all32_smoke.py),
+  produced
+  [p2_scorer_ready_candidates_all32.json](/Users/lzhang/Documents/GenSR_SDE/p2_scorer_ready_candidates_all32.json),
+  and wrote
+  [p2_calibration_all32_smoke.md](/Users/lzhang/Documents/GenSR_SDE/p2_calibration_all32_smoke.md)
+  /
+  [p2_calibration_all32_smoke.json](/Users/lzhang/Documents/GenSR_SDE/p2_calibration_all32_smoke.json).
+  This used one allowed coverage-only sidecar reconstruction plus offline
+  candidate scoring only. It did not run `sde_validation_probe.py`, formal eval,
+  64-sample eval, retraining, scorer grids, active/weak grids, or production
+  scorer/default changes. V0 selected exact/relaxed is `6/32`; V11 regresses to
+  `4/32`; V4 reaches `9/32` but harms 2 V0 hits. Decision `B`: diagnostic only.
 - Logged validated experiments in
   [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md).
 
@@ -609,12 +633,10 @@ production default should be added.
 
 - Transitioning from "can the model learn the fingerprint?" to "can we decode
   the right symbolic sequence?".
-- Deciding whether to run one future small smoke around fixed shared-constant /
-  calibration behavior after offline P2 counterfactuals flipped 5/7 score
-  misses, including 3/7 under shared-constant-only best-of-grid.
-  Do not treat the P2 flag smoke as selected-rerank evidence or a production
-  default change. The counterfactual signal may justify a small smoke, but not
-  a formal eval or rerank-mode implementation.
+- Interpreting the all-32 fixed residual calibration smoke. It found useful
+  diagnostic rescues, but every non-V0 fixed variant harms at least one V0 hit;
+  V11 shared-constant regresses. Do not treat this as selected-rerank evidence
+  for implementation, formal eval, or a production default change.
 - The 2000-step role-token checkpoint has been restored in `/private/tmp` and
   backed up under `checkpoints/`; model weights remain ignored by git.
 
@@ -650,10 +672,9 @@ production default should be added.
    admission, in the actual candidate coverage pipeline.
 10. Do not run formal eval from the drift-only or constant-folding diagnostics;
    they are oracle-coverage diagnostics, not selected-recovery evidence.
-11. Use `p2_residual_calibration_counterfactuals.json` to design at most one
-   future small smoke around fixed shared-constant / calibration behavior. Do
-   not run formal eval or implement a rerank mode from offline counterfactuals
-   alone.
+11. Do not implement shared-constant or fixed residual calibration from the
+   all-32 smoke. V4 improves sidecar selected exact/relaxed to `9/32` but harms
+   2 V0 hits; V11 regresses to `4/32`. Treat these as scorer diagnostics only.
 12. Keep drift/diffusion pairing enabled and tune candidate pool size carefully
    because fingerprint recomputation is CPU-expensive.
 13. Reuse the saved 2000-step checkpoint for decoding experiments instead of
