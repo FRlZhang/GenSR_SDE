@@ -134,7 +134,15 @@ decision. That minimal default-off scorer-ready logging now exists in
 diffusion present, and 245 scorer-ready candidate rows total. Validation
 decision `A`: the next step can be offline semantic scoring of P2 admitted
 candidates, but no semantic scoring or formal eval was run in this logging
-task.
+task. The offline semantic scoring diagnostic is now complete on the sidecar:
+245/245 candidate rows scored with 0 parse failures and 0 fingerprint failures.
+All 7 P2 oracle candidates are present, but the current
+`constant_grid_rolewise_no_multi_u0` scorer selects 0/7 of them; all 7 are score
+misses. Combined selection comes from P2-admitted rows in 3/7 samples and
+current-expanded rows in 4/7, but none of the selected P2 rows is the P2
+canonical oracle. Median P2 oracle rank is 4 and max rank is 32; only 2/7 score
+gaps are within 0.10 and none are within 0.05. Decision `B`: diagnose
+residual/segment behavior for these P2 cases before any eval integration.
 
 ## Last Updated
 
@@ -532,6 +540,22 @@ task.
   P2 oracle rows, and parse-ready full sequences for all candidates. Decision
   `A`: next step can be offline semantic scoring of P2 admitted candidates. No
   semantic scoring or formal eval was run.
+- Extended
+  [scripts/analyze_p2_admitted_candidate_scoring.py](/Users/lzhang/Documents/GenSR_SDE/scripts/analyze_p2_admitted_candidate_scoring.py)
+  to score `p2_scorer_ready_candidates.json` offline and wrote
+  [p2_admitted_candidate_semantic_scoring.md](/Users/lzhang/Documents/GenSR_SDE/p2_admitted_candidate_semantic_scoring.md)
+  /
+  [p2_admitted_candidate_semantic_scoring.json](/Users/lzhang/Documents/GenSR_SDE/p2_admitted_candidate_semantic_scoring.json).
+  The helper used `constant_grid_rolewise_no_multi_u0` with active:weak `1:1`
+  and constants `0.25,0.5,1.0,2.0,4.0`; no model decoding, candidate
+  generation, formal eval, grid, retraining, scorer mode, checkpoint/data,
+  target-format, or fingerprint-schema change was run. It scored 245/245
+  candidate rows with 0 parse/fingerprint failures. P2 oracle candidates are
+  present for 7/7 samples but selected 0/7; all 7 are score misses. Combined
+  selected sources are P2-admitted 3 and current-expanded 4. Median/max P2
+  oracle rank is 4/32; near gaps are 0 within 0.005, 0 within 0.01, 0 within
+  0.05, and 2 within 0.10. Decision `B`: inspect residual/segment behavior for
+  these P2 cases before eval integration.
 - Logged validated experiments in
   [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md).
 
@@ -539,11 +563,11 @@ task.
 
 - Transitioning from "can the model learn the fingerprint?" to "can we decode
   the right symbolic sequence?".
-- Deciding the next offline semantic scoring diagnostic for P2 admitted
-  candidates after scorer-ready sidecar logging validated with decision `A`.
+- Deciding the next residual/segment diagnostic for P2 admitted candidates
+  after offline semantic scoring selected 0/7 P2 oracle candidates.
   Do not treat the P2 flag smoke as selected-rerank evidence or a production
-  default change. The new sidecar makes scoring possible, but no semantic
-  scoring has been run yet.
+  default change. The P2 sidecar makes scoring possible, but current semantic
+  scoring says P2 admission is not eval-integration-ready yet.
 - The 2000-step role-token checkpoint has been restored in `/private/tmp` and
   backed up under `checkpoints/`; model weights remain ignored by git.
 
@@ -579,9 +603,9 @@ task.
    admission, in the actual candidate coverage pipeline.
 10. Do not run formal eval from the drift-only or constant-folding diagnostics;
    they are oracle-coverage diagnostics, not selected-recovery evidence.
-11. Use `p2_scorer_ready_candidates.json` for the next offline semantic scoring
-   diagnostic of P2 admitted candidates. Do not run formal eval or change
-   defaults from sidecar readiness alone.
+11. Use `p2_admitted_candidate_semantic_scoring.json` for a targeted
+   residual/segment diagnostic of the 7 P2 oracle score misses. Do not run
+   formal eval or change defaults from P2 coverage/readiness alone.
 12. Keep drift/diffusion pairing enabled and tune candidate pool size carefully
    because fingerprint recomputation is CPU-expensive.
 13. Reuse the saved 2000-step checkpoint for decoding experiments instead of
@@ -662,9 +686,9 @@ task.
   `P2_one_per_family` keeps `30/32` projected coverage with much lower pair
   pressure, but this still has no semantic fingerprint or selected-rerank
   validation.
-- P2 scorer-ready sidecar logging is now available and validated, but selected
-  rerank behavior is still untested. Do not infer selected-rerank readiness
-  from coverage-only P2 oracle presence.
+- P2 scorer-ready sidecar logging is available and validated, but offline
+  semantic scoring selects 0/7 P2 oracle candidates. Do not integrate P2 into
+  eval before diagnosing residual/segment score failures.
 - Constant-folding collision checks are token-structure-only; they did not flag
   unsafe observed overmerge, but semantic fingerprint validation and
   selected-rerank behavior remain untested.

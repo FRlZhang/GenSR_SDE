@@ -1096,3 +1096,62 @@ decision=A
 
 Next step can be offline semantic scoring of P2 admitted candidates from
 `p2_scorer_ready_candidates.json`; do not run formal eval from readiness alone.
+
+## P2 Admitted Candidate Offline Semantic Scoring
+
+This scores existing sidecar candidates only. It does not run model decoding,
+candidate generation/regeneration, formal eval, 64-sample eval, retraining,
+scorer grids, active/weak grids, checkpoint/data changes, target-format
+changes, fingerprint schema changes, production default changes, or a new
+rerank mode.
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/tmp/cache \
+/opt/miniconda3/envs/gensr/bin/python3 scripts/analyze_p2_admitted_candidate_scoring.py \
+  --scorer-ready-json p2_scorer_ready_candidates.json \
+  --target-samples 0,2,6,7,15,25,29 \
+  --report p2_admitted_candidate_semantic_scoring.md \
+  --json-output p2_admitted_candidate_semantic_scoring.json \
+  > /private/tmp/gensr_sde_p2_admitted_candidate_semantic_scoring.log 2>&1
+```
+
+Compile check:
+
+```bash
+PYTHONPYCACHEPREFIX=/private/tmp/gensr_pycache \
+/opt/miniconda3/envs/gensr/bin/python3 -m py_compile \
+  scripts/analyze_p2_admitted_candidate_scoring.py \
+  scripts/normalized_drift_admission.py \
+  sde_fingerprint.py \
+  simulator_sde.py \
+  sde_dataset_generator.py \
+  sde_validation_probe.py
+```
+
+Latest result:
+
+```text
+scorer=constant_grid_rolewise_no_multi_u0
+active:weak=1:1
+constant_values=0.25,0.5,1.0,2.0,4.0
+candidate_rows_analyzed=245
+valid_candidate_count=245
+parse_failures=0
+fingerprint_failures=0
+p2_oracle_present=7/7
+p2_oracle_selected=0/7
+p2_oracle_score_misses=7/7
+combined_selected_from_p2=3
+combined_selected_from_current=4
+median_p2_oracle_rank=4
+max_p2_oracle_rank=32
+near_gap_counts:
+  <=0.005: 0
+  <=0.01: 0
+  <=0.05: 0
+  <=0.10: 2
+decision=B
+```
+
+Next step should be a targeted residual/segment diagnostic for the 7 P2 oracle
+score misses. Do not run formal eval or integrate P2 admission into eval yet.

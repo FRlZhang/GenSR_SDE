@@ -17,11 +17,18 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
+import numpy as np
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
 SCRIPT_DIR = Path(__file__).resolve().parent
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 from normalized_drift_admission import canonicalize_constant_chains, token_text
+from sde_fingerprint import FingerprintConfig
+from sde_validation_probe import score_candidate_system, template_tokens
 
 
 TARGET_FINGERPRINT_ALIASES = {
@@ -42,11 +49,12 @@ SCORER_SCORE_ALIASES = {
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--p2-coverage-json", type=Path, required=True)
-    parser.add_argument("--expanded-coverage-json", type=Path, required=True)
-    parser.add_argument("--baseline-coverage-json", type=Path, required=True)
-    parser.add_argument("--drift-only-json", type=Path, required=True)
-    parser.add_argument("--target-samples", type=str, required=True)
+    parser.add_argument("--scorer-ready-json", type=Path, default=None)
+    parser.add_argument("--p2-coverage-json", type=Path, default=None)
+    parser.add_argument("--expanded-coverage-json", type=Path, default=None)
+    parser.add_argument("--baseline-coverage-json", type=Path, default=None)
+    parser.add_argument("--drift-only-json", type=Path, default=None)
+    parser.add_argument("--target-samples", type=str, default="")
     parser.add_argument("--report", type=Path, required=True)
     parser.add_argument("--json-output", type=Path, required=True)
     return parser.parse_args()
@@ -278,8 +286,507 @@ def build_markdown(result: dict[str, Any]) -> str:
     return "\n".join(lines) + "\n"
 
 
+def json_ready(value: Any) -> Any:
+    if isinstance(value, np.ndarray):
+        return value.astype(float).tolist()
+    if isinstance(value, np.integer):
+        return int(value)
+    if isinstance(value, np.floating):
+        number = float(value)
+        return number if np.isfinite(number) else None
+    if isinstance(value, float):
+        return value if np.isfinite(value) else None
+    if isinstance(value, dict):
+        return {str(key): json_ready(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [json_ready(item) for item in value]
+    return value
+
+
+def target_array(sample: dict[str, Any]) -> np.ndarray:
+    payload = sample.get("target_y_to_fit") or sample.get("target_fingerprint")
+    if not isinstance(payload, dict) or not isinstance(payload.get("flat"), list):
+        raise ValueError(f"sample {sample.get('sample_index')} missing target_y_to_fit")
+    shape = payload.get("shape") or [len(payload["flat"])]
+    return np.asarray(payload["flat"], dtype=np.float64).reshape(shape)
+
+
+def score_seed(sample_index: int, candidate_index: int, base_seed: int = 20260612) -> int:
+    return base_seed + sample_index * 1009 + candidate_index
+
+
+def is_canonical_oracle(row: dict[str, Any]) -> bool:
+    return bool(row.get("is_truth_drift_canonical") and row.get("is_truth_diffusion_exact"))
+
+
+def score_row(
+    row: dict[str, Any],
+    sample_index: int,
+    candidate_index: int,
+    target_y: np.ndarray,
+    config: FingerprintConfig,
+) -> dict[str, Any]:
+    words = row.get("full_sequence_tokens") or []
+    out = {
+        "candidate_id": row.get("candidate_id"),
+        "candidate_source": row.get("candidate_source"),
+        "full_sequence_tokens": words,
+        "full_sequence_string": row.get("full_sequence_string") or " ".join(words),
+        "drift_source": row.get("drift_source"),
+        "diffusion_source": row.get("diffusion_source"),
+        "drift_rank": row.get("drift_rank"),
+        "diffusion_rank": row.get("diffusion_rank"),
+        "pair_rank": row.get("pair_rank"),
+        "is_truth_drift_canonical": bool(row.get("is_truth_drift_canonical")),
+        "is_truth_diffusion_exact": bool(row.get("is_truth_diffusion_exact")),
+        "is_p2_canonical_oracle": bool(row.get("is_p2_canonical_oracle")),
+        "is_oracle_like": is_canonical_oracle(row),
+        "parse_ready_bool": bool(row.get("parse_ready_bool")),
+        "valid_bool": False,
+        "failure_reason": None,
+        "score": None,
+        "active_score": None,
+        "weak_score": None,
+        "full_score": None,
+        "multi_u0_score": None,
+        "best_constant": None,
+        "best_drift_constant": None,
+        "best_diffusion_constant": None,
+        "fingerprint_failures": 0,
+    }
+    details, failure_reason, fingerprint_failures = score_candidate_system(
+        words,
+        target_y,
+        config,
+        "constant_grid_rolewise_no_multi_u0",
+        (1.0, 2.0, 1.0),
+        [0.25, 0.5, 1.0, 2.0, 4.0],
+        score_seed(sample_index, candidate_index),
+    )
+    out["failure_reason"] = failure_reason
+    out["fingerprint_failures"] = fingerprint_failures
+    if details is None:
+        return out
+    out.update(
+        {
+            "valid_bool": True,
+            "score": details["distance"],
+            "active_score": details["active_kramers_moyal_distance"],
+            "weak_score": details["gaussian_weak_kernel_distance"],
+            "full_score": details["full_distance"],
+            "multi_u0_score": details["multi_u0_moments_distance"],
+            "best_constant": details["best_constant"],
+            "best_drift_constant": details["best_drift_constant"],
+            "best_diffusion_constant": details["best_diffusion_constant"],
+        }
+    )
+    return out
+
+
+def finite_score(row: dict[str, Any]) -> bool:
+    score = row.get("score")
+    return score is not None and np.isfinite(score)
+
+
+def rank_scored(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    return sorted(
+        rows,
+        key=lambda row: (
+            not finite_score(row),
+            row["score"] if row.get("score") is not None else float("inf"),
+            row.get("candidate_source") or "",
+            row.get("candidate_id") or "",
+        ),
+    )
+
+
+def best_summary(row: dict[str, Any] | None) -> dict[str, Any] | None:
+    if row is None:
+        return None
+    return {
+        "candidate_id": row.get("candidate_id"),
+        "candidate_source": row.get("candidate_source"),
+        "sequence": row.get("full_sequence_tokens"),
+        "sequence_string": row.get("full_sequence_string"),
+        "score": row.get("score"),
+        "active_score": row.get("active_score"),
+        "weak_score": row.get("weak_score"),
+        "best_drift_constant": row.get("best_drift_constant"),
+        "best_diffusion_constant": row.get("best_diffusion_constant"),
+        "drift_source": row.get("drift_source"),
+        "diffusion_source": row.get("diffusion_source"),
+        "drift_rank": row.get("drift_rank"),
+        "diffusion_rank": row.get("diffusion_rank"),
+        "pair_rank": row.get("pair_rank"),
+        "is_p2_canonical_oracle": row.get("is_p2_canonical_oracle"),
+        "is_oracle_like": row.get("is_oracle_like"),
+    }
+
+
+def pool_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    valid = [row for row in rows if row.get("valid_bool")]
+    parse_failures = sum(1 for row in rows if row.get("failure_reason") == "parse_failed")
+    fingerprint_failures = sum(
+        1
+        for row in rows
+        if row.get("failure_reason")
+        and row.get("failure_reason") != "parse_failed"
+        and not row.get("valid_bool")
+    )
+    best = rank_scored(valid)[0] if valid else None
+    return {
+        "candidate_count": len(rows),
+        "valid_count": len(valid),
+        "parse_failures": parse_failures,
+        "fingerprint_failures": fingerprint_failures,
+        "best_candidate": best_summary(best),
+    }
+
+
+def percentile_summary(values: list[float]) -> dict[str, float | None]:
+    finite = [float(value) for value in values if value is not None and np.isfinite(value)]
+    if not finite:
+        return {"min": None, "median": None, "max": None}
+    return {
+        "min": min(finite),
+        "median": statistics.median(finite),
+        "max": max(finite),
+    }
+
+
+def sample_scoring_summary(sample: dict[str, Any], config: FingerprintConfig) -> dict[str, Any]:
+    sample_index = int(sample["sample_index"])
+    target_y = target_array(sample)
+    scored = [
+        score_row(row, sample_index, candidate_idx, target_y, config)
+        for candidate_idx, row in enumerate(sample.get("candidates", []), start=1)
+    ]
+    current_rows = [row for row in scored if row.get("candidate_source") == "current_expanded"]
+    p2_rows = [row for row in scored if row.get("candidate_source") == "p2_admitted"]
+    combined_valid_ranked = rank_scored([row for row in scored if row.get("valid_bool")])
+    selected = combined_valid_ranked[0] if combined_valid_ranked else None
+
+    p2_oracles = [row for row in scored if row.get("is_p2_canonical_oracle")]
+    p2_oracle = rank_scored(p2_oracles)[0] if p2_oracles else None
+    combined_rank = None
+    if p2_oracle is not None:
+        for rank, row in enumerate(combined_valid_ranked, start=1):
+            if row.get("candidate_id") == p2_oracle.get("candidate_id"):
+                combined_rank = rank
+                break
+    selected_score = selected.get("score") if selected else None
+    p2_score = p2_oracle.get("score") if p2_oracle else None
+    score_gap = None
+    active_gap = None
+    weak_gap = None
+    if selected is not None and p2_oracle is not None and selected_score is not None and p2_score is not None:
+        score_gap = p2_score - selected_score
+        active_gap = p2_oracle.get("active_score") - selected.get("active_score")
+        weak_gap = p2_oracle.get("weak_score") - selected.get("weak_score")
+    near_gap = {
+        str(threshold): score_gap is not None and abs(score_gap) <= threshold
+        for threshold in (0.005, 0.01, 0.05, 0.10)
+    }
+    p2_oracle_selected = bool(
+        selected is not None
+        and p2_oracle is not None
+        and selected.get("candidate_id") == p2_oracle.get("candidate_id")
+    )
+    if p2_oracle_selected:
+        miss_reason = "selected_p2_oracle"
+    elif not p2_oracles:
+        miss_reason = "p2_oracle_missing"
+    elif p2_oracle is not None and not p2_oracle.get("valid_bool") and p2_oracle.get("failure_reason") == "parse_failed":
+        miss_reason = "parse_failure"
+    elif p2_oracle is not None and not p2_oracle.get("valid_bool"):
+        miss_reason = "fingerprint_failure"
+    else:
+        miss_reason = "p2_oracle_present_but_score_miss"
+
+    current_summary = pool_summary(current_rows)
+    p2_summary = pool_summary(p2_rows)
+    combined_summary = pool_summary(scored)
+    current_best = current_summary["best_candidate"]
+    p2_best = p2_summary["best_candidate"]
+    return {
+        "sample_index": sample_index,
+        "truth_sequence": sample.get("truth_sequence"),
+        "truth_drift_tokens": sample.get("truth_drift_tokens"),
+        "truth_diffusion_tokens": sample.get("truth_diffusion_tokens"),
+        "current_expanded": {
+            **current_summary,
+            "selected_is_oracle_bool": bool(current_best and current_best.get("is_oracle_like")),
+        },
+        "p2_admitted": {
+            **p2_summary,
+            "selected_is_p2_oracle_bool": bool(p2_best and p2_best.get("is_p2_canonical_oracle")),
+        },
+        "combined": {
+            **combined_summary,
+            "selected_candidate": best_summary(selected),
+            "selected_sequence": selected.get("full_sequence_tokens") if selected else None,
+            "selected_source": selected.get("candidate_source") if selected else None,
+            "selected_score": selected.get("score") if selected else None,
+            "selected_active_score": selected.get("active_score") if selected else None,
+            "selected_weak_score": selected.get("weak_score") if selected else None,
+            "selected_best_drift_constant": selected.get("best_drift_constant") if selected else None,
+            "selected_best_diffusion_constant": selected.get("best_diffusion_constant") if selected else None,
+        },
+        "p2_oracle": {
+            "present_bool": bool(p2_oracles),
+            "candidate_id": p2_oracle.get("candidate_id") if p2_oracle else None,
+            "source": p2_oracle.get("drift_source") if p2_oracle else None,
+            "drift_rank": p2_oracle.get("drift_rank") if p2_oracle else None,
+            "diffusion_rank": p2_oracle.get("diffusion_rank") if p2_oracle else None,
+            "combined_rank": combined_rank,
+            "score": p2_score,
+            "active_score": p2_oracle.get("active_score") if p2_oracle else None,
+            "weak_score": p2_oracle.get("weak_score") if p2_oracle else None,
+            "best_drift_constant": p2_oracle.get("best_drift_constant") if p2_oracle else None,
+            "best_diffusion_constant": p2_oracle.get("best_diffusion_constant") if p2_oracle else None,
+            "would_be_selected_bool": p2_oracle_selected,
+            "score_gap_vs_selected": score_gap,
+            "active_score_gap_vs_selected": active_gap,
+            "weak_score_gap_vs_selected": weak_gap,
+            "near_gap_bool": near_gap,
+            "miss_reason": miss_reason,
+            "parse_failure": bool(
+                p2_oracle is not None and p2_oracle.get("failure_reason") == "parse_failed"
+            ),
+            "fingerprint_failure": bool(
+                p2_oracle is not None
+                and p2_oracle.get("failure_reason")
+                and p2_oracle.get("failure_reason") != "parse_failed"
+                and not p2_oracle.get("valid_bool")
+            ),
+        },
+        "scored_candidates": scored,
+    }
+
+
+def build_scoring_report(result: dict[str, Any]) -> str:
+    summary = result["summary"]
+    lines = [
+        "# P2 Admitted Candidate Semantic Scoring",
+        "",
+        "## Scorer",
+        "",
+        "`constant_grid_rolewise_no_multi_u0`, active:weak `1:1`, constants `0.25,0.5,1.0,2.0,4.0`, with separate drift/diffusion constants and `multi_u0` excluded.",
+        "",
+        "Lower score is better. No formal eval was run.",
+        "",
+        "## Summary",
+        "",
+        "| Item | Value |",
+        "| --- | ---: |",
+        f"| Target samples analyzed | {summary['target_samples_analyzed']} |",
+        f"| Candidate rows analyzed | {summary['candidate_rows_analyzed']} |",
+        f"| Valid candidates | {summary['valid_candidate_count']} |",
+        f"| Parse failures | {summary['parse_failure_count']} |",
+        f"| Fingerprint failures | {summary['fingerprint_failure_count']} |",
+        f"| P2 oracle present | {summary['p2_oracle_present_count']} |",
+        f"| P2 oracle selected | {summary['p2_oracle_selected_count']} |",
+        f"| P2 oracle score misses | {summary['p2_oracle_score_miss_count']} |",
+        f"| Combined selected from P2 | {summary['combined_selected_from_p2_count']} |",
+        f"| Combined selected from current | {summary['combined_selected_from_current_count']} |",
+        f"| Median P2 oracle rank | {summary['median_p2_oracle_rank']} |",
+        f"| Max P2 oracle rank | {summary['max_p2_oracle_rank']} |",
+        "",
+        "Near-gap counts:",
+        "",
+    ]
+    for threshold, count in summary["near_gap_counts"].items():
+        lines.append(f"- `<= {threshold}`: {count}")
+    lines.extend(
+        [
+            "",
+            f"Score gap summary: `{json.dumps(summary['score_gap_summary'], sort_keys=True)}`",
+            f"Active gap summary: `{json.dumps(summary['active_score_gap_summary'], sort_keys=True)}`",
+            f"Weak gap summary: `{json.dumps(summary['weak_score_gap_summary'], sort_keys=True)}`",
+            "",
+            "## Per-Sample P2 Oracle",
+            "",
+            "| Sample | Selected source | P2 oracle rank | P2 oracle score | Selected score | Gap | Near <=0.10 | Miss reason |",
+            "| ---: | --- | ---: | ---: | ---: | ---: | --- | --- |",
+        ]
+    )
+    for sample in result["samples"]:
+        p2 = sample["p2_oracle"]
+        combined = sample["combined"]
+        lines.append(
+            "| {idx} | {source} | {rank} | {p2_score} | {selected_score} | {gap} | {near} | {reason} |".format(
+                idx=sample["sample_index"],
+                source=combined.get("selected_source"),
+                rank=p2.get("combined_rank"),
+                p2_score=format_optional(p2.get("score")),
+                selected_score=format_optional(combined.get("selected_score")),
+                gap=format_optional(p2.get("score_gap_vs_selected")),
+                near=p2.get("near_gap_bool", {}).get("0.1"),
+                reason=p2.get("miss_reason"),
+            )
+        )
+    lines.extend(
+        [
+            "",
+            "## Decision",
+            "",
+            f"Decision `{summary['decision']}`: {summary['recommendation']}",
+            "",
+            "No formal eval is recommended unless a later small eval-integration smoke improves selected behavior.",
+        ]
+    )
+    return "\n".join(lines) + "\n"
+
+
+def run_scorer_ready_mode(args: argparse.Namespace) -> None:
+    sidecar = load_json(args.scorer_ready_json)
+    target_samples = parse_target_samples(args.target_samples)
+    if not target_samples:
+        target_samples = sidecar.get("metadata", {}).get("target_samples_included", [])
+    samples_by_index = {
+        int(sample["sample_index"]): sample
+        for sample in sidecar.get("samples", [])
+    }
+    config = FingerprintConfig(n_paths=800, n_steps=60, active_paths=800)
+    sample_results = [
+        sample_scoring_summary(samples_by_index[idx], config)
+        for idx in target_samples
+    ]
+    all_candidates = [
+        candidate
+        for sample in sample_results
+        for candidate in sample.get("scored_candidates", [])
+    ]
+    valid_candidates = [candidate for candidate in all_candidates if candidate.get("valid_bool")]
+    p2_oracles = [sample["p2_oracle"] for sample in sample_results]
+    score_gaps = [
+        p2["score_gap_vs_selected"]
+        for p2 in p2_oracles
+        if p2.get("score_gap_vs_selected") is not None
+    ]
+    active_gaps = [
+        p2["active_score_gap_vs_selected"]
+        for p2 in p2_oracles
+        if p2.get("active_score_gap_vs_selected") is not None
+    ]
+    weak_gaps = [
+        p2["weak_score_gap_vs_selected"]
+        for p2 in p2_oracles
+        if p2.get("weak_score_gap_vs_selected") is not None
+    ]
+    p2_ranks = [
+        p2["combined_rank"]
+        for p2 in p2_oracles
+        if p2.get("combined_rank") is not None
+    ]
+    near_gap_counts = {
+        str(threshold): sum(
+            1
+            for p2 in p2_oracles
+            if p2.get("score_gap_vs_selected") is not None
+            and abs(p2["score_gap_vs_selected"]) <= threshold
+        )
+        for threshold in (0.005, 0.01, 0.05, 0.10)
+    }
+    p2_selected = sum(1 for p2 in p2_oracles if p2.get("would_be_selected_bool"))
+    p2_present = sum(1 for p2 in p2_oracles if p2.get("present_bool"))
+    parse_failures = sum(1 for candidate in all_candidates if candidate.get("failure_reason") == "parse_failed")
+    fingerprint_failures = sum(
+        1
+        for candidate in all_candidates
+        if candidate.get("failure_reason")
+        and candidate.get("failure_reason") != "parse_failed"
+        and not candidate.get("valid_bool")
+    )
+    if parse_failures or fingerprint_failures:
+        decision = "C"
+        recommendation = "Fix candidate serialization or fingerprint failures before scoring/eval integration."
+    elif p2_selected or near_gap_counts["0.1"] >= max(1, p2_present // 2):
+        decision = "A"
+        recommendation = "P2 oracle candidates are selected or often near-selected; a future small eval-integration smoke may be justified."
+    else:
+        decision = "B"
+        recommendation = "P2 oracle candidates are present but mostly lose under current scorer; diagnose residual/segment behavior before eval integration."
+    result = {
+        "metadata": {
+            "scorer_ready_json": str(args.scorer_ready_json),
+            "scorer": "constant_grid_rolewise_no_multi_u0",
+            "component_weights": [1.0, 2.0, 1.0],
+            "effective_active_weak_weights": [1.0, 1.0],
+            "constant_values": [0.25, 0.5, 1.0, 2.0, 4.0],
+            "fingerprint_config": {
+                "n_paths": 800,
+                "active_paths": 800,
+                "n_steps": 60,
+            },
+            "semantic_scoring_mode": "offline_sidecar_only",
+            "formal_eval_run": False,
+        },
+        "summary": {
+            "target_samples_analyzed": len(sample_results),
+            "target_samples": target_samples,
+            "candidate_rows_analyzed": len(all_candidates),
+            "valid_candidate_count": len(valid_candidates),
+            "parse_failure_count": parse_failures,
+            "fingerprint_failure_count": fingerprint_failures,
+            "p2_oracle_present_count": p2_present,
+            "p2_oracle_selected_count": p2_selected,
+            "p2_oracle_score_miss_count": sum(
+                1
+                for p2 in p2_oracles
+                if p2.get("miss_reason") == "p2_oracle_present_but_score_miss"
+            ),
+            "p2_oracle_parse_failure_count": sum(1 for p2 in p2_oracles if p2.get("parse_failure")),
+            "p2_oracle_fingerprint_failure_count": sum(1 for p2 in p2_oracles if p2.get("fingerprint_failure")),
+            "combined_selected_from_p2_count": sum(
+                1
+                for sample in sample_results
+                if sample["combined"].get("selected_source") == "p2_admitted"
+            ),
+            "combined_selected_from_current_count": sum(
+                1
+                for sample in sample_results
+                if sample["combined"].get("selected_source") == "current_expanded"
+            ),
+            "median_p2_oracle_rank": statistics.median(p2_ranks) if p2_ranks else None,
+            "max_p2_oracle_rank": max(p2_ranks) if p2_ranks else None,
+            "near_gap_counts": near_gap_counts,
+            "score_gap_summary": percentile_summary(score_gaps),
+            "active_score_gap_summary": percentile_summary(active_gaps),
+            "weak_score_gap_summary": percentile_summary(weak_gaps),
+            "decision": decision,
+            "recommendation": recommendation,
+            "formal_eval_recommended": False,
+        },
+        "samples": sample_results,
+    }
+    args.json_output.write_text(json.dumps(json_ready(result), indent=2, sort_keys=True) + "\n")
+    args.report.write_text(build_scoring_report(json_ready(result)))
+    print(f"decision={decision}")
+    print(f"candidate_rows_analyzed={len(all_candidates)}")
+    print(f"valid_candidate_count={len(valid_candidates)}")
+    print(f"parse_failure_count={parse_failures}")
+    print(f"fingerprint_failure_count={fingerprint_failures}")
+    print(f"p2_oracle_selected_count={p2_selected}")
+
+
 def main() -> None:
     args = parse_args()
+    if args.scorer_ready_json is not None:
+        run_scorer_ready_mode(args)
+        return
+    required = [
+        ("--p2-coverage-json", args.p2_coverage_json),
+        ("--expanded-coverage-json", args.expanded_coverage_json),
+        ("--baseline-coverage-json", args.baseline_coverage_json),
+        ("--drift-only-json", args.drift_only_json),
+        ("--target-samples", args.target_samples),
+    ]
+    missing = [name for name, value in required if not value]
+    if missing:
+        raise SystemExit(
+            "readiness-only mode requires " + ", ".join(missing)
+        )
     p2_coverage = load_json(args.p2_coverage_json)
     expanded = load_json(args.expanded_coverage_json)
     baseline = load_json(args.baseline_coverage_json)

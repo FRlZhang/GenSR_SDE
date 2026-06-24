@@ -2,8 +2,8 @@
 
 ## Next Engineering Task
 
-Decide the next offline semantic scoring diagnostic for P2 admitted candidates
-after scorer-ready sidecar logging validated with decision `A`. Do not widen
+Decide the next residual/segment diagnostic for the 7 P2 oracle score misses
+after offline semantic scoring selected 0/7 P2 oracle candidates. Do not widen
 drift beam/top-k or change production candidate-generation defaults from this
 coverage-only result alone.
 The drift-only smoke is complete: exact drift appears in only `3/17` targets,
@@ -26,9 +26,11 @@ The JSON-only P2 admitted-candidate scoring readiness diagnostic found that the
 semantic-scoring-ready from existing JSON: exact diffusion is present and the
 P2 canonical oracle drift is beam-source rank 5 for each sample, but target
 `y_to_fit` / fingerprint vectors are missing.
-The minimal logging gap has now been fixed: `scripts/analyze_candidate_coverage.py`
-has default-off `--scorer-ready-json` and `--scorer-ready-target-samples`, and
-`p2_scorer_ready_candidates.json` validates with decision `A`.
+The minimal logging gap has now been fixed:
+`scripts/analyze_candidate_coverage.py` has default-off `--scorer-ready-json`
+and `--scorer-ready-target-samples`, and `p2_scorer_ready_candidates.json`
+validates with decision `A`. Offline semantic scoring on that sidecar is now
+complete and selects 0/7 P2 oracle candidates.
 
 Current strongest no-retraining decoding setting:
 
@@ -409,9 +411,10 @@ pressure. The hook is now cross-validated and integrated behind a default-off
 coverage-only candidate coverage flag, and the runtime path now matches the
 prior validation. A follow-up scorer-ready sidecar logging run now provides
 target fingerprint / `y_to_fit` fields and full candidate rows for the 7 P2
-newly recovered samples, but this is still not selected-rerank evidence. The
-next useful step can be offline semantic scoring of the sidecar candidates,
-not naive global beam/top-k expansion or formal eval.
+newly recovered samples. Offline semantic scoring now shows all 7 P2 oracle
+candidates lose under the current scorer, so the next useful step is a targeted
+residual/segment diagnostic, not naive global beam/top-k expansion or formal
+eval.
 
 Do not launch formal eval from these diagnostics. Exact-tail admission alone is
 weak and expensive-looking because all exact hits are rank-30 beam cases.

@@ -2,6 +2,72 @@
 
 ## Last Codex Workflow
 
+Codex extended `scripts/analyze_p2_admitted_candidate_scoring.py` to score the
+P2 scorer-ready sidecar offline:
+
+```text
+p2_scorer_ready_candidates.json
+p2_admitted_candidate_semantic_scoring.md
+p2_admitted_candidate_semantic_scoring.json
+/private/tmp/gensr_sde_p2_admitted_candidate_semantic_scoring.log
+```
+
+This used:
+
+```text
+scorer=constant_grid_rolewise_no_multi_u0
+active:weak=1:1
+constant_values=0.25,0.5,1.0,2.0,4.0
+multi_u0 excluded
+role-wise drift/diffusion constants
+```
+
+No model decoding, candidate generation/regeneration, formal 32-sample eval,
+64-sample eval, retraining, scorer grids, active/weak grids, checkpoint/data
+changes, target-format changes, fingerprint schema changes, production default
+changes, or new rerank mode were run.
+
+Result:
+
+```text
+target_samples=0,2,6,7,15,25,29
+candidate_rows_analyzed=245
+valid_candidate_count=245
+parse_failures=0
+fingerprint_failures=0
+p2_oracle_present=7/7
+p2_oracle_selected=0/7
+p2_oracle_score_misses=7/7
+combined_selected_from_p2=3
+combined_selected_from_current=4
+median_p2_oracle_rank=4
+max_p2_oracle_rank=32
+near_gap_counts:
+  <=0.005: 0
+  <=0.01: 0
+  <=0.05: 0
+  <=0.10: 2
+score_gap_summary:
+  min=0.06083171418627509
+  median=0.16399053942537534
+  max=1.4305316842684028
+decision=B
+```
+
+Interpretation: P2 oracle candidates are present and scoreable, but the current
+semantic scorer does not select any of them. P2 admission is not
+eval-integration-ready yet. Next recommended action is a targeted
+residual/segment diagnostic for these 7 P2 oracle score misses, not formal eval.
+
+Verification:
+
+```text
+py_compile scripts/analyze_p2_admitted_candidate_scoring.py scripts/normalized_drift_admission.py sde_fingerprint.py simulator_sde.py sde_dataset_generator.py sde_validation_probe.py: passed
+offline semantic scoring helper: passed
+```
+
+## Previous Codex Workflow
+
 Codex added default-off P2 scorer-ready sidecar logging and validation:
 
 ```text
