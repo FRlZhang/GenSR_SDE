@@ -2,8 +2,8 @@
 
 ## Next Engineering Task
 
-Plan a future optional coverage-only candidate-coverage pipeline flag for the
-validated reusable `P2_one_per_family` normalized drift admission hook before
+Plan a future small local coverage-only run of the explicit
+`--normalized-drift-admission p2_one_per_family` candidate coverage flag before
 widening drift beam/top-k or changing production candidate-generation defaults.
 The drift-only smoke is complete: exact drift appears in only `3/17` targets,
 all beam rank-30 nested-mul linear cases. Candidate-normalization folding is
@@ -11,10 +11,11 @@ complete in helper-only mode: current expanded-pool folding projects `23/32`,
 exact-tail admission projects `18/32`, full normalized drift-only admission
 projects `30/32` with pair count `1105`, capped `P2_one_per_family` preserves
 `30/32` with pair count `340`, and the reusable hook reproduces those numbers
-with strict self-checks. The P2 hook cross-validation is complete:
-metric_cross_check_status `ok`, schema_status `ok`, canonicalizer_safety_status
-`ok`, zero mismatches, decision `A`. Residual-debug safety checks do not support
-continuing scorer-side normalization or adding a new rerank mode.
+with strict self-checks. The candidate coverage pipeline now has a default-off
+P2 flag, validated from existing JSON with metric_cross_check_status `ok`,
+schema_status `ok`, canonicalizer_safety_status `ok`, zero mismatches, decision
+`A`. Residual-debug safety checks do not support continuing scorer-side
+normalization or adding a new rerank mode.
 
 Current strongest no-retraining decoding setting:
 
@@ -331,12 +332,30 @@ mismatch_count=0
 decision=A
 ```
 
+Candidate coverage P2 flag integration:
+
+```text
+script=scripts/validate_candidate_coverage_p2_flag.py
+report=candidate_coverage_p2_flag_validation.md
+json=candidate_coverage_p2_flag_validation.json
+new_flag=--normalized-drift-admission none|p2_one_per_family
+default=none
+source_flag=--normalized-drift-admission-source beam
+metric_cross_check_status=ok
+schema_status=ok
+canonicalizer_safety_status=ok
+mismatch_count=0
+model_backed_candidate_generation_avoided=True
+decision=A
+```
+
 Interpretation: current expanded-pool canonicalization helps but is not enough,
 full normalized drift-only admission is too high-pressure to adopt wholesale,
 and `P2_one_per_family` preserves the coverage ceiling with much lower pair
-pressure. The hook is now cross-validated and remains coverage-only; the next
-useful step is an optional coverage-only candidate-coverage pipeline integration
-flag, not naive global beam/top-k expansion and not formal eval.
+pressure. The hook is now cross-validated and integrated behind a default-off
+coverage-only candidate coverage flag; the next useful step is a future small
+local coverage-only run of the explicit flag, not naive global beam/top-k
+expansion and not formal eval.
 
 Do not launch formal eval from these diagnostics. Exact-tail admission alone is
 weak and expensive-looking because all exact hits are rank-30 beam cases.

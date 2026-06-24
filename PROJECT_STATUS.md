@@ -88,11 +88,21 @@ consistent with the previous capped, normalized-admission, normalization,
 drift-only, and expanded-coverage diagnostics: all expected metrics match,
 schema is sufficient for future coverage-pipeline integration, canonicalizer
 safety checks pass, and decision `A` recommends a future optional coverage-only
-integration flag rather than formal eval.
+integration flag rather than formal eval. The candidate coverage pipeline now
+has that default-off optional flag:
+`--normalized-drift-admission none|p2_one_per_family`, with default `none` and
+default source `beam`. The integration reuses
+`scripts/normalized_drift_admission.py`, avoids independent canonicalizer
+duplication, and was validated from existing JSON only. The validation report
+matches the P2 hook metrics exactly (`15/32`, `23/32`, `30/32`, pair count
+`340`, newly recovered `0,2,6,7,15,25,29`, remaining `16,28`), with schema and
+canonicalizer safety status `ok`; no model-backed candidate regeneration or
+formal eval was run. A future small local coverage-only run can exercise the
+flag end to end, but this still should not change production defaults.
 
 ## Last Updated
 
-2026-06-23
+2026-06-24
 
 ## Completed
 
@@ -414,6 +424,18 @@ integration flag rather than formal eval.
   It validates six JSON reports, recomputes P2 from source JSON through the
   reusable hook, and confirms metric cross-check status `ok`, schema status
   `ok`, canonicalizer safety status `ok`, zero mismatches, and decision `A`.
+- Integrated the validated P2 hook into
+  [scripts/analyze_candidate_coverage.py](/Users/lzhang/Documents/GenSR_SDE/scripts/analyze_candidate_coverage.py)
+  behind the default-off `--normalized-drift-admission none|p2_one_per_family`
+  flag, plus `--normalized-drift-admission-source beam`. Added
+  [scripts/validate_candidate_coverage_p2_flag.py](/Users/lzhang/Documents/GenSR_SDE/scripts/validate_candidate_coverage_p2_flag.py)
+  and wrote
+  [candidate_coverage_p2_flag_validation.md](/Users/lzhang/Documents/GenSR_SDE/candidate_coverage_p2_flag_validation.md)
+  /
+  [candidate_coverage_p2_flag_validation.json](/Users/lzhang/Documents/GenSR_SDE/candidate_coverage_p2_flag_validation.json).
+  The JSON-only validation confirms metric cross-check status `ok`, schema
+  status `ok`, canonicalizer safety status `ok`, zero mismatches, and decision
+  `A`. No model-backed candidate generation was run.
 - Logged validated experiments in
   [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md).
 
@@ -421,10 +443,11 @@ integration flag rather than formal eval.
 
 - Transitioning from "can the model learn the fingerprint?" to "can we decode
   the right symbolic sequence?".
-- Planning a future optional coverage-only candidate-coverage pipeline flag for
-  the validated reusable `P2_one_per_family` hook. Do not treat this as
-  selected-rerank evidence or a production default change. Residual-debug safety
-  checks do not support continuing scorer-side normalization.
+- Planning a future small local coverage-only run of the explicit
+  `--normalized-drift-admission p2_one_per_family` candidate-coverage flag. Do
+  not treat this as selected-rerank evidence or a production default change.
+  Residual-debug safety checks do not support continuing scorer-side
+  normalization.
 - The 2000-step role-token checkpoint has been restored in `/private/tmp` and
   backed up under `checkpoints/`; model weights remain ignored by git.
 
@@ -454,10 +477,10 @@ integration flag rather than formal eval.
    expanded-pairing 16-sample smoke had 5 oracle samples, 0 selected hits, and
    0/5 offline miss rescues, so do not run a formal 32-sample eval for this
    scorer idea.
-9. Prefer a small coverage-only integration flag for the validated reusable
-   `P2_one_per_family` hook before widening beam/top-k. It preserves the
-   `30/32` diagnostic ceiling with target pair count `340`, versus `1105` for
-   full normalized admission.
+9. Prefer a future small local coverage-only run of the default-off
+   `--normalized-drift-admission p2_one_per_family` flag before widening
+   beam/top-k. It preserves the `30/32` diagnostic ceiling with target pair
+   count `340`, versus `1105` for full normalized admission in JSON validation.
 10. Do not run formal eval from the drift-only or constant-folding diagnostics;
    they are oracle-coverage diagnostics, not selected-recovery evidence.
 11. Keep drift/diffusion pairing enabled and tune candidate pool size carefully

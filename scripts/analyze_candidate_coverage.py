@@ -36,6 +36,19 @@ from sde_validation_probe import (
     template_tokens,
 )
 from symbolicregression.trainer_vae import Trainer
+from normalized_drift_admission import (
+    build_p2_normalized_admission_pool,
+    canonicalize_constant_chains,
+    collision_summary,
+    current_expanded_drift_rows,
+    drift_only_candidate_rows,
+    safety_checks,
+)
+
+
+NORMALIZED_DRIFT_ADMISSION_POLICIES = ("none", "p2_one_per_family")
+DEFAULT_NORMALIZED_DRIFT_ADMISSION = "none"
+DEFAULT_NORMALIZED_DRIFT_ADMISSION_SOURCE = "beam"
 
 
 def parse_args() -> argparse.Namespace:
@@ -79,6 +92,24 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--save-checkpoint", type=Path, default=None)
     parser.add_argument("--eval-only", action="store_true", default=True)
     parser.add_argument("--checkpoint-include-optimizer", action="store_true")
+    parser.add_argument(
+        "--normalized-drift-admission",
+        choices=NORMALIZED_DRIFT_ADMISSION_POLICIES,
+        default=DEFAULT_NORMALIZED_DRIFT_ADMISSION,
+        help="Coverage-only normalized drift admission diagnostic. Default keeps existing output unchanged.",
+    )
+    parser.add_argument(
+        "--drift-only-json",
+        type=Path,
+        default=None,
+        help="Required when --normalized-drift-admission is enabled.",
+    )
+    parser.add_argument(
+        "--normalized-drift-admission-source",
+        choices=["beam", "all"],
+        default=DEFAULT_NORMALIZED_DRIFT_ADMISSION_SOURCE,
+        help="Source filter for normalized drift admission; beam matches validated P2 diagnostics.",
+    )
     return parser.parse_args()
 
 
@@ -185,6 +216,140 @@ def source_set_string(sources: set[str]) -> str:
     if not sources:
         return "-"
     return ",".join(sorted(sources))
+
+
+def load_json(path: Path) -> dict:
+    if not path.is_file():
+        raise FileNotFoundError(path)
+    return json.loads(path.read_text())
+
+
+def p2_source_breakdown(samples: list[dict]) -> dict[str, int]:
+    counts = Counter()
+    for sample in samples:
+        if not sample.get("p2_normalized_full_oracle"):
+            continue
+        truth_key = tuple(sample.get("canonical_truth_drift_tokens") or [])
+        sources = {
+            row.get("source")
+            for row in sample.get("admitted_candidates", [])
+            if tuple(row.get("canonical_drift_tokens", [])) == truth_key and row.get("source")
+        }
+        if sources:
+            counts["+".join(sorted(sources))] += 1
+    return dict(counts)
+
+
+def p2_sampling_recovery_count(samples: list[dict]) -> int:
+    count = 0
+    for sample in samples:
+        truth_key = tuple(sample.get("canonical_truth_drift_tokens") or [])
+        if any(
+            row.get("source") == "sampling"
+            and tuple(row.get("canonical_drift_tokens", [])) == truth_key
+            for row in sample.get("admitted_candidates", [])
+        ):
+            count += 1
+    return count
+
+
+def build_normalized_drift_admission_block(
+    coverage_payload: dict,
+    drift_only_payload: dict,
+    policy: str = "p2_one_per_family",
+    source: str = DEFAULT_NORMALIZED_DRIFT_ADMISSION_SOURCE,
+) -> dict:
+    if policy != "p2_one_per_family":
+        raise ValueError(f"unsupported normalized drift admission policy: {policy}")
+
+    include_sampling = source == "all"
+    pool = build_p2_normalized_admission_pool(
+        coverage_payload,
+        drift_only_payload,
+        admission_source=source,
+        include_sampling=include_sampling,
+    )
+    target_samples = pool["samples"]
+    current_full = sum(1 for sample in coverage_payload["samples"] if sample.get("has_full"))
+    current_canonical_hits = [sample for sample in target_samples if sample["current_canonical_full_oracle"]]
+    p2_hits = [sample for sample in target_samples if sample["p2_normalized_full_oracle"]]
+    newly = [
+        sample["sample_index"]
+        for sample in p2_hits
+        if not sample["current_canonical_full_oracle"]
+    ]
+    remaining = [sample["sample_index"] for sample in target_samples if not sample["p2_normalized_full_oracle"]]
+    family_counts = Counter(sample["drift_family"] for sample in p2_hits)
+
+    expanded_by_index = {sample["sample_index"]: sample for sample in coverage_payload["samples"]}
+    all_rows = []
+    polynomial_truths = []
+    for drift_sample in drift_only_payload["samples"]:
+        sample_idx = drift_sample["sample_index"]
+        expanded_sample = expanded_by_index[sample_idx]
+        if drift_sample.get("drift_family") == "polynomial-like drift":
+            polynomial_truths.append(expanded_sample["truth_drift"])
+        all_rows.extend(current_expanded_drift_rows(expanded_sample))
+        all_rows.extend(drift_only_candidate_rows(drift_sample, include_sampling=True))
+    safety = collision_summary(all_rows, polynomial_truths)
+    safety["self_checks"] = safety_checks()
+
+    admitted_by_sample = {
+        sample["sample_index"]: [
+            {
+                "raw_drift_tokens": row.get("raw_drift_tokens"),
+                "canonical_drift_tokens": row.get("canonical_drift_tokens"),
+                "source": row.get("source"),
+                "rank": row.get("source_rank"),
+                "family": row.get("family"),
+                "filter_reason": row.get("filter_reason"),
+            }
+            for row in sample.get("admitted_candidates", [])
+        ]
+        for sample in target_samples
+    }
+    return {
+        "policy": policy,
+        "source": source,
+        "sampling_excluded": not include_sampling,
+        "target_oracle_absent_samples_analyzed": len(target_samples),
+        "current_expanded_full_oracle": current_full,
+        "canonicalized_expanded_pool_coverage": current_full + len(current_canonical_hits),
+        "p2_normalized_admission_coverage": current_full + len(p2_hits),
+        "p2_pair_count": sum(sample["pair_count"] for sample in target_samples),
+        "newly_recovered": newly,
+        "remaining_missing": remaining,
+        "sampling_recovered_canonical_drift_count": p2_sampling_recovery_count(target_samples),
+        "unsafe_collision_flag": bool(safety["unsafe_collision_flag"]),
+        "source_breakdown": p2_source_breakdown(target_samples),
+        "family_breakdown": {
+            family: family_counts.get(family, 0)
+            for family in [
+                "linear drift",
+                "sin drift",
+                "nested-mul linear drift",
+                "polynomial-like drift",
+                "other",
+            ]
+        },
+        "safety": safety,
+        "admitted_candidates_by_sample": admitted_by_sample,
+        "samples": [
+            {
+                "sample_index": sample["sample_index"],
+                "truth_drift_tokens": sample["truth_drift_tokens"],
+                "canonical_truth_drift_tokens": sample["canonical_truth_drift_tokens"],
+                "truth_diffusion_tokens": sample["truth_diffusion_tokens"],
+                "drift_family": sample["drift_family"],
+                "exact_diffusion_present": sample["exact_diffusion_present"],
+                "current_expanded_full_oracle": sample["current_expanded_full_oracle"],
+                "current_canonical_full_oracle": sample["current_canonical_full_oracle"],
+                "p2_normalized_full_oracle": sample["p2_normalized_full_oracle"],
+                "pair_count": sample["pair_count"],
+            }
+            for sample in target_samples
+        ],
+    }
 
 
 def drift_family(tokens: list[str]) -> str:
@@ -532,7 +697,13 @@ def rank_pair_cross_product(
     return None
 
 
-def write_report(path: Path, analyses: list[dict], log_metrics: dict, args: argparse.Namespace) -> None:
+def write_report(
+    path: Path,
+    analyses: list[dict],
+    log_metrics: dict,
+    args: argparse.Namespace,
+    normalized_admission_block: dict | None = None,
+) -> None:
     total = len(analyses)
     full_count = sum(item["has_full"] for item in analyses)
     selected_count = log_metrics.get("selected_count")
@@ -644,6 +815,33 @@ def write_report(path: Path, analyses: list[dict], log_metrics: dict, args: argp
         )
     else:
         lines.append("Full oracle coverage is not the current blocker in this diagnostic.")
+    if normalized_admission_block is not None:
+        lines.extend(
+            [
+                "",
+                "## P2 Normalized Drift Admission",
+                "",
+                "This optional section is coverage-only and uses the reusable normalized drift admission hook. "
+                "It does not run reranking, fingerprint scoring, or candidate generation beyond the current coverage run.",
+                "",
+                "| Metric | Value |",
+                "| --- | ---: |",
+                f"| Policy | `{normalized_admission_block['policy']}` |",
+                f"| Source | `{normalized_admission_block['source']}` |",
+                f"| Current expanded full oracle | `{normalized_admission_block['current_expanded_full_oracle']}/{total}` |",
+                f"| Canonicalized expanded-pool coverage | `{normalized_admission_block['canonicalized_expanded_pool_coverage']}/{total}` |",
+                f"| P2 normalized admission coverage | `{normalized_admission_block['p2_normalized_admission_coverage']}/{total}` |",
+                f"| P2 pair count | `{normalized_admission_block['p2_pair_count']}` |",
+                f"| Newly recovered | `{','.join(str(i) for i in normalized_admission_block['newly_recovered'])}` |",
+                f"| Remaining missing | `{','.join(str(i) for i in normalized_admission_block['remaining_missing'])}` |",
+                f"| Sampling excluded | `{normalized_admission_block['sampling_excluded']}` |",
+                f"| Sampling recovered canonical drift count | `{normalized_admission_block['sampling_recovered_canonical_drift_count']}` |",
+                f"| Unsafe collision flag | `{normalized_admission_block['unsafe_collision_flag']}` |",
+                "",
+                f"- Source breakdown: `{json.dumps(normalized_admission_block['source_breakdown'], sort_keys=True)}`.",
+                f"- Family breakdown: `{json.dumps(normalized_admission_block['family_breakdown'], sort_keys=True)}`.",
+            ]
+        )
     lines.extend(
         [
             "",
@@ -683,6 +881,7 @@ def write_json_sidecar(
     analyses: list[dict],
     log_metrics: dict,
     args: argparse.Namespace,
+    normalized_admission_block: dict | None = None,
 ) -> None:
     payload = {
         "metadata": {
@@ -696,11 +895,15 @@ def write_json_sidecar(
         "log_metrics": log_metrics,
         "samples": analyses,
     }
+    if normalized_admission_block is not None:
+        payload["p2_normalized_admission"] = normalized_admission_block
     path.write_text(json.dumps(json_ready(payload), indent=2, sort_keys=True))
 
 
 def main() -> None:
     args = parse_args()
+    if args.normalized_drift_admission != "none" and args.drift_only_json is None:
+        raise SystemExit("--drift-only-json is required when --normalized-drift-admission is enabled")
     log_metrics = parse_source_log(args.source_log, args.eval_samples)
     trainer = setup_trainer(args)
     fingerprint_config = FingerprintConfig(
@@ -724,9 +927,19 @@ def main() -> None:
                 args.pair_drift_diffusion_candidates,
             )
         )
-    write_report(args.report, analyses, log_metrics, args)
+    normalized_admission_block = None
+    if args.normalized_drift_admission == "p2_one_per_family":
+        coverage_payload = {"samples": json_ready(analyses)}
+        drift_only_payload = load_json(args.drift_only_json)
+        normalized_admission_block = build_normalized_drift_admission_block(
+            coverage_payload,
+            drift_only_payload,
+            policy=args.normalized_drift_admission,
+            source=args.normalized_drift_admission_source,
+        )
+    write_report(args.report, analyses, log_metrics, args, normalized_admission_block)
     json_output = args.json_output or args.report.with_suffix(".json")
-    write_json_sidecar(json_output, analyses, log_metrics, args)
+    write_json_sidecar(json_output, analyses, log_metrics, args, normalized_admission_block)
     full_count = sum(item["has_full"] for item in analyses)
     missing_counts = Counter(item["missing_side"] for item in analyses if not item["has_full"])
     print(f"wrote_report={args.report}")
@@ -736,6 +949,12 @@ def main() -> None:
         "oracle_absent_missing_sides="
         + ",".join(f"{key}:{value}" for key, value in sorted(missing_counts.items()))
     )
+    if normalized_admission_block is not None:
+        print(
+            "p2_normalized_admission_coverage="
+            f"{normalized_admission_block['p2_normalized_admission_coverage']}/{len(analyses)}"
+        )
+        print(f"p2_pair_count={normalized_admission_block['p2_pair_count']}")
 
 
 if __name__ == "__main__":

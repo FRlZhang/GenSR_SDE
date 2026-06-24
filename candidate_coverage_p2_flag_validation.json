@@ -1,0 +1,2220 @@
+{
+  "decision": {
+    "choice": "A",
+    "label": "Pipeline flag is ready for a future small local coverage-only run",
+    "recommended_next_action": "Run a future small local coverage-only candidate coverage command with the explicit P2 flag. No formal eval."
+  },
+  "metrics": {
+    "canonicalized_expanded_pool_coverage": {
+      "expected": 23,
+      "mismatches": [],
+      "ok": true,
+      "sources": [
+        {
+          "field": "canonicalized_expanded_pool_coverage",
+          "ok": true,
+          "report": "pipeline_flag_block",
+          "value": 23
+        },
+        {
+          "field": "summary.canonicalized_expanded_pool_coverage",
+          "ok": true,
+          "report": "candidate_coverage_p2_normalized_admission",
+          "value": 23
+        }
+      ]
+    },
+    "canonicalizer_safety_status": {
+      "expected": "ok",
+      "mismatches": [],
+      "ok": true,
+      "sources": [
+        {
+          "field": "summary.canonicalizer_safety_status",
+          "ok": true,
+          "report": "hook_validation",
+          "value": "ok"
+        }
+      ]
+    },
+    "current_expanded_full_oracle": {
+      "expected": 15,
+      "mismatches": [],
+      "ok": true,
+      "sources": [
+        {
+          "field": "current_expanded_full_oracle",
+          "ok": true,
+          "report": "pipeline_flag_block",
+          "value": 15
+        },
+        {
+          "field": "summary.current_expanded_full_oracle",
+          "ok": true,
+          "report": "candidate_coverage_p2_normalized_admission",
+          "value": 15
+        }
+      ]
+    },
+    "metric_cross_check_status": {
+      "expected": "ok",
+      "mismatches": [],
+      "ok": true,
+      "sources": [
+        {
+          "field": "summary.metric_cross_check_status",
+          "ok": true,
+          "report": "hook_validation",
+          "value": "ok"
+        }
+      ]
+    },
+    "newly_recovered": {
+      "expected": [
+        0,
+        2,
+        6,
+        7,
+        15,
+        25,
+        29
+      ],
+      "mismatches": [],
+      "ok": true,
+      "sources": [
+        {
+          "field": "newly_recovered",
+          "ok": true,
+          "report": "pipeline_flag_block",
+          "value": [
+            0,
+            2,
+            6,
+            7,
+            15,
+            25,
+            29
+          ]
+        },
+        {
+          "field": "summary.newly_recovered_beyond_current",
+          "ok": true,
+          "report": "candidate_coverage_p2_normalized_admission",
+          "value": [
+            0,
+            2,
+            6,
+            7,
+            15,
+            25,
+            29
+          ]
+        }
+      ]
+    },
+    "p2_normalized_admission_coverage": {
+      "expected": 30,
+      "mismatches": [],
+      "ok": true,
+      "sources": [
+        {
+          "field": "p2_normalized_admission_coverage",
+          "ok": true,
+          "report": "pipeline_flag_block",
+          "value": 30
+        },
+        {
+          "field": "summary.p2_normalized_admission_coverage",
+          "ok": true,
+          "report": "candidate_coverage_p2_normalized_admission",
+          "value": 30
+        }
+      ]
+    },
+    "p2_pair_count": {
+      "expected": 340,
+      "mismatches": [],
+      "ok": true,
+      "sources": [
+        {
+          "field": "p2_pair_count",
+          "ok": true,
+          "report": "pipeline_flag_block",
+          "value": 340
+        },
+        {
+          "field": "summary.p2_pair_count",
+          "ok": true,
+          "report": "candidate_coverage_p2_normalized_admission",
+          "value": 340
+        }
+      ]
+    },
+    "remaining_missing": {
+      "expected": [
+        16,
+        28
+      ],
+      "mismatches": [],
+      "ok": true,
+      "sources": [
+        {
+          "field": "remaining_missing",
+          "ok": true,
+          "report": "pipeline_flag_block",
+          "value": [
+            16,
+            28
+          ]
+        },
+        {
+          "field": "summary.remaining_missing_samples",
+          "ok": true,
+          "report": "candidate_coverage_p2_normalized_admission",
+          "value": [
+            16,
+            28
+          ]
+        }
+      ]
+    },
+    "sampling_excluded": {
+      "expected": true,
+      "mismatches": [],
+      "ok": true,
+      "sources": [
+        {
+          "field": "sampling_excluded",
+          "ok": true,
+          "report": "pipeline_flag_block",
+          "value": true
+        },
+        {
+          "field": "summary.sampling_excluded",
+          "ok": true,
+          "report": "candidate_coverage_p2_normalized_admission",
+          "value": true
+        }
+      ]
+    },
+    "sampling_recovered_canonical_drift_count": {
+      "expected": 0,
+      "mismatches": [],
+      "ok": true,
+      "sources": [
+        {
+          "field": "sampling_recovered_canonical_drift_count",
+          "ok": true,
+          "report": "pipeline_flag_block",
+          "value": 0
+        },
+        {
+          "field": "summary.sampling_recovered_canonical_drift_count",
+          "ok": true,
+          "report": "candidate_coverage_p2_normalized_admission",
+          "value": 0
+        }
+      ]
+    },
+    "unsafe_collision_flag": {
+      "expected": false,
+      "mismatches": [],
+      "ok": true,
+      "sources": [
+        {
+          "field": "unsafe_collision_flag",
+          "ok": true,
+          "report": "pipeline_flag_block",
+          "value": false
+        },
+        {
+          "field": "safety.unsafe_collision_flag",
+          "ok": true,
+          "report": "candidate_coverage_p2_normalized_admission",
+          "value": false
+        }
+      ]
+    }
+  },
+  "mismatches": [],
+  "pipeline_block": {
+    "admitted_candidates_by_sample": {
+      "0": [
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "x_0"
+          ],
+          "family": "other",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 1,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "x_0"
+          ],
+          "source": "beam"
+        },
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "family": "linear drift",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 5,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "source": "beam"
+        },
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "sin",
+            "x_0"
+          ],
+          "family": "sin drift",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 15,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "sin",
+            "x_0"
+          ],
+          "source": "beam"
+        }
+      ],
+      "1": [
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "x_0"
+          ],
+          "family": "other",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 1,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "x_0"
+          ],
+          "source": "beam"
+        },
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "family": "linear drift",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 5,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "source": "beam"
+        },
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "sin",
+            "x_0"
+          ],
+          "family": "sin drift",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 15,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "sin",
+            "x_0"
+          ],
+          "source": "beam"
+        }
+      ],
+      "2": [
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "x_0"
+          ],
+          "family": "other",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 1,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "x_0"
+          ],
+          "source": "beam"
+        },
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "family": "linear drift",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 5,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "source": "beam"
+        },
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "sin",
+            "x_0"
+          ],
+          "family": "sin drift",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 15,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "sin",
+            "x_0"
+          ],
+          "source": "beam"
+        }
+      ],
+      "3": [
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "x_0"
+          ],
+          "family": "other",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 1,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "x_0"
+          ],
+          "source": "beam"
+        },
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "family": "linear drift",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 5,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "source": "beam"
+        },
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "sin",
+            "x_0"
+          ],
+          "family": "sin drift",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 15,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "sin",
+            "x_0"
+          ],
+          "source": "beam"
+        }
+      ],
+      "4": [
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "x_0"
+          ],
+          "family": "other",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 1,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "x_0"
+          ],
+          "source": "beam"
+        },
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "family": "linear drift",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 5,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "source": "beam"
+        },
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "sin",
+            "x_0"
+          ],
+          "family": "sin drift",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 15,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "sin",
+            "x_0"
+          ],
+          "source": "beam"
+        }
+      ],
+      "6": [
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "x_0"
+          ],
+          "family": "other",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 1,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "x_0"
+          ],
+          "source": "beam"
+        },
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "family": "linear drift",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 5,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "source": "beam"
+        },
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "sin",
+            "x_0"
+          ],
+          "family": "sin drift",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 15,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "sin",
+            "x_0"
+          ],
+          "source": "beam"
+        }
+      ],
+      "7": [
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "x_0"
+          ],
+          "family": "other",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 1,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "x_0"
+          ],
+          "source": "beam"
+        },
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "family": "linear drift",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 5,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "source": "beam"
+        },
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "sin",
+            "x_0"
+          ],
+          "family": "sin drift",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 15,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "sin",
+            "x_0"
+          ],
+          "source": "beam"
+        }
+      ],
+      "9": [
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "x_0"
+          ],
+          "family": "other",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 1,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "x_0"
+          ],
+          "source": "beam"
+        },
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "family": "linear drift",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 5,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "source": "beam"
+        },
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "sin",
+            "x_0"
+          ],
+          "family": "sin drift",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 15,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "sin",
+            "x_0"
+          ],
+          "source": "beam"
+        }
+      ],
+      "10": [
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "x_0"
+          ],
+          "family": "other",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 1,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "x_0"
+          ],
+          "source": "beam"
+        },
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "family": "linear drift",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 5,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "source": "beam"
+        },
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "sin",
+            "x_0"
+          ],
+          "family": "sin drift",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 15,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "sin",
+            "x_0"
+          ],
+          "source": "beam"
+        }
+      ],
+      "14": [
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "x_0"
+          ],
+          "family": "other",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 1,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "x_0"
+          ],
+          "source": "beam"
+        },
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "family": "linear drift",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 5,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "source": "beam"
+        },
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "sin",
+            "x_0"
+          ],
+          "family": "sin drift",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 15,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "sin",
+            "x_0"
+          ],
+          "source": "beam"
+        }
+      ],
+      "15": [
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "x_0"
+          ],
+          "family": "other",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 1,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "x_0"
+          ],
+          "source": "beam"
+        },
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "family": "linear drift",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 5,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "source": "beam"
+        },
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "sin",
+            "x_0"
+          ],
+          "family": "sin drift",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 15,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "sin",
+            "x_0"
+          ],
+          "source": "beam"
+        }
+      ],
+      "16": [
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "x_0"
+          ],
+          "family": "other",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 1,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "x_0"
+          ],
+          "source": "beam"
+        },
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "family": "linear drift",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 5,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "source": "beam"
+        },
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "sin",
+            "x_0"
+          ],
+          "family": "sin drift",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 15,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "sin",
+            "x_0"
+          ],
+          "source": "beam"
+        }
+      ],
+      "20": [
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "x_0"
+          ],
+          "family": "other",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 1,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "x_0"
+          ],
+          "source": "beam"
+        },
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "family": "linear drift",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 5,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "source": "beam"
+        },
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "sin",
+            "x_0"
+          ],
+          "family": "sin drift",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 15,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "sin",
+            "x_0"
+          ],
+          "source": "beam"
+        }
+      ],
+      "22": [
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "x_0"
+          ],
+          "family": "other",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 1,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "x_0"
+          ],
+          "source": "beam"
+        },
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "family": "linear drift",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 5,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "source": "beam"
+        },
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "sin",
+            "x_0"
+          ],
+          "family": "sin drift",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 15,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "sin",
+            "x_0"
+          ],
+          "source": "beam"
+        }
+      ],
+      "25": [
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "x_0"
+          ],
+          "family": "other",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 1,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "x_0"
+          ],
+          "source": "beam"
+        },
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "family": "linear drift",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 5,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "source": "beam"
+        },
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "sin",
+            "x_0"
+          ],
+          "family": "sin drift",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 15,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "sin",
+            "x_0"
+          ],
+          "source": "beam"
+        }
+      ],
+      "28": [
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "x_0"
+          ],
+          "family": "other",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 1,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "x_0"
+          ],
+          "source": "beam"
+        },
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "family": "linear drift",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 5,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "source": "beam"
+        },
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "sin",
+            "x_0"
+          ],
+          "family": "sin drift",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 15,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "sin",
+            "x_0"
+          ],
+          "source": "beam"
+        }
+      ],
+      "29": [
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "x_0"
+          ],
+          "family": "other",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 1,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "x_0"
+          ],
+          "source": "beam"
+        },
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "family": "linear drift",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 5,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "source": "beam"
+        },
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "sin",
+            "x_0"
+          ],
+          "family": "sin drift",
+          "filter_reason": "admitted_best_family_representative",
+          "rank": 15,
+          "raw_drift_tokens": [
+            "mul",
+            "mul",
+            "CONSTANT",
+            "CONSTANT",
+            "sin",
+            "x_0"
+          ],
+          "source": "beam"
+        }
+      ]
+    },
+    "canonicalized_expanded_pool_coverage": 23,
+    "current_expanded_full_oracle": 15,
+    "family_breakdown": {
+      "linear drift": 6,
+      "nested-mul linear drift": 3,
+      "other": 0,
+      "polynomial-like drift": 0,
+      "sin drift": 6
+    },
+    "newly_recovered": [
+      0,
+      2,
+      6,
+      7,
+      15,
+      25,
+      29
+    ],
+    "p2_normalized_admission_coverage": 30,
+    "p2_pair_count": 340,
+    "policy": "p2_one_per_family",
+    "remaining_missing": [
+      16,
+      28
+    ],
+    "safety": {
+      "collision_group_count": 9,
+      "largest_collision_groups": [
+        {
+          "canonical_drift_tokens": [
+            "CONSTANT"
+          ],
+          "raw_count": 3,
+          "raw_examples": [
+            [
+              "mul",
+              "CONSTANT",
+              "CONSTANT"
+            ],
+            [
+              "mul",
+              "mul",
+              "CONSTANT",
+              "CONSTANT",
+              "CONSTANT"
+            ],
+            [
+              "mul",
+              "mul",
+              "CONSTANT",
+              "CONSTANT",
+              "mul",
+              "CONSTANT",
+              "CONSTANT"
+            ]
+          ]
+        },
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "raw_count": 2,
+          "raw_examples": [
+            [
+              "mul",
+              "mul",
+              "CONSTANT",
+              "CONSTANT",
+              "mul",
+              "CONSTANT",
+              "x_0"
+            ],
+            [
+              "mul",
+              "mul",
+              "CONSTANT",
+              "CONSTANT",
+              "x_0"
+            ]
+          ]
+        },
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "x_0"
+          ],
+          "raw_count": 2,
+          "raw_examples": [
+            [
+              "mul",
+              "CONSTANT",
+              "mul",
+              "x_0",
+              "sub",
+              "CONSTANT",
+              "x_0"
+            ],
+            [
+              "mul",
+              "mul",
+              "CONSTANT",
+              "CONSTANT",
+              "mul",
+              "x_0",
+              "sub",
+              "CONSTANT",
+              "x_0"
+            ]
+          ]
+        },
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "sqrt",
+            "sqrt",
+            "abs",
+            "x_0"
+          ],
+          "raw_count": 2,
+          "raw_examples": [
+            [
+              "mul",
+              "CONSTANT",
+              "mul",
+              "x_0",
+              "sub",
+              "CONSTANT",
+              "sqrt",
+              "sqrt",
+              "abs",
+              "x_0"
+            ],
+            [
+              "mul",
+              "mul",
+              "CONSTANT",
+              "CONSTANT",
+              "mul",
+              "x_0",
+              "sub",
+              "CONSTANT",
+              "sqrt",
+              "sqrt",
+              "abs",
+              "x_0"
+            ]
+          ]
+        },
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "sqrt",
+            "abs",
+            "x_0"
+          ],
+          "raw_count": 2,
+          "raw_examples": [
+            [
+              "mul",
+              "CONSTANT",
+              "mul",
+              "x_0",
+              "sub",
+              "CONSTANT",
+              "sqrt",
+              "abs",
+              "x_0"
+            ],
+            [
+              "mul",
+              "mul",
+              "CONSTANT",
+              "CONSTANT",
+              "mul",
+              "x_0",
+              "sub",
+              "CONSTANT",
+              "sqrt",
+              "abs",
+              "x_0"
+            ]
+          ]
+        },
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "raw_count": 2,
+          "raw_examples": [
+            [
+              "mul",
+              "CONSTANT",
+              "mul",
+              "x_0",
+              "sub",
+              "CONSTANT",
+              "mul",
+              "CONSTANT",
+              "x_0"
+            ],
+            [
+              "mul",
+              "mul",
+              "CONSTANT",
+              "CONSTANT",
+              "mul",
+              "x_0",
+              "sub",
+              "CONSTANT",
+              "mul",
+              "CONSTANT",
+              "x_0"
+            ]
+          ]
+        },
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "mul",
+            "CONSTANT",
+            "sqrt",
+            "abs",
+            "x_0"
+          ],
+          "raw_count": 2,
+          "raw_examples": [
+            [
+              "mul",
+              "CONSTANT",
+              "mul",
+              "x_0",
+              "sub",
+              "CONSTANT",
+              "mul",
+              "CONSTANT",
+              "sqrt",
+              "abs",
+              "x_0"
+            ],
+            [
+              "mul",
+              "mul",
+              "CONSTANT",
+              "CONSTANT",
+              "mul",
+              "x_0",
+              "sub",
+              "CONSTANT",
+              "mul",
+              "CONSTANT",
+              "sqrt",
+              "abs",
+              "x_0"
+            ]
+          ]
+        },
+        {
+          "canonical_drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "mul",
+            "x_0",
+            "sub",
+            "CONSTANT",
+            "abs",
+            "x_0"
+          ],
+          "raw_count": 2,
+          "raw_examples": [
+            [
+              "mul",
+              "CONSTANT",
+              "mul",
+              "x_0",
+              "sub",
+              "CONSTANT",
+              "abs",
+              "x_0"
+            ],
+            [
+              "mul",
+              "mul",
+              "CONSTANT",
+              "CONSTANT",
+              "mul",
+              "x_0",
+              "sub",
+              "CONSTANT",
+              "abs",
+              "x_0"
+            ]
+          ]
+        }
+      ],
+      "nonconstant_structural_merge_detected": false,
+      "polynomial_like_truth_collides_with_linear_like": false,
+      "safety_checks": {
+        "const_pow2_not_const_x0": true,
+        "pow2_x0_not_x0": true,
+        "sin_x0_not_x0": true
+      },
+      "self_checks": {
+        "const_pow2_not_const_x0": true,
+        "pow2_x0_not_x0": true,
+        "sin_x0_not_x0": true
+      },
+      "unsafe_collision_flag": false
+    },
+    "samples": [
+      {
+        "canonical_truth_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "current_canonical_full_oracle": false,
+        "current_expanded_full_oracle": false,
+        "drift_family": "linear drift",
+        "exact_diffusion_present": true,
+        "p2_normalized_full_oracle": true,
+        "pair_count": 20,
+        "sample_index": 0,
+        "truth_diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ],
+        "truth_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      {
+        "canonical_truth_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "current_canonical_full_oracle": true,
+        "current_expanded_full_oracle": false,
+        "drift_family": "sin drift",
+        "exact_diffusion_present": true,
+        "p2_normalized_full_oracle": true,
+        "pair_count": 20,
+        "sample_index": 1,
+        "truth_diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ],
+        "truth_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ]
+      },
+      {
+        "canonical_truth_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "current_canonical_full_oracle": false,
+        "current_expanded_full_oracle": false,
+        "drift_family": "nested-mul linear drift",
+        "exact_diffusion_present": true,
+        "p2_normalized_full_oracle": true,
+        "pair_count": 20,
+        "sample_index": 2,
+        "truth_diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ],
+        "truth_drift_tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      {
+        "canonical_truth_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "current_canonical_full_oracle": true,
+        "current_expanded_full_oracle": false,
+        "drift_family": "linear drift",
+        "exact_diffusion_present": true,
+        "p2_normalized_full_oracle": true,
+        "pair_count": 20,
+        "sample_index": 3,
+        "truth_diffusion_tokens": [
+          "add",
+          "CONSTANT",
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ],
+        "truth_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      {
+        "canonical_truth_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "current_canonical_full_oracle": true,
+        "current_expanded_full_oracle": false,
+        "drift_family": "sin drift",
+        "exact_diffusion_present": true,
+        "p2_normalized_full_oracle": true,
+        "pair_count": 20,
+        "sample_index": 4,
+        "truth_diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "CONSTANT"
+        ],
+        "truth_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ]
+      },
+      {
+        "canonical_truth_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "current_canonical_full_oracle": false,
+        "current_expanded_full_oracle": false,
+        "drift_family": "linear drift",
+        "exact_diffusion_present": true,
+        "p2_normalized_full_oracle": true,
+        "pair_count": 20,
+        "sample_index": 6,
+        "truth_diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "truth_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      {
+        "canonical_truth_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "current_canonical_full_oracle": false,
+        "current_expanded_full_oracle": false,
+        "drift_family": "linear drift",
+        "exact_diffusion_present": true,
+        "p2_normalized_full_oracle": true,
+        "pair_count": 20,
+        "sample_index": 7,
+        "truth_diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "CONSTANT"
+        ],
+        "truth_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      {
+        "canonical_truth_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "current_canonical_full_oracle": true,
+        "current_expanded_full_oracle": false,
+        "drift_family": "sin drift",
+        "exact_diffusion_present": true,
+        "p2_normalized_full_oracle": true,
+        "pair_count": 20,
+        "sample_index": 9,
+        "truth_diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ],
+        "truth_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ]
+      },
+      {
+        "canonical_truth_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "current_canonical_full_oracle": true,
+        "current_expanded_full_oracle": false,
+        "drift_family": "sin drift",
+        "exact_diffusion_present": true,
+        "p2_normalized_full_oracle": true,
+        "pair_count": 20,
+        "sample_index": 10,
+        "truth_diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ],
+        "truth_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ]
+      },
+      {
+        "canonical_truth_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "current_canonical_full_oracle": true,
+        "current_expanded_full_oracle": false,
+        "drift_family": "sin drift",
+        "exact_diffusion_present": true,
+        "p2_normalized_full_oracle": true,
+        "pair_count": 20,
+        "sample_index": 14,
+        "truth_diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ],
+        "truth_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ]
+      },
+      {
+        "canonical_truth_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "current_canonical_full_oracle": false,
+        "current_expanded_full_oracle": false,
+        "drift_family": "linear drift",
+        "exact_diffusion_present": true,
+        "p2_normalized_full_oracle": true,
+        "pair_count": 20,
+        "sample_index": 15,
+        "truth_diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "truth_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      {
+        "canonical_truth_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "pow2",
+          "x_0"
+        ],
+        "current_canonical_full_oracle": false,
+        "current_expanded_full_oracle": false,
+        "drift_family": "polynomial-like drift",
+        "exact_diffusion_present": true,
+        "p2_normalized_full_oracle": false,
+        "pair_count": 20,
+        "sample_index": 16,
+        "truth_diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "truth_drift_tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "pow2",
+          "x_0"
+        ]
+      },
+      {
+        "canonical_truth_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "current_canonical_full_oracle": true,
+        "current_expanded_full_oracle": false,
+        "drift_family": "sin drift",
+        "exact_diffusion_present": true,
+        "p2_normalized_full_oracle": true,
+        "pair_count": 20,
+        "sample_index": 20,
+        "truth_diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "truth_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ]
+      },
+      {
+        "canonical_truth_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "current_canonical_full_oracle": true,
+        "current_expanded_full_oracle": false,
+        "drift_family": "linear drift",
+        "exact_diffusion_present": true,
+        "p2_normalized_full_oracle": true,
+        "pair_count": 20,
+        "sample_index": 22,
+        "truth_diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "truth_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      {
+        "canonical_truth_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "current_canonical_full_oracle": false,
+        "current_expanded_full_oracle": false,
+        "drift_family": "nested-mul linear drift",
+        "exact_diffusion_present": true,
+        "p2_normalized_full_oracle": true,
+        "pair_count": 20,
+        "sample_index": 25,
+        "truth_diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ],
+        "truth_drift_tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      {
+        "canonical_truth_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "pow2",
+          "x_0"
+        ],
+        "current_canonical_full_oracle": false,
+        "current_expanded_full_oracle": false,
+        "drift_family": "polynomial-like drift",
+        "exact_diffusion_present": true,
+        "p2_normalized_full_oracle": false,
+        "pair_count": 20,
+        "sample_index": 28,
+        "truth_diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ],
+        "truth_drift_tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "pow2",
+          "x_0"
+        ]
+      },
+      {
+        "canonical_truth_drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "current_canonical_full_oracle": false,
+        "current_expanded_full_oracle": false,
+        "drift_family": "nested-mul linear drift",
+        "exact_diffusion_present": true,
+        "p2_normalized_full_oracle": true,
+        "pair_count": 20,
+        "sample_index": 29,
+        "truth_diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "CONSTANT"
+        ],
+        "truth_drift_tokens": [
+          "mul",
+          "mul",
+          "CONSTANT",
+          "CONSTANT",
+          "x_0"
+        ]
+      }
+    ],
+    "sampling_excluded": true,
+    "sampling_recovered_canonical_drift_count": 0,
+    "source": "beam",
+    "source_breakdown": {
+      "beam": 15
+    },
+    "target_oracle_absent_samples_analyzed": 17,
+    "unsafe_collision_flag": false
+  },
+  "schema": {
+    "field_aliases_used": [
+      "pipeline_block.* from build_normalized_drift_admission_block",
+      "p2_json.summary.*",
+      "hook_validation.summary.*"
+    ],
+    "missing_fields": [],
+    "schema_status": "ok"
+  },
+  "summary": {
+    "canonicalizer_safety_status": "ok",
+    "default_behavior_intended_unchanged": true,
+    "default_off_flag_present": true,
+    "default_source": "beam",
+    "full_no_flag_runtime_equivalence": "not_run_model_backed; default-off code path leaves report/JSON unchanged when disabled",
+    "independent_canonicalizer_duplication_avoided": true,
+    "json_reports_validated": 4,
+    "metric_cross_check_status": "ok",
+    "mismatch_count": 0,
+    "model_backed_candidate_generation_avoided": true,
+    "schema_status": "ok",
+    "uses_reusable_p2_hook": true
+  }
+}

@@ -537,6 +537,66 @@ decision=A
 
 No formal eval is recommended from this validation.
 
+## Candidate Coverage P2 Flag
+
+The candidate coverage pipeline now exposes a default-off coverage-only P2
+diagnostic flag. Default behavior is unchanged when the flag is omitted.
+
+Future small local coverage-only command:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/tmp/cache \
+/opt/miniconda3/envs/gensr/bin/python3 scripts/analyze_candidate_coverage.py \
+  --source-log /private/tmp/gensr_sde_32_rolewise_no_multi_u0.log \
+  --report candidate_coverage_pair_expanded_p2_flag.md \
+  --json-output candidate_coverage_pair_expanded_p2_flag.json \
+  --pair-drift-topk 5 \
+  --pair-diffusion-topk 6 \
+  --pair-drift-diffusion-candidates 32 \
+  --normalized-drift-admission p2_one_per_family \
+  --normalized-drift-admission-source beam \
+  --drift-only-json drift_only_candidate_diversity_smoke.json \
+  > /private/tmp/gensr_sde_candidate_coverage_pair_expanded_p2_flag.log 2>&1
+```
+
+JSON-only validation command:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 \
+/opt/miniconda3/envs/gensr/bin/python3 scripts/validate_candidate_coverage_p2_flag.py \
+  --expanded-coverage-json candidate_coverage_pair_expanded.json \
+  --drift-only-json drift_only_candidate_diversity_smoke.json \
+  --p2-json candidate_coverage_p2_normalized_admission.json \
+  --hook-validation-json p2_normalized_admission_hook_validation.json \
+  --report candidate_coverage_p2_flag_validation.md \
+  --json-output candidate_coverage_p2_flag_validation.json \
+  > /private/tmp/gensr_sde_candidate_coverage_p2_flag_validation.log 2>&1
+```
+
+Compile check:
+
+```bash
+PYTHONPYCACHEPREFIX=/private/tmp/gensr_pycache \
+/opt/miniconda3/envs/gensr/bin/python3 -m py_compile \
+  scripts/analyze_candidate_coverage.py \
+  scripts/normalized_drift_admission.py \
+  scripts/run_p2_normalized_admission_coverage.py \
+  scripts/validate_p2_normalized_admission_hook.py \
+  scripts/validate_candidate_coverage_p2_flag.py
+```
+
+Latest JSON-only validation result:
+
+```text
+metric_cross_check_status=ok
+schema_status=ok
+canonicalizer_safety_status=ok
+mismatch_count=0
+decision=A
+```
+
+No formal eval is recommended from this validation.
+
 ## Expanded Pairing Formal Eval Result
 
 The formal eval log is:
