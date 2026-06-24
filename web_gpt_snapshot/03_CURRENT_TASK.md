@@ -2,10 +2,11 @@
 
 ## Next Engineering Task
 
-Decide the next scorer-side residual/calibration diagnostic after P2
-score-miss residuals showed mostly active/weak traps. Do not widen drift
-beam/top-k or change production candidate-generation defaults from this
-coverage-only result alone.
+Decide whether to run one future small smoke around shared-constant / fixed
+residual calibration after offline counterfactuals flipped several P2 score
+misses. Do not widen drift beam/top-k, run formal eval, add a rerank mode, or
+change production candidate-generation defaults from this diagnostic evidence
+alone.
 The drift-only smoke is complete: exact drift appears in only `3/17` targets,
 all beam rank-30 nested-mul linear cases. Candidate-normalization folding is
 complete in helper-only mode: current expanded-pool folding projects `23/32`,
@@ -32,8 +33,14 @@ and `--scorer-ready-target-samples`, and `p2_scorer_ready_candidates.json`
 validates with decision `A`. Offline semantic scoring on that sidecar is now
 complete and selects 0/7 P2 oracle candidates.
 The targeted residual/segment diagnostic is now complete: classifications are
-active-trap 3, weak-trap 1, near-tie 2, current-candidate trap 1. This does not
-support P2 eval integration yet.
+active-trap 3, weak-trap 1, near-tie 2, current-candidate trap 1. The follow-up
+offline residual-calibration counterfactual diagnostic is also complete:
+baseline oracle wins remain 0/7, but fixed variants flip 5/7 cases.
+`V11_shared_constants_only_best_of_grid` flips 3/7, global recurring-dimension
+removals flip 2/7, per-sample top active removals flip 2/7, and constant
+counterfactuals flip 5/7. Decision `A`: one future small smoke focused on
+shared-constant / fixed residual calibration may be justified, but this does
+not support P2 eval integration yet.
 
 Current strongest no-retraining decoding setting:
 
@@ -407,6 +414,26 @@ backup_dir=experiment_logs/2026-06-24_tmp_gensr_sde_logs/
 backup_status=all surviving /private/tmp/gensr_sde*.log/json copied
 ```
 
+P2 residual calibration counterfactual diagnostic:
+
+```text
+script=scripts/analyze_p2_residual_calibration_counterfactuals.py
+report=p2_residual_calibration_counterfactuals.md
+json=p2_residual_calibration_counterfactuals.json
+log=/private/tmp/gensr_sde_p2_residual_calibration_counterfactuals.log
+samples_analyzed=7
+baseline_oracle_wins=0
+samples_flipped_by_any_variant=5
+V11_shared_constants_only_best_of_grid=3/7
+global_recurring_dims_flipped=2/7
+per_sample_top_active_dims_flipped=2/7
+constant_counterfactuals_flipped=5/7
+near_tie_samples_flipped=2
+active_trap_samples_flipped=2
+weak_trap_samples_flipped=0
+decision=A
+```
+
 Interpretation: current expanded-pool canonicalization helps but is not enough,
 full normalized drift-only admission is too high-pressure to adopt wholesale,
 and `P2_one_per_family` preserves the coverage ceiling with much lower pair
@@ -416,8 +443,8 @@ prior validation. A follow-up scorer-ready sidecar logging run now provides
 target fingerprint / `y_to_fit` fields and full candidate rows for the 7 P2
 newly recovered samples. Offline semantic scoring now shows all 7 P2 oracle
 candidates lose under the current scorer, so the next useful step is a targeted
-residual/calibration diagnostic on the observed active/weak traps, not naive
-global beam/top-k expansion or formal eval.
+shared-constant / fixed residual calibration smoke, not naive global beam/top-k
+expansion or formal eval.
 
 Do not launch formal eval from these diagnostics. Exact-tail admission alone is
 weak and expensive-looking because all exact hits are rank-30 beam cases.
@@ -506,15 +533,15 @@ cap; its combined pair rank was 24.
 
 ## Primary File To Modify
 
-No primary source file needs to change for a pure offline follow-up. The
-candidate-normalization question should be tested in helper-only mode first. Do
-not modify `sde_validation_probe.py` unless a concrete narrow logging or
+No primary production source file needs to change for a pure offline follow-up.
+Use helper-only diagnostics for any residual/calibration counterfactuals first.
+Do not modify `sde_validation_probe.py` unless a concrete narrow logging or
 diagnostic hook is proven necessary.
 
 Likely next actions:
 
-- design a helper-only candidate-normalization diagnostic for constant-chain
-  folding before pairing/admission;
+- if continuing scorer work, design at most one small smoke around
+  shared-constant / fixed residual calibration;
 - avoid naive global beam top-k expansion to 30/32 as a default from this
   evidence alone;
 - do not add `per_active_dim_norm_plus_weak` or any robust/clipped normalized
@@ -522,8 +549,8 @@ Likely next actions:
 - do not run a formal 32-sample eval from the drift-only or constant-folding
   diagnostics alone;
 - keep role-wise constant diagnostics in every rerank experiment;
-- consider production candidate-generation changes only after the
-  constant-folding idea is validated as a candidate-normalization diagnostic.
+- do not integrate P2 admission into eval until semantic scoring selects P2
+  oracles safely.
 
 ## Supporting Files If Needed
 
@@ -565,6 +592,7 @@ Likely next actions:
 
 ## Success Standard
 
-The next useful scorer-side step is one 16-sample residual-debug smoke so full
-candidate-pool hit safety can be checked offline. The other main direction
-remains drift span diversity for the 17 expanded-pairing oracle-absent samples.
+The next useful scorer-side step, if any, is at most one small smoke focused on
+shared-constant / fixed residual calibration so full candidate-pool hit safety
+can be checked. Do not run formal eval or add a rerank mode from the offline
+counterfactual alone.

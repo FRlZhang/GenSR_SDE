@@ -151,6 +151,16 @@ Active selected-advantage dimensions recur most at 76, with 72/82/88 also
 appearing; weak selected-advantage dimensions recur most at 136/137. Decision
 remains `B`: do not integrate P2 into eval yet; diagnose/calibrate residual
 behavior on these cases only.
+An offline residual-calibration counterfactual diagnostic is now complete for
+the same 7 P2 score misses. Baseline oracle wins remain `0/7`, but fixed
+counterfactuals flip `5/7` samples in total. The most stable interpretable
+signal is `V11_shared_constants_only_best_of_grid`, which flips `3/7`; global
+recurring-dimension removals flip `2/7`, per-sample top active removals flip
+`2/7`, and constant counterfactuals flip `5/7`. Both near-tie samples flip, as
+do 2 active-trap samples; the weak-trap case does not flip. Decision `A`: one
+future small smoke focused on shared-constant / fixed residual calibration may
+be justified, but this is still not formal-eval evidence and no rerank mode or
+production default should be added.
 
 ## Last Updated
 
@@ -577,6 +587,21 @@ behavior on these cases only.
   current-candidate trap 1. The largest selected-advantage active dimension is
   76; weak dimensions 136 and 137 recur most. Decision `B`: residual behavior
   is the immediate blocker, not parse/fingerprint failures.
+- Added
+  [scripts/analyze_p2_residual_calibration_counterfactuals.py](/Users/lzhang/Documents/GenSR_SDE/scripts/analyze_p2_residual_calibration_counterfactuals.py)
+  and wrote
+  [p2_residual_calibration_counterfactuals.md](/Users/lzhang/Documents/GenSR_SDE/p2_residual_calibration_counterfactuals.md)
+  /
+  [p2_residual_calibration_counterfactuals.json](/Users/lzhang/Documents/GenSR_SDE/p2_residual_calibration_counterfactuals.json).
+  This tested only the fixed counterfactuals requested on the 7 P2 score misses:
+  weak-only, active-only, fixed recurring-dimension removals, per-sample top
+  active removals, selected/oracle constant swaps, and shared-constant-only best
+  grid. Baseline oracle wins were `0/7`; any fixed variant flipped `5/7`.
+  `V11_shared_constants_only_best_of_grid` flipped `3/7`, global recurring
+  dimension removals flipped `2/7`, per-sample top active removals flipped
+  `2/7`, and constant counterfactuals flipped `5/7`. Decision `A`: a future
+  small smoke focused on fixed shared-constant / calibration behavior may be
+  justified, but no formal eval or rerank-mode implementation is recommended.
 - Logged validated experiments in
   [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md).
 
@@ -584,13 +609,12 @@ behavior on these cases only.
 
 - Transitioning from "can the model learn the fingerprint?" to "can we decode
   the right symbolic sequence?".
-- Deciding the next residual/segment diagnostic for P2 admitted candidates
-  after offline semantic scoring selected 0/7 P2 oracle candidates.
+- Deciding whether to run one future small smoke around fixed shared-constant /
+  calibration behavior after offline P2 counterfactuals flipped 5/7 score
+  misses, including 3/7 under shared-constant-only best-of-grid.
   Do not treat the P2 flag smoke as selected-rerank evidence or a production
-  default change. The P2 sidecar makes scoring possible, but current semantic
-  scoring says P2 admission is not eval-integration-ready yet.
-- The targeted residual/segment diagnostic is now complete; it shows mostly
-  active/weak residual traps rather than near-tie misses.
+  default change. The counterfactual signal may justify a small smoke, but not
+  a formal eval or rerank-mode implementation.
 - The 2000-step role-token checkpoint has been restored in `/private/tmp` and
   backed up under `checkpoints/`; model weights remain ignored by git.
 
@@ -626,9 +650,10 @@ behavior on these cases only.
    admission, in the actual candidate coverage pipeline.
 10. Do not run formal eval from the drift-only or constant-folding diagnostics;
    they are oracle-coverage diagnostics, not selected-recovery evidence.
-11. Use `p2_oracle_score_miss_residual_diagnostics.json` only for targeted
-   scorer-side residual/calibration diagnostics. Do not run formal eval or
-   integrate P2 admission from the current residual evidence.
+11. Use `p2_residual_calibration_counterfactuals.json` to design at most one
+   future small smoke around fixed shared-constant / calibration behavior. Do
+   not run formal eval or implement a rerank mode from offline counterfactuals
+   alone.
 12. Keep drift/diffusion pairing enabled and tune candidate pool size carefully
    because fingerprint recomputation is CPU-expensive.
 13. Reuse the saved 2000-step checkpoint for decoding experiments instead of

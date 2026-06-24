@@ -1202,3 +1202,63 @@ decision=B
 
 Do not integrate P2 admission into eval yet; residual behavior is still the
 blocker.
+
+## P2 Residual Calibration Counterfactual Diagnostic
+
+This tests fixed offline counterfactuals on the 7 P2 oracle score misses. It
+uses existing JSON only and does not run model decoding, candidate generation,
+formal eval, 64-sample eval, retraining, scorer grids, active/weak grids,
+checkpoint/data changes, target-format changes, fingerprint schema changes,
+production default changes, or a new rerank mode.
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/tmp/cache \
+/opt/miniconda3/envs/gensr/bin/python3 scripts/analyze_p2_residual_calibration_counterfactuals.py \
+  --residual-json p2_oracle_score_miss_residual_diagnostics.json \
+  --semantic-scoring-json p2_admitted_candidate_semantic_scoring.json \
+  --scorer-ready-json p2_scorer_ready_candidates.json \
+  --target-samples 0,2,6,7,15,25,29 \
+  --report p2_residual_calibration_counterfactuals.md \
+  --json-output p2_residual_calibration_counterfactuals.json \
+  > /private/tmp/gensr_sde_p2_residual_calibration_counterfactuals.log 2>&1
+```
+
+Compile check:
+
+```bash
+PYTHONPYCACHEPREFIX=/private/tmp/gensr_pycache \
+/opt/miniconda3/envs/gensr/bin/python3 -m py_compile \
+  scripts/analyze_p2_residual_calibration_counterfactuals.py \
+  scripts/analyze_p2_oracle_score_miss_residuals.py \
+  scripts/analyze_p2_admitted_candidate_scoring.py \
+  sde_fingerprint.py \
+  simulator_sde.py \
+  sde_dataset_generator.py
+```
+
+Latest result:
+
+```text
+samples_analyzed=7
+baseline_oracle_wins=0
+samples_flipped_by_any_variant=5
+V11_shared_constants_only_best_of_grid=3/7
+V1_weak_only_diagnostic=2/7
+V3_active_without_dim_76=2/7
+V4_active_without_dims_76_72_82_88=2/7
+V6_active_and_weak_without_recurring_dims=2/7
+V7_top1_active_advantage_removed_per_sample=2/7
+V8_top2_active_advantages_removed_per_sample=2/7
+V10_oracle_constants_applied_to_selected=2/7
+samples_flipped_by_global_recurring_dims=2
+samples_flipped_by_per_sample_top_dims=2
+samples_flipped_by_constant_counterfactual=5
+near_tie_samples_flipped=2
+active_trap_samples_flipped=2
+weak_trap_samples_flipped=0
+decision=A
+```
+
+Use this only to design at most one future small smoke around shared-constant /
+fixed residual calibration. Do not run formal eval or add a rerank mode from
+this offline diagnostic alone.

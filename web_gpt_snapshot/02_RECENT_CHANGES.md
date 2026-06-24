@@ -2,6 +2,77 @@
 
 ## Last Codex Workflow
 
+Codex added an offline residual-calibration counterfactual diagnostic for the 7
+P2 oracle score misses:
+
+```text
+scripts/analyze_p2_residual_calibration_counterfactuals.py
+p2_residual_calibration_counterfactuals.md
+p2_residual_calibration_counterfactuals.json
+/private/tmp/gensr_sde_p2_residual_calibration_counterfactuals.log
+```
+
+This used existing residual/scoring/sidecar JSON only. It did not run model
+decoding, candidate generation/regeneration, formal eval, 64-sample eval,
+retraining, scorer grids, active/weak grids, checkpoint/data changes,
+target-format changes, fingerprint schema changes, production default changes,
+or a new rerank mode.
+
+Result:
+
+```text
+samples_analyzed=7
+baseline_oracle_wins=0
+samples_flipped_by_any_variant=5
+variant_oracle_wins_by_variant:
+  V0_current_recomputed=0
+  V1_weak_only_diagnostic=2
+  V2_active_only_diagnostic=0
+  V3_active_without_dim_76=2
+  V4_active_without_dims_76_72_82_88=2
+  V5_weak_without_dims_136_137_133=0
+  V6_active_and_weak_without_recurring_dims=2
+  V7_top1_active_advantage_removed_per_sample=2
+  V8_top2_active_advantages_removed_per_sample=2
+  V9_selected_constants_applied_to_oracle=0
+  V10_oracle_constants_applied_to_selected=2
+  V11_shared_constants_only_best_of_grid=3
+samples_flipped_by_global_recurring_dims=2
+samples_flipped_by_per_sample_top_dims=2
+samples_flipped_by_constant_counterfactual=5
+near_tie_samples_flipped=2
+active_trap_samples_flipped=2
+weak_trap_samples_flipped=0
+decision=A
+```
+
+Per-sample best counterfactuals:
+
+```text
+sample 0: weak_trap, no flip, best=V2_active_only_diagnostic
+sample 2: current_candidate_trap, flip, best=V10_oracle_constants_applied_to_selected
+sample 6: near_tie, flip, best=V11_shared_constants_only_best_of_grid
+sample 7: near_tie, flip, best=V8_top2_active_advantages_removed_per_sample
+sample 15: active_trap, flip, best=V11_shared_constants_only_best_of_grid
+sample 25: active_trap, no flip, best=V1_weak_only_diagnostic
+sample 29: active_trap, flip, best=V11_shared_constants_only_best_of_grid
+```
+
+Interpretation: fixed counterfactuals can flip several P2 score misses, with
+the clearest stable signal from shared-constant scoring. This justifies at most
+one future small smoke focused on shared-constant / fixed residual calibration.
+It does not justify formal eval, a new rerank mode, or a production default
+change.
+
+Verification:
+
+```text
+py_compile scripts/analyze_p2_residual_calibration_counterfactuals.py scripts/analyze_p2_oracle_score_miss_residuals.py scripts/analyze_p2_admitted_candidate_scoring.py sde_fingerprint.py simulator_sde.py sde_dataset_generator.py: passed
+helper run: passed
+```
+
+## Previous Codex Workflow
+
 Codex added a targeted residual/segment diagnostic for the 7 P2 oracle score
 misses:
 
