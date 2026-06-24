@@ -142,7 +142,15 @@ misses. Combined selection comes from P2-admitted rows in 3/7 samples and
 current-expanded rows in 4/7, but none of the selected P2 rows is the P2
 canonical oracle. Median P2 oracle rank is 4 and max rank is 32; only 2/7 score
 gaps are within 0.10 and none are within 0.05. Decision `B`: diagnose
-residual/segment behavior for these P2 cases before any eval integration.
+residual/segment behavior for these P2 cases before any eval integration. The
+targeted residual/segment diagnostic for the 7 P2 score misses is now complete:
+selected sources are current-expanded 4 and P2-admitted non-oracle 3; dominant
+gap segments are active 3, weak 1, near-tie 2, mixed/current 1; classifications
+are active-trap 3, weak-trap 1, near-tie 2, and current-candidate trap 1.
+Active selected-advantage dimensions recur most at 76, with 72/82/88 also
+appearing; weak selected-advantage dimensions recur most at 136/137. Decision
+remains `B`: do not integrate P2 into eval yet; diagnose/calibrate residual
+behavior on these cases only.
 
 ## Last Updated
 
@@ -556,6 +564,19 @@ residual/segment behavior for these P2 cases before any eval integration.
   oracle rank is 4/32; near gaps are 0 within 0.005, 0 within 0.01, 0 within
   0.05, and 2 within 0.10. Decision `B`: inspect residual/segment behavior for
   these P2 cases before eval integration.
+- Added
+  [scripts/analyze_p2_oracle_score_miss_residuals.py](/Users/lzhang/Documents/GenSR_SDE/scripts/analyze_p2_oracle_score_miss_residuals.py)
+  and wrote
+  [p2_oracle_score_miss_residual_diagnostics.md](/Users/lzhang/Documents/GenSR_SDE/p2_oracle_score_miss_residual_diagnostics.md)
+  /
+  [p2_oracle_score_miss_residual_diagnostics.json](/Users/lzhang/Documents/GenSR_SDE/p2_oracle_score_miss_residual_diagnostics.json).
+  This recomputed selected-vs-oracle active/weak residual vectors for the 7 P2
+  score misses only. Selected sources were current-expanded 4 and P2-admitted
+  3. Dominant gap segments were active 3, weak 1, near-tie 2, and mixed 1;
+  classifications were active-trap 3, weak-trap 1, near-tie 2, and
+  current-candidate trap 1. The largest selected-advantage active dimension is
+  76; weak dimensions 136 and 137 recur most. Decision `B`: residual behavior
+  is the immediate blocker, not parse/fingerprint failures.
 - Logged validated experiments in
   [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md).
 
@@ -568,6 +589,8 @@ residual/segment behavior for these P2 cases before any eval integration.
   Do not treat the P2 flag smoke as selected-rerank evidence or a production
   default change. The P2 sidecar makes scoring possible, but current semantic
   scoring says P2 admission is not eval-integration-ready yet.
+- The targeted residual/segment diagnostic is now complete; it shows mostly
+  active/weak residual traps rather than near-tie misses.
 - The 2000-step role-token checkpoint has been restored in `/private/tmp` and
   backed up under `checkpoints/`; model weights remain ignored by git.
 
@@ -603,16 +626,16 @@ residual/segment behavior for these P2 cases before any eval integration.
    admission, in the actual candidate coverage pipeline.
 10. Do not run formal eval from the drift-only or constant-folding diagnostics;
    they are oracle-coverage diagnostics, not selected-recovery evidence.
-11. Use `p2_admitted_candidate_semantic_scoring.json` for a targeted
-   residual/segment diagnostic of the 7 P2 oracle score misses. Do not run
-   formal eval or change defaults from P2 coverage/readiness alone.
+11. Use `p2_oracle_score_miss_residual_diagnostics.json` only for targeted
+   scorer-side residual/calibration diagnostics. Do not run formal eval or
+   integrate P2 admission from the current residual evidence.
 12. Keep drift/diffusion pairing enabled and tune candidate pool size carefully
    because fingerprint recomputation is CPU-expensive.
 13. Reuse the saved 2000-step checkpoint for decoding experiments instead of
    retraining.
-13. Compare greedy, constrained beam, reranked, and oracle candidate metrics on the same
+14. Compare greedy, constrained beam, reranked, and oracle candidate metrics on the same
    held-out evaluation setup.
-14. Only revisit fingerprint design after candidate diversity and scoring have
+15. Only revisit fingerprint design after candidate diversity and scoring have
    been tested more thoroughly.
 
 ## Open Questions
@@ -689,6 +712,9 @@ residual/segment behavior for these P2 cases before any eval integration.
 - P2 scorer-ready sidecar logging is available and validated, but offline
   semantic scoring selects 0/7 P2 oracle candidates. Do not integrate P2 into
   eval before diagnosing residual/segment score failures.
+- P2 oracle score misses are mostly active/weak residual traps, not
+  parse/fingerprint/serialization failures. This does not support P2 eval
+  integration yet.
 - Constant-folding collision checks are token-structure-only; they did not flag
   unsafe observed overmerge, but semantic fingerprint validation and
   selected-rerank behavior remain untested.

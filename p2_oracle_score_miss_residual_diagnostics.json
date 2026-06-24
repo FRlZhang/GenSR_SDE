@@ -1,0 +1,1527 @@
+{
+  "metadata": {
+    "active_slice": [
+      72,
+      90
+    ],
+    "formal_eval_run": false,
+    "scorer": "constant_grid_rolewise_no_multi_u0",
+    "scorer_ready_json": "p2_scorer_ready_candidates.json",
+    "semantic_scoring_json": "p2_admitted_candidate_semantic_scoring.json",
+    "target_samples": [
+      0,
+      2,
+      6,
+      7,
+      15,
+      25,
+      29
+    ],
+    "weak_slice": [
+      90,
+      186
+    ]
+  },
+  "samples": [
+    {
+      "active_gap": 0.0235337161186768,
+      "classification": "weak_trap",
+      "constant_choice_differs": false,
+      "dominant_gap_segment": "weak",
+      "p2_oracle_active_score": 0.15469518867632004,
+      "p2_oracle_best_diffusion_constant": 0.5,
+      "p2_oracle_best_drift_constant": 2.0,
+      "p2_oracle_rank": 4,
+      "p2_oracle_score": 0.49762605172014723,
+      "p2_oracle_sequence": [
+        "<DRIFT>",
+        "mul",
+        "CONSTANT",
+        "x_0",
+        "<DIFFUSION>",
+        "mul",
+        "CONSTANT",
+        "sqrt",
+        "abs",
+        "x_0"
+      ],
+      "p2_oracle_weak_score": 0.3429308630438272,
+      "sample_index": 0,
+      "score_gap": 0.16399053942537534,
+      "selected_active_score": 0.13116147255764324,
+      "selected_best_diffusion_constant": 0.5,
+      "selected_best_drift_constant": 2.0,
+      "selected_is_current_candidate": false,
+      "selected_is_p2_nonoracle": true,
+      "selected_score": 0.3336355122947719,
+      "selected_sequence": [
+        "<DRIFT>",
+        "mul",
+        "CONSTANT",
+        "x_0",
+        "<DIFFUSION>",
+        "mul",
+        "CONSTANT",
+        "abs",
+        "x_0"
+      ],
+      "selected_source": "p2_admitted",
+      "selected_weak_score": 0.20247403973712866,
+      "top_active_residual_advantages_for_oracle": [
+        {
+          "dimension_index": 88,
+          "oracle_abs_residual": 0.05154538541885444,
+          "oracle_advantage": 0.058182393925162716,
+          "segment_local_index": 16,
+          "selected_abs_residual": 0.10972777934401716
+        },
+        {
+          "dimension_index": 81,
+          "oracle_abs_residual": 0.0028688045594195033,
+          "oracle_advantage": 0.022812417839195475,
+          "segment_local_index": 9,
+          "selected_abs_residual": 0.025681222398614978
+        },
+        {
+          "dimension_index": 87,
+          "oracle_abs_residual": 0.005950038212732098,
+          "oracle_advantage": 0.022503452592238463,
+          "segment_local_index": 15,
+          "selected_abs_residual": 0.02845349080497056
+        },
+        {
+          "dimension_index": 80,
+          "oracle_abs_residual": 0.0010659979481032833,
+          "oracle_advantage": 0.020169493600765913,
+          "segment_local_index": 8,
+          "selected_abs_residual": 0.021235491548869195
+        },
+        {
+          "dimension_index": 75,
+          "oracle_abs_residual": 0.01048937308402113,
+          "oracle_advantage": 0.011560932445900712,
+          "segment_local_index": 3,
+          "selected_abs_residual": 0.02205030552992184
+        }
+      ],
+      "top_active_residual_advantages_for_selected": [
+        {
+          "dimension_index": 76,
+          "oracle_abs_residual": 0.1075528653805355,
+          "segment_local_index": 4,
+          "selected_abs_residual": 0.019644172052238555,
+          "selected_advantage": 0.08790869332829696
+        },
+        {
+          "dimension_index": 72,
+          "oracle_abs_residual": 0.04861868945252309,
+          "segment_local_index": 0,
+          "selected_abs_residual": 0.001882896476045208,
+          "selected_advantage": 0.04673579297647788
+        },
+        {
+          "dimension_index": 78,
+          "oracle_abs_residual": 0.0414768823517785,
+          "segment_local_index": 6,
+          "selected_abs_residual": 0.016893396110932896,
+          "selected_advantage": 0.024583486240845605
+        },
+        {
+          "dimension_index": 85,
+          "oracle_abs_residual": 0.032352470570856474,
+          "segment_local_index": 13,
+          "selected_abs_residual": 0.008255537239504998,
+          "selected_advantage": 0.024096933331351475
+        },
+        {
+          "dimension_index": 73,
+          "oracle_abs_residual": 0.031568779268171476,
+          "segment_local_index": 1,
+          "selected_abs_residual": 0.009123534697985596,
+          "selected_advantage": 0.02244524457018588
+        }
+      ],
+      "top_weak_residual_advantages_for_oracle": [
+        {
+          "dimension_index": 114,
+          "oracle_abs_residual": 0.016101407572776467,
+          "oracle_advantage": 0.025251279890985242,
+          "segment_local_index": 24,
+          "selected_abs_residual": 0.04135268746376171
+        },
+        {
+          "dimension_index": 107,
+          "oracle_abs_residual": 0.0015395722883204549,
+          "oracle_advantage": 0.016569174131188927,
+          "segment_local_index": 17,
+          "selected_abs_residual": 0.01810874641950938
+        },
+        {
+          "dimension_index": 108,
+          "oracle_abs_residual": 0.006357227294899172,
+          "oracle_advantage": 0.01583299188724825,
+          "segment_local_index": 18,
+          "selected_abs_residual": 0.022190219182147423
+        },
+        {
+          "dimension_index": 111,
+          "oracle_abs_residual": 0.0018967691986186133,
+          "oracle_advantage": 0.015578874193111457,
+          "segment_local_index": 21,
+          "selected_abs_residual": 0.01747564339173007
+        },
+        {
+          "dimension_index": 109,
+          "oracle_abs_residual": 0.007388118322639501,
+          "oracle_advantage": 0.015382795092780125,
+          "segment_local_index": 19,
+          "selected_abs_residual": 0.022770913415419626
+        }
+      ],
+      "top_weak_residual_advantages_for_selected": [
+        {
+          "dimension_index": 116,
+          "oracle_abs_residual": 0.06572102321942623,
+          "segment_local_index": 26,
+          "selected_abs_residual": 0.006607354139471512,
+          "selected_advantage": 0.05911366907995472
+        },
+        {
+          "dimension_index": 115,
+          "oracle_abs_residual": 0.059316726179357016,
+          "segment_local_index": 25,
+          "selected_abs_residual": 0.006937993658669435,
+          "selected_advantage": 0.05237873252068758
+        },
+        {
+          "dimension_index": 117,
+          "oracle_abs_residual": 0.06963321210852948,
+          "segment_local_index": 27,
+          "selected_abs_residual": 0.018505056440500506,
+          "selected_advantage": 0.051128155668028974
+        },
+        {
+          "dimension_index": 118,
+          "oracle_abs_residual": 0.07180833373464837,
+          "segment_local_index": 28,
+          "selected_abs_residual": 0.02889545747094322,
+          "selected_advantage": 0.04291287626370515
+        },
+        {
+          "dimension_index": 119,
+          "oracle_abs_residual": 0.07210230979512604,
+          "segment_local_index": 29,
+          "selected_abs_residual": 0.03733647469961903,
+          "selected_advantage": 0.03476583509550701
+        }
+      ],
+      "truth_sequence": [
+        "<DRIFT>",
+        "mul",
+        "CONSTANT",
+        "x_0",
+        "<DIFFUSION>",
+        "mul",
+        "CONSTANT",
+        "sqrt",
+        "abs",
+        "x_0"
+      ],
+      "weak_gap": 0.14045682330669854
+    },
+    {
+      "active_gap": 0.06533297103885166,
+      "classification": "current_candidate_trap",
+      "constant_choice_differs": true,
+      "dominant_gap_segment": "mixed",
+      "p2_oracle_active_score": 0.3380561042760121,
+      "p2_oracle_best_diffusion_constant": 2.0,
+      "p2_oracle_best_drift_constant": 1.0,
+      "p2_oracle_rank": 3,
+      "p2_oracle_score": 0.7128264188136054,
+      "p2_oracle_sequence": [
+        "<DRIFT>",
+        "mul",
+        "CONSTANT",
+        "x_0",
+        "<DIFFUSION>",
+        "mul",
+        "CONSTANT",
+        "abs",
+        "x_0"
+      ],
+      "p2_oracle_weak_score": 0.3747703145375933,
+      "sample_index": 2,
+      "score_gap": 0.1231958255990181,
+      "selected_active_score": 0.27272313323716046,
+      "selected_best_diffusion_constant": 1.0,
+      "selected_best_drift_constant": 0.5,
+      "selected_is_current_candidate": true,
+      "selected_is_p2_nonoracle": false,
+      "selected_score": 0.5896305932145873,
+      "selected_sequence": [
+        "<DRIFT>",
+        "mul",
+        "CONSTANT",
+        "mul",
+        "x_0",
+        "sub",
+        "CONSTANT",
+        "x_0",
+        "<DIFFUSION>",
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "selected_source": "current_expanded",
+      "selected_weak_score": 0.31690745997742686,
+      "top_active_residual_advantages_for_oracle": [
+        {
+          "dimension_index": 76,
+          "oracle_abs_residual": 0.035602684175443905,
+          "oracle_advantage": 0.08593028883539168,
+          "segment_local_index": 4,
+          "selected_abs_residual": 0.12153297301083558
+        },
+        {
+          "dimension_index": 89,
+          "oracle_abs_residual": 0.02001096995408376,
+          "oracle_advantage": 0.058022043936923035,
+          "segment_local_index": 17,
+          "selected_abs_residual": 0.0780330138910068
+        },
+        {
+          "dimension_index": 83,
+          "oracle_abs_residual": 0.042103101692156926,
+          "oracle_advantage": 0.044441382106142326,
+          "segment_local_index": 11,
+          "selected_abs_residual": 0.08654448379829925
+        },
+        {
+          "dimension_index": 87,
+          "oracle_abs_residual": 0.01644417633147253,
+          "oracle_advantage": 0.04329777376924561,
+          "segment_local_index": 15,
+          "selected_abs_residual": 0.05974195010071814
+        },
+        {
+          "dimension_index": 77,
+          "oracle_abs_residual": 0.05490976938080069,
+          "oracle_advantage": 0.036452655972780156,
+          "segment_local_index": 5,
+          "selected_abs_residual": 0.09136242535358084
+        }
+      ],
+      "top_active_residual_advantages_for_selected": [
+        {
+          "dimension_index": 82,
+          "oracle_abs_residual": 0.18300071261038806,
+          "segment_local_index": 10,
+          "selected_abs_residual": 0.025089124537909912,
+          "selected_advantage": 0.15791158807247815
+        },
+        {
+          "dimension_index": 80,
+          "oracle_abs_residual": 0.18675603218525832,
+          "segment_local_index": 8,
+          "selected_abs_residual": 0.1120587614371893,
+          "selected_advantage": 0.07469727074806902
+        },
+        {
+          "dimension_index": 74,
+          "oracle_abs_residual": 0.10078873076802423,
+          "segment_local_index": 2,
+          "selected_abs_residual": 0.046231534815474304,
+          "selected_advantage": 0.05455719595254993
+        },
+        {
+          "dimension_index": 84,
+          "oracle_abs_residual": 0.052324543865513544,
+          "segment_local_index": 12,
+          "selected_abs_residual": 0.0036333324376163056,
+          "selected_advantage": 0.04869121142789724
+        },
+        {
+          "dimension_index": 78,
+          "oracle_abs_residual": 0.1230006779877465,
+          "segment_local_index": 6,
+          "selected_abs_residual": 0.09510398468864044,
+          "selected_advantage": 0.02789669329910606
+        }
+      ],
+      "top_weak_residual_advantages_for_oracle": [
+        {
+          "dimension_index": 161,
+          "oracle_abs_residual": 0.03794883259506205,
+          "oracle_advantage": 0.14136716298568627,
+          "segment_local_index": 71,
+          "selected_abs_residual": 0.17931599558074832
+        },
+        {
+          "dimension_index": 160,
+          "oracle_abs_residual": 0.024006799072857986,
+          "oracle_advantage": 0.12090059564283612,
+          "segment_local_index": 70,
+          "selected_abs_residual": 0.1449073947156941
+        },
+        {
+          "dimension_index": 159,
+          "oracle_abs_residual": 0.010427890226600138,
+          "oracle_advantage": 0.09757162814354457,
+          "segment_local_index": 69,
+          "selected_abs_residual": 0.10799951837014471
+        },
+        {
+          "dimension_index": 158,
+          "oracle_abs_residual": 0.0025590571452547843,
+          "oracle_advantage": 0.07418577192009466,
+          "segment_local_index": 68,
+          "selected_abs_residual": 0.07674482906534945
+        },
+        {
+          "dimension_index": 157,
+          "oracle_abs_residual": 0.0005723171951107291,
+          "oracle_advantage": 0.052660422963188964,
+          "segment_local_index": 67,
+          "selected_abs_residual": 0.05323274015829969
+        }
+      ],
+      "top_weak_residual_advantages_for_selected": [
+        {
+          "dimension_index": 133,
+          "oracle_abs_residual": 0.09802790290840081,
+          "segment_local_index": 43,
+          "selected_abs_residual": 0.010413473161837414,
+          "selected_advantage": 0.0876144297465634
+        },
+        {
+          "dimension_index": 132,
+          "oracle_abs_residual": 0.08690998355254058,
+          "segment_local_index": 42,
+          "selected_abs_residual": 0.001246987321612939,
+          "selected_advantage": 0.08566299623092764
+        },
+        {
+          "dimension_index": 134,
+          "oracle_abs_residual": 0.10839273309294327,
+          "segment_local_index": 44,
+          "selected_abs_residual": 0.02723787592598032,
+          "selected_advantage": 0.08115485716696295
+        },
+        {
+          "dimension_index": 137,
+          "oracle_abs_residual": 0.15586114185780917,
+          "segment_local_index": 47,
+          "selected_abs_residual": 0.08285128100012472,
+          "selected_advantage": 0.07300986085768445
+        },
+        {
+          "dimension_index": 135,
+          "oracle_abs_residual": 0.11941276235467185,
+          "segment_local_index": 45,
+          "selected_abs_residual": 0.047813179724842024,
+          "selected_advantage": 0.07159958262982982
+        }
+      ],
+      "truth_sequence": [
+        "<DRIFT>",
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "x_0",
+        "<DIFFUSION>",
+        "mul",
+        "CONSTANT",
+        "abs",
+        "x_0"
+      ],
+      "weak_gap": 0.05786285456016643
+    },
+    {
+      "active_gap": 0.11424205638154611,
+      "classification": "near_tie",
+      "constant_choice_differs": false,
+      "dominant_gap_segment": "near_tie",
+      "p2_oracle_active_score": 0.3946859502429891,
+      "p2_oracle_best_diffusion_constant": 1.0,
+      "p2_oracle_best_drift_constant": 0.25,
+      "p2_oracle_rank": 2,
+      "p2_oracle_score": 0.5915156996754629,
+      "p2_oracle_sequence": [
+        "<DRIFT>",
+        "mul",
+        "CONSTANT",
+        "x_0",
+        "<DIFFUSION>",
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "p2_oracle_weak_score": 0.1968297494324739,
+      "sample_index": 6,
+      "score_gap": 0.06083171418627509,
+      "selected_active_score": 0.28044389386144297,
+      "selected_best_diffusion_constant": 1.0,
+      "selected_best_drift_constant": 0.25,
+      "selected_is_current_candidate": true,
+      "selected_is_p2_nonoracle": false,
+      "selected_score": 0.5306839854891878,
+      "selected_sequence": [
+        "<DRIFT>",
+        "CONSTANT",
+        "<DIFFUSION>",
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "selected_source": "current_expanded",
+      "selected_weak_score": 0.25024009162774485,
+      "top_active_residual_advantages_for_oracle": [
+        {
+          "dimension_index": 80,
+          "oracle_abs_residual": 0.00829893131735632,
+          "oracle_advantage": 0.12806011454870164,
+          "segment_local_index": 8,
+          "selected_abs_residual": 0.13635904586605796
+        },
+        {
+          "dimension_index": 86,
+          "oracle_abs_residual": 0.016887499869001614,
+          "oracle_advantage": 0.12099158225096485,
+          "segment_local_index": 14,
+          "selected_abs_residual": 0.13787908211996647
+        },
+        {
+          "dimension_index": 89,
+          "oracle_abs_residual": 0.045495932792695266,
+          "oracle_advantage": 0.02466158793002427,
+          "segment_local_index": 17,
+          "selected_abs_residual": 0.07015752072271954
+        },
+        {
+          "dimension_index": 75,
+          "oracle_abs_residual": 0.02994567436241343,
+          "oracle_advantage": 0.017799934561528695,
+          "segment_local_index": 3,
+          "selected_abs_residual": 0.047745608923942126
+        },
+        {
+          "dimension_index": 72,
+          "oracle_abs_residual": 0.02782374925393292,
+          "oracle_advantage": 0.017663865141094217,
+          "segment_local_index": 0,
+          "selected_abs_residual": 0.04548761439502714
+        }
+      ],
+      "top_active_residual_advantages_for_selected": [
+        {
+          "dimension_index": 76,
+          "oracle_abs_residual": 0.2698933045878415,
+          "segment_local_index": 4,
+          "selected_abs_residual": 0.021219139636231947,
+          "selected_advantage": 0.24867416495160954
+        },
+        {
+          "dimension_index": 88,
+          "oracle_abs_residual": 0.16206829836849015,
+          "segment_local_index": 16,
+          "selected_abs_residual": 0.03615090801823306,
+          "selected_advantage": 0.1259173903502571
+        },
+        {
+          "dimension_index": 82,
+          "oracle_abs_residual": 0.13067081440159475,
+          "segment_local_index": 10,
+          "selected_abs_residual": 0.07768502978308439,
+          "selected_advantage": 0.05298578461851036
+        },
+        {
+          "dimension_index": 78,
+          "oracle_abs_residual": 0.08593343155569219,
+          "segment_local_index": 6,
+          "selected_abs_residual": 0.03885123206613613,
+          "selected_advantage": 0.04708219948955606
+        },
+        {
+          "dimension_index": 84,
+          "oracle_abs_residual": 0.13721207788863501,
+          "segment_local_index": 12,
+          "selected_abs_residual": 0.11262375965597232,
+          "selected_advantage": 0.024588318232662693
+        }
+      ],
+      "top_weak_residual_advantages_for_oracle": [
+        {
+          "dimension_index": 137,
+          "oracle_abs_residual": 0.045560443594787337,
+          "oracle_advantage": 0.0801907929947337,
+          "segment_local_index": 47,
+          "selected_abs_residual": 0.12575123658952103
+        },
+        {
+          "dimension_index": 136,
+          "oracle_abs_residual": 0.032769442500866997,
+          "oracle_advantage": 0.05927238486011449,
+          "segment_local_index": 46,
+          "selected_abs_residual": 0.09204182736098149
+        },
+        {
+          "dimension_index": 135,
+          "oracle_abs_residual": 0.015271322696360374,
+          "oracle_advantage": 0.038851352093589274,
+          "segment_local_index": 45,
+          "selected_abs_residual": 0.05412267478994965
+        },
+        {
+          "dimension_index": 134,
+          "oracle_abs_residual": 0.0001728733926615236,
+          "oracle_advantage": 0.023766231110399015,
+          "segment_local_index": 44,
+          "selected_abs_residual": 0.02393910450306054
+        },
+        {
+          "dimension_index": 128,
+          "oracle_abs_residual": 0.0026641867403811954,
+          "oracle_advantage": 0.0220811556440841,
+          "segment_local_index": 38,
+          "selected_abs_residual": 0.024745342384465296
+        }
+      ],
+      "top_weak_residual_advantages_for_selected": [
+        {
+          "dimension_index": 161,
+          "oracle_abs_residual": 0.08203205408429214,
+          "segment_local_index": 71,
+          "selected_abs_residual": 0.054684344127263806,
+          "selected_advantage": 0.02734770995702833
+        },
+        {
+          "dimension_index": 160,
+          "oracle_abs_residual": 0.07036440272309395,
+          "segment_local_index": 70,
+          "selected_abs_residual": 0.052825664328284366,
+          "selected_advantage": 0.017538738394809586
+        },
+        {
+          "dimension_index": 159,
+          "oracle_abs_residual": 0.06154312240995404,
+          "segment_local_index": 69,
+          "selected_abs_residual": 0.04875391493885499,
+          "selected_advantage": 0.012789207471099052
+        },
+        {
+          "dimension_index": 177,
+          "oracle_abs_residual": 0.014666955847100826,
+          "segment_local_index": 87,
+          "selected_abs_residual": 0.002401879907957541,
+          "selected_advantage": 0.012265075939143284
+        },
+        {
+          "dimension_index": 147,
+          "oracle_abs_residual": 0.01162352514352831,
+          "segment_local_index": 57,
+          "selected_abs_residual": 0.00033281987362094396,
+          "selected_advantage": 0.011290705269907365
+        }
+      ],
+      "truth_sequence": [
+        "<DRIFT>",
+        "mul",
+        "CONSTANT",
+        "x_0",
+        "<DIFFUSION>",
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "weak_gap": -0.053410342195270966
+    },
+    {
+      "active_gap": 0.18516699840619022,
+      "classification": "near_tie",
+      "constant_choice_differs": true,
+      "dominant_gap_segment": "near_tie",
+      "p2_oracle_active_score": 1.0267650287746537,
+      "p2_oracle_best_diffusion_constant": 1.0,
+      "p2_oracle_best_drift_constant": 2.0,
+      "p2_oracle_rank": 2,
+      "p2_oracle_score": 1.359635215981526,
+      "p2_oracle_sequence": [
+        "<DRIFT>",
+        "mul",
+        "CONSTANT",
+        "x_0",
+        "<DIFFUSION>",
+        "mul",
+        "CONSTANT",
+        "CONSTANT"
+      ],
+      "p2_oracle_weak_score": 0.3328701872068721,
+      "sample_index": 7,
+      "score_gap": 0.0736511758475451,
+      "selected_active_score": 0.8415980303684635,
+      "selected_best_diffusion_constant": 1.0,
+      "selected_best_drift_constant": 1.0,
+      "selected_is_current_candidate": false,
+      "selected_is_p2_nonoracle": true,
+      "selected_score": 1.2859840401339808,
+      "selected_sequence": [
+        "<DRIFT>",
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0",
+        "<DIFFUSION>",
+        "mul",
+        "CONSTANT",
+        "CONSTANT"
+      ],
+      "selected_source": "p2_admitted",
+      "selected_weak_score": 0.44438600976551734,
+      "top_active_residual_advantages_for_oracle": [
+        {
+          "dimension_index": 78,
+          "oracle_abs_residual": 0.05054838814008535,
+          "oracle_advantage": 0.22754236995891527,
+          "segment_local_index": 6,
+          "selected_abs_residual": 0.27809075809900063
+        },
+        {
+          "dimension_index": 81,
+          "oracle_abs_residual": 0.07516786869944217,
+          "oracle_advantage": 0.13845914799870332,
+          "segment_local_index": 9,
+          "selected_abs_residual": 0.2136270166981455
+        },
+        {
+          "dimension_index": 75,
+          "oracle_abs_residual": 0.1278999085178953,
+          "oracle_advantage": 0.11777895542177672,
+          "segment_local_index": 3,
+          "selected_abs_residual": 0.245678863939672
+        },
+        {
+          "dimension_index": 86,
+          "oracle_abs_residual": 0.3167096801558166,
+          "oracle_advantage": 0.08062988605094912,
+          "segment_local_index": 14,
+          "selected_abs_residual": 0.3973395662067657
+        },
+        {
+          "dimension_index": 89,
+          "oracle_abs_residual": 0.097531902402687,
+          "oracle_advantage": 0.06782939934059845,
+          "segment_local_index": 17,
+          "selected_abs_residual": 0.16536130174328545
+        }
+      ],
+      "top_active_residual_advantages_for_selected": [
+        {
+          "dimension_index": 72,
+          "oracle_abs_residual": 0.5592332924227005,
+          "segment_local_index": 0,
+          "selected_abs_residual": 0.08116105307385373,
+          "selected_advantage": 0.47807223934884674
+        },
+        {
+          "dimension_index": 76,
+          "oracle_abs_residual": 0.46892075098198266,
+          "segment_local_index": 4,
+          "selected_abs_residual": 0.1819083432811146,
+          "selected_advantage": 0.28701240770086806
+        },
+        {
+          "dimension_index": 80,
+          "oracle_abs_residual": 0.37349319315819324,
+          "segment_local_index": 8,
+          "selected_abs_residual": 0.15648569846674104,
+          "selected_advantage": 0.2170074946914522
+        },
+        {
+          "dimension_index": 84,
+          "oracle_abs_residual": 0.1376884378495248,
+          "segment_local_index": 12,
+          "selected_abs_residual": 0.05052090820577736,
+          "selected_advantage": 0.08716752964374745
+        },
+        {
+          "dimension_index": 79,
+          "oracle_abs_residual": 0.17674046634832077,
+          "segment_local_index": 7,
+          "selected_abs_residual": 0.09940414275232662,
+          "selected_advantage": 0.07733632359599416
+        }
+      ],
+      "top_weak_residual_advantages_for_oracle": [
+        {
+          "dimension_index": 114,
+          "oracle_abs_residual": 0.002848924445185691,
+          "oracle_advantage": 0.23894883056014438,
+          "segment_local_index": 24,
+          "selected_abs_residual": 0.24179775500533007
+        },
+        {
+          "dimension_index": 115,
+          "oracle_abs_residual": 0.013237924274892456,
+          "oracle_advantage": 0.17678355502064103,
+          "segment_local_index": 25,
+          "selected_abs_residual": 0.19002147929553348
+        },
+        {
+          "dimension_index": 116,
+          "oracle_abs_residual": 0.010101368384051238,
+          "oracle_advantage": 0.11469751314134846,
+          "segment_local_index": 26,
+          "selected_abs_residual": 0.1247988815253997
+        },
+        {
+          "dimension_index": 137,
+          "oracle_abs_residual": 0.022550733989438566,
+          "oracle_advantage": 0.07202313982048686,
+          "segment_local_index": 47,
+          "selected_abs_residual": 0.09457387380992542
+        },
+        {
+          "dimension_index": 121,
+          "oracle_abs_residual": 0.0012310853518713353,
+          "oracle_advantage": 0.06976969686585376,
+          "segment_local_index": 31,
+          "selected_abs_residual": 0.07100078221772509
+        }
+      ],
+      "top_weak_residual_advantages_for_selected": [
+        {
+          "dimension_index": 182,
+          "oracle_abs_residual": 0.04392249266853053,
+          "segment_local_index": 92,
+          "selected_abs_residual": 0.0019379946638764555,
+          "selected_advantage": 0.04198449800465408
+        },
+        {
+          "dimension_index": 133,
+          "oracle_abs_residual": 0.04089687722161858,
+          "segment_local_index": 43,
+          "selected_abs_residual": 0.00045917017070726544,
+          "selected_advantage": 0.04043770705091132
+        },
+        {
+          "dimension_index": 102,
+          "oracle_abs_residual": 0.03219902896260773,
+          "segment_local_index": 12,
+          "selected_abs_residual": 0.00047313762345474583,
+          "selected_advantage": 0.03172589133915298
+        },
+        {
+          "dimension_index": 132,
+          "oracle_abs_residual": 0.04087209362048212,
+          "segment_local_index": 42,
+          "selected_abs_residual": 0.00920542924556938,
+          "selected_advantage": 0.031666664374912744
+        },
+        {
+          "dimension_index": 174,
+          "oracle_abs_residual": 0.03417106740056267,
+          "segment_local_index": 84,
+          "selected_abs_residual": 0.0027485852191848274,
+          "selected_advantage": 0.031422482181377845
+        }
+      ],
+      "truth_sequence": [
+        "<DRIFT>",
+        "mul",
+        "CONSTANT",
+        "x_0",
+        "<DIFFUSION>",
+        "mul",
+        "CONSTANT",
+        "CONSTANT"
+      ],
+      "weak_gap": -0.11151582255864523
+    },
+    {
+      "active_gap": 0.2554183565892078,
+      "classification": "active_trap",
+      "constant_choice_differs": false,
+      "dominant_gap_segment": "active",
+      "p2_oracle_active_score": 0.5435599186398308,
+      "p2_oracle_best_diffusion_constant": 1.0,
+      "p2_oracle_best_drift_constant": 0.25,
+      "p2_oracle_rank": 10,
+      "p2_oracle_score": 0.6908803725905245,
+      "p2_oracle_sequence": [
+        "<DRIFT>",
+        "mul",
+        "CONSTANT",
+        "x_0",
+        "<DIFFUSION>",
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "p2_oracle_weak_score": 0.1473204539506937,
+      "sample_index": 15,
+      "score_gap": 0.29166258558557623,
+      "selected_active_score": 0.28814156205062297,
+      "selected_best_diffusion_constant": 1.0,
+      "selected_best_drift_constant": 0.25,
+      "selected_is_current_candidate": true,
+      "selected_is_p2_nonoracle": false,
+      "selected_score": 0.39921778700494825,
+      "selected_sequence": [
+        "<DRIFT>",
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0",
+        "<DIFFUSION>",
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "selected_source": "current_expanded",
+      "selected_weak_score": 0.11107622495432526,
+      "top_active_residual_advantages_for_oracle": [
+        {
+          "dimension_index": 77,
+          "oracle_abs_residual": 0.0030262814109012766,
+          "oracle_advantage": 0.031543266505526746,
+          "segment_local_index": 5,
+          "selected_abs_residual": 0.03456954791642802
+        },
+        {
+          "dimension_index": 82,
+          "oracle_abs_residual": 0.2161981999812739,
+          "oracle_advantage": 0.02359280755865631,
+          "segment_local_index": 10,
+          "selected_abs_residual": 0.2397910075399302
+        },
+        {
+          "dimension_index": 87,
+          "oracle_abs_residual": 0.011571024550081552,
+          "oracle_advantage": 0.013132484420107528,
+          "segment_local_index": 15,
+          "selected_abs_residual": 0.02470350897018908
+        },
+        {
+          "dimension_index": 80,
+          "oracle_abs_residual": 0.053355173762931536,
+          "oracle_advantage": 0.01081959104588607,
+          "segment_local_index": 8,
+          "selected_abs_residual": 0.0641747648088176
+        },
+        {
+          "dimension_index": 72,
+          "oracle_abs_residual": 0.09116833686711588,
+          "oracle_advantage": 0.004594025723277592,
+          "segment_local_index": 0,
+          "selected_abs_residual": 0.09576236259039347
+        }
+      ],
+      "top_active_residual_advantages_for_selected": [
+        {
+          "dimension_index": 76,
+          "oracle_abs_residual": 0.439843387641437,
+          "segment_local_index": 4,
+          "selected_abs_residual": 0.012113279024463103,
+          "selected_advantage": 0.4277301086169739
+        },
+        {
+          "dimension_index": 86,
+          "oracle_abs_residual": 0.11880399449889699,
+          "segment_local_index": 14,
+          "selected_abs_residual": 0.03679262294763204,
+          "selected_advantage": 0.08201137155126495
+        },
+        {
+          "dimension_index": 74,
+          "oracle_abs_residual": 0.10707396809261954,
+          "segment_local_index": 2,
+          "selected_abs_residual": 0.047831293752400056,
+          "selected_advantage": 0.05924267434021949
+        },
+        {
+          "dimension_index": 88,
+          "oracle_abs_residual": 0.05707917718867975,
+          "segment_local_index": 16,
+          "selected_abs_residual": 0.011069318219917954,
+          "selected_advantage": 0.046009858968761794
+        },
+        {
+          "dimension_index": 83,
+          "oracle_abs_residual": 0.04533489602773201,
+          "segment_local_index": 11,
+          "selected_abs_residual": 0.0027204312635417957,
+          "selected_advantage": 0.042614464764190216
+        }
+      ],
+      "top_weak_residual_advantages_for_oracle": [
+        {
+          "dimension_index": 133,
+          "oracle_abs_residual": 0.000891630609646091,
+          "oracle_advantage": 0.007645775834159254,
+          "segment_local_index": 43,
+          "selected_abs_residual": 0.008537406443805346
+        },
+        {
+          "dimension_index": 117,
+          "oracle_abs_residual": 0.015420925531774647,
+          "oracle_advantage": 0.003634744688994787,
+          "segment_local_index": 27,
+          "selected_abs_residual": 0.019055670220769434
+        },
+        {
+          "dimension_index": 118,
+          "oracle_abs_residual": 0.015222098331094688,
+          "oracle_advantage": 0.0036251670244527145,
+          "segment_local_index": 28,
+          "selected_abs_residual": 0.018847265355547402
+        },
+        {
+          "dimension_index": 116,
+          "oracle_abs_residual": 0.01558042475758626,
+          "oracle_advantage": 0.0035960026732763835,
+          "segment_local_index": 26,
+          "selected_abs_residual": 0.019176427430862644
+        },
+        {
+          "dimension_index": 119,
+          "oracle_abs_residual": 0.014972164804034002,
+          "oracle_advantage": 0.003561108519597997,
+          "segment_local_index": 29,
+          "selected_abs_residual": 0.018533273323632
+        }
+      ],
+      "top_weak_residual_advantages_for_selected": [
+        {
+          "dimension_index": 137,
+          "oracle_abs_residual": 0.0761336143765382,
+          "segment_local_index": 47,
+          "selected_abs_residual": 0.012230002192555817,
+          "selected_advantage": 0.06390361218398238
+        },
+        {
+          "dimension_index": 136,
+          "oracle_abs_residual": 0.04908776629815872,
+          "segment_local_index": 46,
+          "selected_abs_residual": 0.0186553976126866,
+          "selected_advantage": 0.030432368685472118
+        },
+        {
+          "dimension_index": 135,
+          "oracle_abs_residual": 0.02559523391213187,
+          "segment_local_index": 45,
+          "selected_abs_residual": 0.01678529896516837,
+          "selected_advantage": 0.008809934946963499
+        },
+        {
+          "dimension_index": 182,
+          "oracle_abs_residual": 0.015219554085013664,
+          "segment_local_index": 92,
+          "selected_abs_residual": 0.007528433697059649,
+          "selected_advantage": 0.007691120387954015
+        },
+        {
+          "dimension_index": 181,
+          "oracle_abs_residual": 0.02412655306973219,
+          "segment_local_index": 91,
+          "selected_abs_residual": 0.016681993603568666,
+          "selected_advantage": 0.007444559466163524
+        }
+      ],
+      "truth_sequence": [
+        "<DRIFT>",
+        "mul",
+        "CONSTANT",
+        "x_0",
+        "<DIFFUSION>",
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "weak_gap": 0.03624422899636845
+    },
+    {
+      "active_gap": 0.7695548795077873,
+      "classification": "active_trap",
+      "constant_choice_differs": true,
+      "dominant_gap_segment": "active",
+      "p2_oracle_active_score": 1.222804657336682,
+      "p2_oracle_best_diffusion_constant": 0.5,
+      "p2_oracle_best_drift_constant": 0.25,
+      "p2_oracle_rank": 32,
+      "p2_oracle_score": 2.295592326606074,
+      "p2_oracle_sequence": [
+        "<DRIFT>",
+        "mul",
+        "CONSTANT",
+        "x_0",
+        "<DIFFUSION>",
+        "mul",
+        "CONSTANT",
+        "abs",
+        "x_0"
+      ],
+      "p2_oracle_weak_score": 1.0727876692693916,
+      "sample_index": 25,
+      "score_gap": 1.4305316842684028,
+      "selected_active_score": 0.45324977782889464,
+      "selected_best_diffusion_constant": 0.5,
+      "selected_best_drift_constant": 0.5,
+      "selected_is_current_candidate": true,
+      "selected_is_p2_nonoracle": false,
+      "selected_score": 0.865060642337671,
+      "selected_sequence": [
+        "<DRIFT>",
+        "mul",
+        "CONSTANT",
+        "mul",
+        "x_0",
+        "sub",
+        "CONSTANT",
+        "x_0",
+        "<DIFFUSION>",
+        "mul",
+        "CONSTANT",
+        "sqrt",
+        "abs",
+        "x_0"
+      ],
+      "selected_source": "current_expanded",
+      "selected_weak_score": 0.41181086450877635,
+      "top_active_residual_advantages_for_oracle": [
+        {
+          "dimension_index": 78,
+          "oracle_abs_residual": 0.09594299900378478,
+          "oracle_advantage": 0.030216595262109847,
+          "segment_local_index": 6,
+          "selected_abs_residual": 0.12615959426589463
+        },
+        {
+          "dimension_index": 84,
+          "oracle_abs_residual": 0.08979433165478312,
+          "oracle_advantage": 0.027686650679201688,
+          "segment_local_index": 12,
+          "selected_abs_residual": 0.11748098233398481
+        },
+        {
+          "dimension_index": 75,
+          "oracle_abs_residual": 0.005293399429786942,
+          "oracle_advantage": 0.020626585693854085,
+          "segment_local_index": 3,
+          "selected_abs_residual": 0.025919985123641028
+        },
+        {
+          "dimension_index": 81,
+          "oracle_abs_residual": 0.022112629265520226,
+          "oracle_advantage": 0.0037616965943842832,
+          "segment_local_index": 9,
+          "selected_abs_residual": 0.02587432585990451
+        },
+        {
+          "dimension_index": 89,
+          "oracle_abs_residual": 0.01376891223167136,
+          "oracle_advantage": 0.0027390982738904578,
+          "segment_local_index": 17,
+          "selected_abs_residual": 0.016508010505561818
+        }
+      ],
+      "top_active_residual_advantages_for_selected": [
+        {
+          "dimension_index": 88,
+          "oracle_abs_residual": 0.7895368388833347,
+          "segment_local_index": 16,
+          "selected_abs_residual": 0.02230253392175553,
+          "selected_advantage": 0.7672343049615792
+        },
+        {
+          "dimension_index": 76,
+          "oracle_abs_residual": 0.4117713291214043,
+          "segment_local_index": 4,
+          "selected_abs_residual": 0.05914107911550624,
+          "selected_advantage": 0.35263025000589804
+        },
+        {
+          "dimension_index": 86,
+          "oracle_abs_residual": 0.33543190782385,
+          "segment_local_index": 14,
+          "selected_abs_residual": 0.07107294817093333,
+          "selected_advantage": 0.26435895965291667
+        },
+        {
+          "dimension_index": 74,
+          "oracle_abs_residual": 0.3363897787378397,
+          "segment_local_index": 2,
+          "selected_abs_residual": 0.12637313724755306,
+          "selected_advantage": 0.21001664149028665
+        },
+        {
+          "dimension_index": 82,
+          "oracle_abs_residual": 0.5702264529746389,
+          "segment_local_index": 10,
+          "selected_abs_residual": 0.3680958970820426,
+          "selected_advantage": 0.20213055589259632
+        }
+      ],
+      "top_weak_residual_advantages_for_oracle": [
+        {
+          "dimension_index": 180,
+          "oracle_abs_residual": 0.002980646390192411,
+          "oracle_advantage": 0.04536034900381655,
+          "segment_local_index": 90,
+          "selected_abs_residual": 0.04834099539400896
+        },
+        {
+          "dimension_index": 107,
+          "oracle_abs_residual": 0.01775700363567103,
+          "oracle_advantage": 0.041244366129982966,
+          "segment_local_index": 17,
+          "selected_abs_residual": 0.059001369765653996
+        },
+        {
+          "dimension_index": 154,
+          "oracle_abs_residual": 0.0013836822261078649,
+          "oracle_advantage": 0.02350458561549979,
+          "segment_local_index": 64,
+          "selected_abs_residual": 0.024888267841607657
+        },
+        {
+          "dimension_index": 155,
+          "oracle_abs_residual": 0.005010090589512849,
+          "oracle_advantage": 0.02005724667780154,
+          "segment_local_index": 65,
+          "selected_abs_residual": 0.02506733726731439
+        },
+        {
+          "dimension_index": 117,
+          "oracle_abs_residual": 0.03977405795146637,
+          "oracle_advantage": 0.017777323144682,
+          "segment_local_index": 27,
+          "selected_abs_residual": 0.05755138109614837
+        }
+      ],
+      "top_weak_residual_advantages_for_selected": [
+        {
+          "dimension_index": 137,
+          "oracle_abs_residual": 0.3590064575660557,
+          "segment_local_index": 47,
+          "selected_abs_residual": 0.016910720530531193,
+          "selected_advantage": 0.34209573703552454
+        },
+        {
+          "dimension_index": 136,
+          "oracle_abs_residual": 0.3238941701614436,
+          "segment_local_index": 46,
+          "selected_abs_residual": 0.03381644910063842,
+          "selected_advantage": 0.2900777210608052
+        },
+        {
+          "dimension_index": 135,
+          "oracle_abs_residual": 0.2990367975800544,
+          "segment_local_index": 45,
+          "selected_abs_residual": 0.048788676463370935,
+          "selected_advantage": 0.2502481211166835
+        },
+        {
+          "dimension_index": 134,
+          "oracle_abs_residual": 0.2771493798447537,
+          "segment_local_index": 44,
+          "selected_abs_residual": 0.060480293793390316,
+          "selected_advantage": 0.21666908605136337
+        },
+        {
+          "dimension_index": 133,
+          "oracle_abs_residual": 0.25572943518685326,
+          "segment_local_index": 43,
+          "selected_abs_residual": 0.06867138035999108,
+          "selected_advantage": 0.18705805482686216
+        }
+      ],
+      "truth_sequence": [
+        "<DRIFT>",
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "x_0",
+        "<DIFFUSION>",
+        "mul",
+        "CONSTANT",
+        "abs",
+        "x_0"
+      ],
+      "weak_gap": 0.6609768047606153
+    },
+    {
+      "active_gap": 0.3741914110567913,
+      "classification": "active_trap",
+      "constant_choice_differs": true,
+      "dominant_gap_segment": "active",
+      "p2_oracle_active_score": 0.7734321658016243,
+      "p2_oracle_best_diffusion_constant": 2.0,
+      "p2_oracle_best_drift_constant": 1.0,
+      "p2_oracle_rank": 14,
+      "p2_oracle_score": 1.5295500008551777,
+      "p2_oracle_sequence": [
+        "<DRIFT>",
+        "mul",
+        "CONSTANT",
+        "x_0",
+        "<DIFFUSION>",
+        "mul",
+        "CONSTANT",
+        "CONSTANT"
+      ],
+      "p2_oracle_weak_score": 0.7561178350535535,
+      "sample_index": 29,
+      "score_gap": 0.5689119348936764,
+      "selected_active_score": 0.399240754744833,
+      "selected_best_diffusion_constant": 1.0,
+      "selected_best_drift_constant": 0.25,
+      "selected_is_current_candidate": false,
+      "selected_is_p2_nonoracle": true,
+      "selected_score": 0.9606380659615013,
+      "selected_sequence": [
+        "<DRIFT>",
+        "mul",
+        "CONSTANT",
+        "mul",
+        "x_0",
+        "sub",
+        "CONSTANT",
+        "x_0",
+        "<DIFFUSION>",
+        "mul",
+        "CONSTANT",
+        "CONSTANT"
+      ],
+      "selected_source": "p2_admitted",
+      "selected_weak_score": 0.5613973112166682,
+      "top_active_residual_advantages_for_oracle": [
+        {
+          "dimension_index": 89,
+          "oracle_abs_residual": 0.007316422454669502,
+          "oracle_advantage": 0.01963893006169755,
+          "segment_local_index": 17,
+          "selected_abs_residual": 0.02695535251636705
+        },
+        {
+          "dimension_index": 79,
+          "oracle_abs_residual": 0.0022861865727779145,
+          "oracle_advantage": 0.01736074123866253,
+          "segment_local_index": 7,
+          "selected_abs_residual": 0.019646927811440444
+        },
+        {
+          "dimension_index": 83,
+          "oracle_abs_residual": 0.0026836668609844876,
+          "oracle_advantage": 0.009419346947544158,
+          "segment_local_index": 11,
+          "selected_abs_residual": 0.012103013808528646
+        },
+        {
+          "dimension_index": 87,
+          "oracle_abs_residual": 0.002808503747969901,
+          "oracle_advantage": 0.005079122267802436,
+          "segment_local_index": 15,
+          "selected_abs_residual": 0.007887626015772337
+        },
+        {
+          "dimension_index": 85,
+          "oracle_abs_residual": 0.0013629020454970807,
+          "oracle_advantage": 0.004507986198258612,
+          "segment_local_index": 13,
+          "selected_abs_residual": 0.005870888243755693
+        }
+      ],
+      "top_active_residual_advantages_for_selected": [
+        {
+          "dimension_index": 82,
+          "oracle_abs_residual": 0.3089552716679283,
+          "segment_local_index": 10,
+          "selected_abs_residual": 0.06786064785080581,
+          "selected_advantage": 0.2410946238171225
+        },
+        {
+          "dimension_index": 78,
+          "oracle_abs_residual": 0.2722574085587273,
+          "segment_local_index": 6,
+          "selected_abs_residual": 0.07445207597857102,
+          "selected_advantage": 0.1978053325801563
+        },
+        {
+          "dimension_index": 74,
+          "oracle_abs_residual": 0.30226560676387315,
+          "segment_local_index": 2,
+          "selected_abs_residual": 0.11520010473191922,
+          "selected_advantage": 0.18706550203195393
+        },
+        {
+          "dimension_index": 84,
+          "oracle_abs_residual": 0.25791070817456013,
+          "segment_local_index": 12,
+          "selected_abs_residual": 0.09318746279399868,
+          "selected_advantage": 0.16472324538056143
+        },
+        {
+          "dimension_index": 88,
+          "oracle_abs_residual": 0.2371206955131756,
+          "segment_local_index": 16,
+          "selected_abs_residual": 0.09419616913780206,
+          "selected_advantage": 0.14292452637537356
+        }
+      ],
+      "top_weak_residual_advantages_for_oracle": [
+        {
+          "dimension_index": 115,
+          "oracle_abs_residual": 0.11540131863075823,
+          "oracle_advantage": 0.128488482886081,
+          "segment_local_index": 25,
+          "selected_abs_residual": 0.24388980151683923
+        },
+        {
+          "dimension_index": 116,
+          "oracle_abs_residual": 0.114803634607968,
+          "oracle_advantage": 0.12200008596678846,
+          "segment_local_index": 26,
+          "selected_abs_residual": 0.23680372057475646
+        },
+        {
+          "dimension_index": 117,
+          "oracle_abs_residual": 0.1125031276752407,
+          "oracle_advantage": 0.09228914747268427,
+          "segment_local_index": 27,
+          "selected_abs_residual": 0.20479227514792497
+        },
+        {
+          "dimension_index": 114,
+          "oracle_abs_residual": 0.12169799284360774,
+          "oracle_advantage": 0.08148395283491175,
+          "segment_local_index": 24,
+          "selected_abs_residual": 0.2031819456785195
+        },
+        {
+          "dimension_index": 118,
+          "oracle_abs_residual": 0.10189246264438351,
+          "oracle_advantage": 0.06762382042802365,
+          "segment_local_index": 28,
+          "selected_abs_residual": 0.16951628307240715
+        }
+      ],
+      "top_weak_residual_advantages_for_selected": [
+        {
+          "dimension_index": 137,
+          "oracle_abs_residual": 0.24314235206363752,
+          "segment_local_index": 47,
+          "selected_abs_residual": 0.032592933670684054,
+          "selected_advantage": 0.21054941839295346
+        },
+        {
+          "dimension_index": 136,
+          "oracle_abs_residual": 0.22301743760893233,
+          "segment_local_index": 46,
+          "selected_abs_residual": 0.03823358962641863,
+          "selected_advantage": 0.1847838479825137
+        },
+        {
+          "dimension_index": 135,
+          "oracle_abs_residual": 0.2069425632420059,
+          "segment_local_index": 45,
+          "selected_abs_residual": 0.0454148697433677,
+          "selected_advantage": 0.16152769349863821
+        },
+        {
+          "dimension_index": 134,
+          "oracle_abs_residual": 0.19237905142076217,
+          "segment_local_index": 44,
+          "selected_abs_residual": 0.05235323340947931,
+          "selected_advantage": 0.14002581801128286
+        },
+        {
+          "dimension_index": 180,
+          "oracle_abs_residual": 0.150373422343999,
+          "segment_local_index": 90,
+          "selected_abs_residual": 0.012279141117386748,
+          "selected_advantage": 0.13809428122661224
+        }
+      ],
+      "truth_sequence": [
+        "<DRIFT>",
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "x_0",
+        "<DIFFUSION>",
+        "mul",
+        "CONSTANT",
+        "CONSTANT"
+      ],
+      "weak_gap": 0.1947205238368852
+    }
+  ],
+  "summary": {
+    "active_gap_summary": {
+      "max": 0.7695548795077873,
+      "median": 0.18516699840619022,
+      "min": 0.0235337161186768
+    },
+    "classification_counts": {
+      "active_trap": 3,
+      "current_candidate_trap": 1,
+      "near_tie": 2,
+      "weak_trap": 1
+    },
+    "constant_mismatch_count": 4,
+    "decision": "B",
+    "dominant_gap_segment_counts": {
+      "active": 3,
+      "mixed": 1,
+      "near_tie": 2,
+      "weak": 1
+    },
+    "formal_eval_recommended": false,
+    "near_gap_counts": {
+      "0.005": 0,
+      "0.01": 0,
+      "0.05": 0,
+      "0.1": 2
+    },
+    "recommendation": "Mostly active/weak residual traps; do not integrate P2 yet, diagnose residual behavior on these cases only.",
+    "samples_analyzed": 7,
+    "score_gap_summary": {
+      "max": 1.4305316842684028,
+      "median": 0.16399053942537534,
+      "min": 0.06083171418627509
+    },
+    "selected_source_counts": {
+      "current_expanded": 4,
+      "p2_admitted": 3
+    },
+    "top_active_dimensions_frequency": {
+      "72": 2,
+      "76": 5,
+      "78": 1,
+      "80": 1,
+      "82": 2,
+      "86": 1,
+      "88": 2
+    },
+    "top_weak_dimensions_frequency": {
+      "115": 1,
+      "116": 1,
+      "132": 1,
+      "133": 2,
+      "136": 3,
+      "137": 3,
+      "160": 1,
+      "161": 1,
+      "182": 1
+    },
+    "weak_gap_summary": {
+      "max": 0.6609768047606153,
+      "median": 0.05786285456016643,
+      "min": -0.11151582255864523
+    }
+  }
+}

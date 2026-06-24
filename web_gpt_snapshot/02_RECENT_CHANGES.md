@@ -2,6 +2,82 @@
 
 ## Last Codex Workflow
 
+Codex added a targeted residual/segment diagnostic for the 7 P2 oracle score
+misses:
+
+```text
+scripts/analyze_p2_oracle_score_miss_residuals.py
+p2_oracle_score_miss_residual_diagnostics.md
+p2_oracle_score_miss_residual_diagnostics.json
+/private/tmp/gensr_sde_p2_oracle_score_miss_residuals.log
+```
+
+This used existing sidecar/scoring JSON only. It did not run model decoding,
+candidate generation/regeneration, formal eval, 64-sample eval, retraining,
+scorer grids, active/weak grids, checkpoint/data changes, target-format changes,
+fingerprint schema changes, production default changes, or a new rerank mode.
+
+Result:
+
+```text
+samples_analyzed=7
+selected_source_counts:
+  current_expanded=4
+  p2_admitted=3
+dominant_gap_segment_counts:
+  active=3
+  weak=1
+  near_tie=2
+  mixed=1
+classification_counts:
+  active_trap=3
+  weak_trap=1
+  near_tie=2
+  current_candidate_trap=1
+near_gap_counts:
+  <=0.005: 0
+  <=0.01: 0
+  <=0.05: 0
+  <=0.10: 2
+constant_mismatch_count=4
+score_gap_summary:
+  min=0.06083171418627509
+  median=0.16399053942537534
+  max=1.4305316842684028
+active_gap_summary:
+  min=0.0235337161186768
+  median=0.18516699840619022
+  max=0.7695548795077873
+weak_gap_summary:
+  min=-0.11151582255864523
+  median=0.05786285456016643
+  max=0.6609768047606153
+top_active_dimensions_frequency:
+  76: 5
+  72: 2
+  82: 2
+  88: 2
+top_weak_dimensions_frequency:
+  136: 3
+  137: 3
+  133: 2
+decision=B
+```
+
+Interpretation: the P2 oracle score misses are mostly active/weak residual
+traps, not parse/fingerprint/serialization failures. P2 admission should not be
+integrated into eval yet; any next work should stay diagnostic and focus on
+residual behavior for these cases.
+
+Verification:
+
+```text
+py_compile scripts/analyze_p2_oracle_score_miss_residuals.py scripts/analyze_p2_admitted_candidate_scoring.py sde_fingerprint.py simulator_sde.py sde_dataset_generator.py: passed
+helper run: passed
+```
+
+## Previous Codex Workflow
+
 Codex extended `scripts/analyze_p2_admitted_candidate_scoring.py` to score the
 P2 scorer-ready sidecar offline:
 

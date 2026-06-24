@@ -1155,3 +1155,50 @@ decision=B
 
 Next step should be a targeted residual/segment diagnostic for the 7 P2 oracle
 score misses. Do not run formal eval or integrate P2 admission into eval yet.
+
+## P2 Oracle Score-Miss Residual Diagnostic
+
+This recomputes selected-vs-P2-oracle active/weak residual vectors from
+existing sidecar/scoring JSON only. It does not run model decoding, candidate
+generation/regeneration, formal eval, 64-sample eval, retraining, scorer grids,
+active/weak grids, checkpoint/data changes, target-format changes, fingerprint
+schema changes, production default changes, or a new rerank mode.
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/tmp/cache \
+/opt/miniconda3/envs/gensr/bin/python3 scripts/analyze_p2_oracle_score_miss_residuals.py \
+  --semantic-scoring-json p2_admitted_candidate_semantic_scoring.json \
+  --scorer-ready-json p2_scorer_ready_candidates.json \
+  --target-samples 0,2,6,7,15,25,29 \
+  --report p2_oracle_score_miss_residual_diagnostics.md \
+  --json-output p2_oracle_score_miss_residual_diagnostics.json \
+  > /private/tmp/gensr_sde_p2_oracle_score_miss_residuals.log 2>&1
+```
+
+Compile check:
+
+```bash
+PYTHONPYCACHEPREFIX=/private/tmp/gensr_pycache \
+/opt/miniconda3/envs/gensr/bin/python3 -m py_compile \
+  scripts/analyze_p2_oracle_score_miss_residuals.py \
+  scripts/analyze_p2_admitted_candidate_scoring.py \
+  sde_fingerprint.py \
+  simulator_sde.py \
+  sde_dataset_generator.py
+```
+
+Latest result:
+
+```text
+selected_source_counts: current_expanded=4, p2_admitted=3
+dominant_gap_segment_counts: active=3, weak=1, near_tie=2, mixed=1
+classification_counts: active_trap=3, weak_trap=1, near_tie=2, current_candidate_trap=1
+near_gap_counts: <=0.005=0, <=0.01=0, <=0.05=0, <=0.10=2
+top_active_dimensions_frequency: 76=5, 72=2, 82=2, 88=2
+top_weak_dimensions_frequency: 136=3, 137=3, 133=2
+constant_mismatch_count=4
+decision=B
+```
+
+Do not integrate P2 admission into eval yet; residual behavior is still the
+blocker.

@@ -2,9 +2,9 @@
 
 ## Next Engineering Task
 
-Decide the next residual/segment diagnostic for the 7 P2 oracle score misses
-after offline semantic scoring selected 0/7 P2 oracle candidates. Do not widen
-drift beam/top-k or change production candidate-generation defaults from this
+Decide the next scorer-side residual/calibration diagnostic after P2
+score-miss residuals showed mostly active/weak traps. Do not widen drift
+beam/top-k or change production candidate-generation defaults from this
 coverage-only result alone.
 The drift-only smoke is complete: exact drift appears in only `3/17` targets,
 all beam rank-30 nested-mul linear cases. Candidate-normalization folding is
@@ -31,6 +31,9 @@ The minimal logging gap has now been fixed:
 and `--scorer-ready-target-samples`, and `p2_scorer_ready_candidates.json`
 validates with decision `A`. Offline semantic scoring on that sidecar is now
 complete and selects 0/7 P2 oracle candidates.
+The targeted residual/segment diagnostic is now complete: classifications are
+active-trap 3, weak-trap 1, near-tie 2, current-candidate trap 1. This does not
+support P2 eval integration yet.
 
 Current strongest no-retraining decoding setting:
 
@@ -413,8 +416,8 @@ prior validation. A follow-up scorer-ready sidecar logging run now provides
 target fingerprint / `y_to_fit` fields and full candidate rows for the 7 P2
 newly recovered samples. Offline semantic scoring now shows all 7 P2 oracle
 candidates lose under the current scorer, so the next useful step is a targeted
-residual/segment diagnostic, not naive global beam/top-k expansion or formal
-eval.
+residual/calibration diagnostic on the observed active/weak traps, not naive
+global beam/top-k expansion or formal eval.
 
 Do not launch formal eval from these diagnostics. Exact-tail admission alone is
 weak and expensive-looking because all exact hits are rank-30 beam cases.
