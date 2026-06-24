@@ -108,7 +108,17 @@ eval-only checkpoint command, reproducing the known headline metrics
 (`selected=5/32`, `oracle=9/32`, `pair_oracle=2/32`). The regenerated log and
 other surviving `/private/tmp/gensr_sde*.log/json` artifacts were copied to the
 ignored long-term local backup directory
-`experiment_logs/2026-06-24_tmp_gensr_sde_logs/`.
+`experiment_logs/2026-06-24_tmp_gensr_sde_logs/`. The explicit runtime
+coverage-only smoke has now run through `scripts/analyze_candidate_coverage.py`
+with `--normalized-drift-admission p2_one_per_family`, producing
+`candidate_coverage_pair_expanded_p2_flag.md/json`. It matches the prior
+JSON-only validation exactly: current expanded full oracle `15/32`,
+canonicalized expanded-pool coverage `23/32`, P2 normalized admission coverage
+`30/32`, P2 pair count `340`, newly recovered samples `0,2,6,7,15,25,29`,
+remaining missing `16,28`, sampling excluded, and `unsafe_collision_flag=False`.
+This confirms the default-off P2 flag is runnable as a coverage-only diagnostic
+path, but it is still not selected-rerank evidence and should not become a
+production default.
 
 ## Last Updated
 
@@ -465,6 +475,19 @@ ignored long-term local backup directory
   the surviving `/private/tmp/gensr_sde*.log/json` artifacts to
   `experiment_logs/2026-06-24_tmp_gensr_sde_logs/`; this directory is ignored
   by git.
+- Ran the explicit P2 candidate coverage flag smoke, writing
+  [candidate_coverage_pair_expanded_p2_flag.md](/Users/lzhang/Documents/GenSR_SDE/candidate_coverage_pair_expanded_p2_flag.md)
+  /
+  [candidate_coverage_pair_expanded_p2_flag.json](/Users/lzhang/Documents/GenSR_SDE/candidate_coverage_pair_expanded_p2_flag.json).
+  The runtime path reproduced expanded full-oracle coverage `15/32`, canonical
+  expanded-pool coverage `23/32`, P2 normalized admission coverage `30/32`, P2
+  pair count `340`, newly recovered samples `0,2,6,7,15,25,29`, remaining
+  missing `16,28`, sampling recovered canonical drifts `0`, and
+  `unsafe_collision_flag=False`. Updated
+  [candidate_coverage_pair_expanded_p2_flag_runtime_report.md](/Users/lzhang/Documents/GenSR_SDE/candidate_coverage_pair_expanded_p2_flag_runtime_report.md)
+  /
+  [candidate_coverage_pair_expanded_p2_flag_runtime_report.json](/Users/lzhang/Documents/GenSR_SDE/candidate_coverage_pair_expanded_p2_flag_runtime_report.json)
+  to decision `A`. No formal eval was run.
 - Logged validated experiments in
   [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md).
 
@@ -472,10 +495,9 @@ ignored long-term local backup directory
 
 - Transitioning from "can the model learn the fingerprint?" to "can we decode
   the right symbolic sequence?".
-- Ready to rerun the explicit `--normalized-drift-admission p2_one_per_family`
-  candidate-coverage runtime smoke now that
-  `/private/tmp/gensr_sde_32_rolewise_no_multi_u0.log` has been regenerated and
-  backed up. Do not treat this as selected-rerank evidence or a production
+- Deciding what coverage-only or selected-rerank diagnostic should follow the
+  now-runnable explicit `--normalized-drift-admission p2_one_per_family` path.
+  Do not treat the P2 flag smoke as selected-rerank evidence or a production
   default change. Residual-debug safety checks do not support continuing
   scorer-side normalization.
 - The 2000-step role-token checkpoint has been restored in `/private/tmp` and
@@ -507,10 +529,10 @@ ignored long-term local backup directory
    expanded-pairing 16-sample smoke had 5 oracle samples, 0 selected hits, and
    0/5 offline miss rescues, so do not run a formal 32-sample eval for this
    scorer idea.
-9. Run the exact coverage-only `--normalized-drift-admission
-   p2_one_per_family` command now that the source log has been regenerated.
-   JSON validation still preserves the `30/32` diagnostic ceiling with target
-   pair count `340`, versus `1105` for full normalized admission.
+9. Keep `--normalized-drift-admission p2_one_per_family` as an explicit
+   coverage-only diagnostic path. It now reproduces the `30/32` diagnostic
+   ceiling with target pair count `340`, versus `1105` for full normalized
+   admission, in the actual candidate coverage pipeline.
 10. Do not run formal eval from the drift-only or constant-folding diagnostics;
    they are oracle-coverage diagnostics, not selected-recovery evidence.
 11. Keep drift/diffusion pairing enabled and tune candidate pool size carefully

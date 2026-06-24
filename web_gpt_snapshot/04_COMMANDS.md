@@ -606,12 +606,20 @@ mismatch_count=0
 decision=A
 ```
 
-Latest runtime-smoke attempt:
+Latest runtime-smoke result:
 
 ```text
-previous_status=blocked_before_log_restore
-current_source_log_status=restored
-backup_dir=experiment_logs/2026-06-24_tmp_gensr_sde_logs/
+status=completed
+current_expanded_full_oracle=15/32
+canonicalized_expanded_pool_coverage=23/32
+P2_normalized_admission_coverage=30/32
+P2_pair_count=340
+newly_recovered=0,2,6,7,15,25,29
+remaining_missing=16,28
+sampling_excluded=True
+sampling_recovered_canonical_drift_count=0
+unsafe_collision_flag=False
+decision=A
 ```
 
 No formal eval is recommended from this validation.

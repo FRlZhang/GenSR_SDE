@@ -2,59 +2,50 @@
 
 ## Last Codex Workflow
 
-Codex regenerated the missing baseline role-wise source log and backed up
-surviving `/private/tmp` SDE experiment logs:
+Codex ran the explicit P2 normalized drift admission candidate coverage smoke:
 
 ```text
-/private/tmp/gensr_sde_32_rolewise_no_multi_u0.log
-experiment_logs/2026-06-24_tmp_gensr_sde_logs/
+candidate_coverage_pair_expanded_p2_flag.md
+candidate_coverage_pair_expanded_p2_flag.json
+candidate_coverage_pair_expanded_p2_flag_runtime_report.md
+candidate_coverage_pair_expanded_p2_flag_runtime_report.json
+/private/tmp/gensr_sde_candidate_coverage_pair_expanded_p2_flag.log
 ```
 
-Regenerated log metrics:
+This was a coverage-only candidate-generation smoke through
+`scripts/analyze_candidate_coverage.py` with:
 
 ```text
-reranked_sequence_exact=0.156250      # 5/32
-reranked_sequence_relaxed_no_constants=0.156250
-rerank_oracle_sequence_exact=0.281250 # 9/32
-rerank_pair_oracle_sequence_exact=0.062500 # 2/32
-rerank_candidates_valid=405
-rerank_pair_candidates_valid=103
+--normalized-drift-admission p2_one_per_family
+--normalized-drift-admission-source beam
+--drift-only-json drift_only_candidate_diversity_smoke.json
 ```
 
-Backup contents:
+Runtime metrics:
 
 ```text
-MANIFEST.txt
-README.txt
-all surviving /private/tmp/gensr_sde*.log files
-all surviving /private/tmp/gensr_sde*.json files
-```
-
-The backup directory is ignored by git via the existing `*logs` pattern.
-
-Previous JSON-only P2 flag validation still holds:
-
-```text
-current_expanded_full_oracle=15/32
+full_oracle_present=15/32
+oracle_absent_missing_sides=drift:17
 canonicalized_expanded_pool_coverage=23/32
-P2_normalized_admission_coverage=30/32
-P2_pair_count=340
+p2_normalized_admission_coverage=30/32
+p2_pair_count=340
 newly_recovered=0,2,6,7,15,25,29
 remaining_missing=16,28
 sampling_excluded=True
 sampling_recovered_canonical_drift_count=0
 unsafe_collision_flag=False
+decision=A
 ```
 
-Interpretation: the source log needed for the explicit P2 coverage-only smoke
-is restored. The next step can rerun the exact coverage-only command; no formal
-eval is recommended.
+The runtime path matches the previous JSON-only validation exactly. This is
+still oracle-coverage evidence only; it does not test selected rerank behavior.
+No formal eval is recommended from this result alone.
 
-Validation:
+Verification:
 
 ```text
-log regenerated from restored checkpoint: passed
-backup copied to experiment_logs/2026-06-24_tmp_gensr_sde_logs/: passed
+runtime command: passed
+runtime metrics match prior validation: passed
 ```
 
 ## Previous Codex Workflow
