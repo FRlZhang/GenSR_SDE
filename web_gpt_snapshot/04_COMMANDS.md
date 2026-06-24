@@ -1030,3 +1030,69 @@ decision=D
 
 Do not run formal eval from this readiness report. Add minimal target
 fingerprint / `y_to_fit` logging before P2 semantic scoring or eval integration.
+
+## P2 Scorer-Ready Sidecar Logging
+
+The candidate coverage pipeline now has default-off scorer-ready sidecar
+logging. This is coverage-only logging; it does not run semantic scoring or
+formal eval.
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/tmp/cache \
+/opt/miniconda3/envs/gensr/bin/python3 scripts/analyze_candidate_coverage.py \
+  --source-log /private/tmp/gensr_sde_32_rolewise_no_multi_u0.log \
+  --report candidate_coverage_pair_expanded_p2_flag.md \
+  --json-output candidate_coverage_pair_expanded_p2_flag.json \
+  --pair-drift-topk 5 \
+  --pair-diffusion-topk 6 \
+  --pair-drift-diffusion-candidates 32 \
+  --normalized-drift-admission p2_one_per_family \
+  --normalized-drift-admission-source beam \
+  --drift-only-json drift_only_candidate_diversity_smoke.json \
+  --scorer-ready-target-samples 0,2,6,7,15,25,29 \
+  --scorer-ready-json p2_scorer_ready_candidates.json \
+  > /private/tmp/gensr_sde_p2_scorer_ready_logging.log 2>&1
+```
+
+Validation:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 \
+/opt/miniconda3/envs/gensr/bin/python3 scripts/validate_p2_scorer_ready_logging.py \
+  --scorer-ready-json p2_scorer_ready_candidates.json \
+  --readiness-json p2_admitted_candidate_scoring_diagnostics.json \
+  --report p2_scorer_ready_logging_validation.md \
+  --json-output p2_scorer_ready_logging_validation.json \
+  > /private/tmp/gensr_sde_p2_scorer_ready_logging_validation.log 2>&1
+```
+
+Compile check:
+
+```bash
+PYTHONPYCACHEPREFIX=/private/tmp/gensr_pycache \
+/opt/miniconda3/envs/gensr/bin/python3 -m py_compile \
+  scripts/analyze_candidate_coverage.py \
+  scripts/normalized_drift_admission.py \
+  scripts/analyze_p2_admitted_candidate_scoring.py \
+  scripts/validate_p2_scorer_ready_logging.py
+```
+
+Latest result:
+
+```text
+target_samples=0,2,6,7,15,25,29
+target_y_to_fit_present=7/7
+target_fingerprint_shape=[186,1]
+target_fingerprint_length=186
+p2_oracle_rows=7
+p2_oracle_present=7/7
+exact_diffusion_present=7/7
+p2_oracle_source=beam for all 7
+p2_oracle_rank=5 for all 7
+candidate_rows: current_expanded=140, p2_admitted=105
+semantic_scoring_run=False
+decision=A
+```
+
+Next step can be offline semantic scoring of P2 admitted candidates from
+`p2_scorer_ready_candidates.json`; do not run formal eval from readiness alone.

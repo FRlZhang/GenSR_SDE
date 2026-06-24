@@ -2,9 +2,10 @@
 
 ## Next Engineering Task
 
-Decide the next minimal scorer-readiness logging after the JSON-only P2
-admitted-candidate scoring diagnostic. Do not widen drift beam/top-k or change
-production candidate-generation defaults from this coverage-only result alone.
+Decide the next offline semantic scoring diagnostic for P2 admitted candidates
+after scorer-ready sidecar logging validated with decision `A`. Do not widen
+drift beam/top-k or change production candidate-generation defaults from this
+coverage-only result alone.
 The drift-only smoke is complete: exact drift appears in only `3/17` targets,
 all beam rank-30 nested-mul linear cases. Candidate-normalization folding is
 complete in helper-only mode: current expanded-pool folding projects `23/32`,
@@ -25,6 +26,9 @@ The JSON-only P2 admitted-candidate scoring readiness diagnostic found that the
 semantic-scoring-ready from existing JSON: exact diffusion is present and the
 P2 canonical oracle drift is beam-source rank 5 for each sample, but target
 `y_to_fit` / fingerprint vectors are missing.
+The minimal logging gap has now been fixed: `scripts/analyze_candidate_coverage.py`
+has default-off `--scorer-ready-json` and `--scorer-ready-target-samples`, and
+`p2_scorer_ready_candidates.json` validates with decision `A`.
 
 Current strongest no-retraining decoding setting:
 
@@ -403,11 +407,11 @@ full normalized drift-only admission is too high-pressure to adopt wholesale,
 and `P2_one_per_family` preserves the coverage ceiling with much lower pair
 pressure. The hook is now cross-validated and integrated behind a default-off
 coverage-only candidate coverage flag, and the runtime path now matches the
-prior validation. A follow-up scoring-readiness helper cleanly blocked on
-missing target fingerprint / `y_to_fit` fields, so this is still not
-selected-rerank evidence. The next useful step should add minimal
-scorer-readiness logging rather than naive global beam/top-k expansion or
-formal eval.
+prior validation. A follow-up scorer-ready sidecar logging run now provides
+target fingerprint / `y_to_fit` fields and full candidate rows for the 7 P2
+newly recovered samples, but this is still not selected-rerank evidence. The
+next useful step can be offline semantic scoring of the sidecar candidates,
+not naive global beam/top-k expansion or formal eval.
 
 Do not launch formal eval from these diagnostics. Exact-tail admission alone is
 weak and expensive-looking because all exact hits are rank-30 beam cases.

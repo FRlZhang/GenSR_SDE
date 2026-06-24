@@ -2,6 +2,74 @@
 
 ## Last Codex Workflow
 
+Codex added default-off P2 scorer-ready sidecar logging and validation:
+
+```text
+scripts/analyze_candidate_coverage.py
+scripts/validate_p2_scorer_ready_logging.py
+p2_scorer_ready_candidates.json
+p2_scorer_ready_logging_validation.md
+p2_scorer_ready_logging_validation.json
+/private/tmp/gensr_sde_p2_scorer_ready_logging.log
+/private/tmp/gensr_sde_p2_scorer_ready_logging_validation.log
+```
+
+New flags:
+
+```text
+--scorer-ready-json PATH
+--scorer-ready-target-samples 0,2,6,7,15,25,29
+```
+
+The coverage-only P2 command was rerun with
+`--normalized-drift-admission p2_one_per_family` and wrote a sidecar JSON for
+the 7 P2 newly recovered samples. This did not run semantic scoring, formal
+eval, 64-sample eval, retraining, scorer grids, active/weak grids, checkpoint
+or data changes, target-format changes, fingerprint schema changes, or
+production default changes.
+
+Coverage command metrics:
+
+```text
+full_oracle_present=15/32
+oracle_absent_missing_sides=drift:17
+p2_normalized_admission_coverage=30/32
+p2_pair_count=340
+```
+
+Sidecar / validation metrics:
+
+```text
+target_samples=0,2,6,7,15,25,29
+sample_count=7
+target_y_to_fit_present=7/7
+target_fingerprint_shape=[186,1]
+target_fingerprint_length=186
+p2_oracle_rows=7
+p2_oracle_present=7/7
+exact_diffusion_present=7/7
+p2_oracle_source=beam for all 7
+p2_oracle_rank=5 for all 7
+candidate_rows: current_expanded=140, p2_admitted=105
+parse_ready_rows=7/7 samples
+semantic_scoring_run=False
+decision=A
+```
+
+Interpretation: scorer-ready logging is complete. The next step can be offline
+semantic scoring of P2 admitted candidates, using the sidecar JSON. No formal
+eval is recommended from readiness alone.
+
+Verification:
+
+```text
+py_compile scripts/analyze_candidate_coverage.py scripts/normalized_drift_admission.py scripts/analyze_p2_admitted_candidate_scoring.py scripts/validate_p2_scorer_ready_logging.py: passed
+coverage-only P2 sidecar command: passed
+validation helper: passed
+```
+
+## Previous Codex Workflow
+
 Codex added JSON-only P2 admitted-candidate scoring readiness diagnostics:
 
 ```text

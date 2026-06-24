@@ -19,7 +19,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from sde_fingerprint import FingerprintConfig
+from sde_fingerprint import FingerprintConfig, fingerprint_length
 from sde_validation_probe import (
     build_env,
     build_modules,
@@ -110,6 +110,18 @@ def parse_args() -> argparse.Namespace:
         default=DEFAULT_NORMALIZED_DRIFT_ADMISSION_SOURCE,
         help="Source filter for normalized drift admission; beam matches validated P2 diagnostics.",
     )
+    parser.add_argument(
+        "--scorer-ready-json",
+        type=Path,
+        default=None,
+        help="Optional sidecar JSON with target fingerprints and scorer-ready P2 candidate rows.",
+    )
+    parser.add_argument(
+        "--scorer-ready-target-samples",
+        type=str,
+        default="",
+        help="Comma-separated sample indices for scorer-ready logging; defaults to P2 newly recovered samples.",
+    )
     return parser.parse_args()
 
 
@@ -188,6 +200,240 @@ def build_candidate_rows(trainer: Trainer, eval_samples: list[dict], args: argpa
         )
         all_rows.extend(candidate_rows or [[] for _ in chunk])
     return all_rows
+
+
+def parse_int_list(raw: str) -> list[int]:
+    values = []
+    for part in raw.split(","):
+        part = part.strip()
+        if part:
+            values.append(int(part))
+    return values
+
+
+def array_payload(value) -> dict:
+    array = np.asarray(value, dtype=np.float64)
+    return {
+        "shape": list(array.shape),
+        "flat": array.reshape(-1).tolist(),
+    }
+
+
+def decoded_candidate_records(env, rows: list[dict]) -> list[dict]:
+    records = []
+    source_ranks = Counter()
+    for candidate_rank, candidate in enumerate(rows, start=1):
+        words = decode_generation(env, candidate["tensor"])
+        split = split_sde_tokens(words)
+        if split is None:
+            continue
+        source = source_bucket(candidate.get("source", "beam"))
+        source_ranks[source] += 1
+        drift_tokens, diffusion_tokens = split
+        records.append(
+            {
+                "candidate_rank": candidate_rank,
+                "source": source,
+                "source_rank": source_ranks[source],
+                "normalized_model_score": float(candidate.get("normalized_model_score", float("-inf"))),
+                "full_sequence_tokens": words,
+                "drift_tokens": drift_tokens,
+                "diffusion_tokens": diffusion_tokens,
+            }
+        )
+    return records
+
+
+def first_diffusion_records(records: list[dict]) -> list[dict]:
+    by_key = {}
+    for record in records:
+        key = tuple(template_tokens(record["diffusion_tokens"]))
+        current = by_key.get(key)
+        if current is None or record["candidate_rank"] < current["candidate_rank"]:
+            by_key[key] = record
+    return sorted(by_key.values(), key=lambda item: item["candidate_rank"])
+
+
+def parse_ready(tokens: list[str]) -> bool:
+    split = split_sde_tokens(tokens)
+    if split is None:
+        return False
+    drift_tokens, diffusion_tokens = split
+    return bool(drift_tokens and diffusion_tokens)
+
+
+def candidate_sidecar_row(
+    candidate_id: str,
+    candidate_source: str,
+    drift_tokens_raw: list[str],
+    drift_tokens_canonical: list[str] | None,
+    diffusion_tokens_raw: list[str],
+    truth_drift_canonical: list[str] | None,
+    truth_diffusion: list[str],
+    drift_source: str | None,
+    diffusion_source: str | None,
+    drift_rank: int | None,
+    diffusion_rank: int | None,
+    pair_rank: int | None,
+    is_current_expanded_candidate: bool,
+) -> dict:
+    full_sequence_tokens = ["<DRIFT>"] + (drift_tokens_canonical or drift_tokens_raw) + [
+        "<DIFFUSION>"
+    ] + diffusion_tokens_raw
+    truth_drift_key = tuple(truth_drift_canonical or [])
+    diffusion_key = tuple(template_tokens(diffusion_tokens_raw))
+    truth_diffusion_key = tuple(template_tokens(truth_diffusion))
+    canonical_key = tuple(drift_tokens_canonical or [])
+    is_truth_drift = bool(truth_drift_key and canonical_key == truth_drift_key)
+    is_truth_diffusion = diffusion_key == truth_diffusion_key
+    return {
+        "candidate_id": candidate_id,
+        "candidate_source": candidate_source,
+        "drift_tokens_raw": drift_tokens_raw,
+        "drift_tokens_canonical": drift_tokens_canonical,
+        "diffusion_tokens_raw": diffusion_tokens_raw,
+        "diffusion_tokens_canonical": diffusion_tokens_raw,
+        "full_sequence_tokens": full_sequence_tokens,
+        "full_sequence_string": " ".join(full_sequence_tokens),
+        "drift_source": drift_source,
+        "diffusion_source": diffusion_source,
+        "drift_rank": drift_rank,
+        "diffusion_rank": diffusion_rank,
+        "pair_rank": pair_rank,
+        "is_truth_drift_canonical": is_truth_drift,
+        "is_truth_diffusion_exact": is_truth_diffusion,
+        "is_p2_canonical_oracle": candidate_source == "p2_admitted" and is_truth_drift and is_truth_diffusion,
+        "is_current_expanded_candidate": is_current_expanded_candidate,
+        "parse_ready_bool": parse_ready(full_sequence_tokens),
+    }
+
+
+def build_scorer_ready_sidecar(
+    env,
+    eval_samples: list[dict],
+    candidate_rows: list[list[dict]],
+    analyses: list[dict],
+    args: argparse.Namespace,
+    fingerprint_config: FingerprintConfig,
+    normalized_admission_block: dict | None,
+) -> dict:
+    if normalized_admission_block is None:
+        raise ValueError("--scorer-ready-json requires --normalized-drift-admission p2_one_per_family")
+
+    analyses_by_index = {item["sample_index"]: item for item in analyses}
+    p2_samples_by_index = {
+        item["sample_index"]: item for item in normalized_admission_block.get("samples", [])
+    }
+    admitted_by_sample = normalized_admission_block.get("admitted_candidates_by_sample", {})
+    requested = parse_int_list(args.scorer_ready_target_samples)
+    target_indices = requested or list(normalized_admission_block.get("newly_recovered", []))
+    samples = []
+    fingerprint_lengths = []
+
+    for sample_idx in target_indices:
+        sample = eval_samples[sample_idx]
+        normalized = normalize_sample(sample, env)
+        analysis = analyses_by_index[sample_idx]
+        p2_sample = p2_samples_by_index.get(sample_idx, {})
+        records = decoded_candidate_records(env, candidate_rows[sample_idx])
+        diffusion_records = first_diffusion_records(records)
+        truth_sequence = normalized["tree_encoded"]
+        truth_drift, truth_diffusion = split_sde_tokens(truth_sequence)
+        truth_drift_canonical = canonicalize_constant_chains(truth_drift)
+        y_payload = array_payload(normalized["y_to_fit"])
+        x_payload = array_payload(normalized["x_to_fit"])
+        fingerprint_lengths.append(len(y_payload["flat"]))
+
+        candidate_sidecar_rows = []
+        for record in records:
+            drift_canonical = canonicalize_constant_chains(record["drift_tokens"])
+            candidate_sidecar_rows.append(
+                candidate_sidecar_row(
+                    candidate_id=f"sample{sample_idx}_current_{record['candidate_rank']:04d}",
+                    candidate_source="current_expanded",
+                    drift_tokens_raw=record["drift_tokens"],
+                    drift_tokens_canonical=drift_canonical,
+                    diffusion_tokens_raw=record["diffusion_tokens"],
+                    truth_drift_canonical=truth_drift_canonical,
+                    truth_diffusion=truth_diffusion,
+                    drift_source=record["source"],
+                    diffusion_source=record["source"],
+                    drift_rank=record["source_rank"],
+                    diffusion_rank=record["source_rank"],
+                    pair_rank=record["candidate_rank"] if record["source"] == "pair" else None,
+                    is_current_expanded_candidate=True,
+                )
+            )
+
+        p2_pair_rank = 0
+        admitted_rows = admitted_by_sample.get(sample_idx, admitted_by_sample.get(str(sample_idx), []))
+        for admitted in admitted_rows:
+            for diffusion_record in diffusion_records:
+                p2_pair_rank += 1
+                candidate_sidecar_rows.append(
+                    candidate_sidecar_row(
+                        candidate_id=f"sample{sample_idx}_p2_{p2_pair_rank:04d}",
+                        candidate_source="p2_admitted",
+                        drift_tokens_raw=admitted.get("raw_drift_tokens") or admitted.get("canonical_drift_tokens") or [],
+                        drift_tokens_canonical=admitted.get("canonical_drift_tokens"),
+                        diffusion_tokens_raw=diffusion_record["diffusion_tokens"],
+                        truth_drift_canonical=truth_drift_canonical,
+                        truth_diffusion=truth_diffusion,
+                        drift_source=admitted.get("source"),
+                        diffusion_source=diffusion_record["source"],
+                        drift_rank=admitted.get("rank"),
+                        diffusion_rank=diffusion_record["source_rank"],
+                        pair_rank=p2_pair_rank,
+                        is_current_expanded_candidate=False,
+                    )
+                )
+
+        samples.append(
+            {
+                "sample_index": sample_idx,
+                "truth_sequence": truth_sequence,
+                "truth_drift_tokens": truth_drift,
+                "truth_diffusion_tokens": truth_diffusion,
+                "target_y_to_fit": y_payload,
+                "target_fingerprint": y_payload,
+                "target_x_to_fit": x_payload,
+                "target_fingerprint_length": len(y_payload["flat"]),
+                "p2_newly_recovered_bool": sample_idx in set(normalized_admission_block.get("newly_recovered", [])),
+                "current_expanded_oracle_present_bool": bool(analysis.get("has_full")),
+                "canonicalized_expanded_oracle_present_bool": bool(
+                    p2_sample.get("current_canonical_full_oracle")
+                ),
+                "p2_oracle_present_bool": bool(p2_sample.get("p2_normalized_full_oracle")),
+                "exact_diffusion_present_bool": bool(p2_sample.get("exact_diffusion_present")),
+                "candidates": candidate_sidecar_rows,
+            }
+        )
+
+    readiness_status = (
+        "complete"
+        if samples
+        and len(set(fingerprint_lengths)) == 1
+        and all(sample.get("target_y_to_fit", {}).get("flat") for sample in samples)
+        else "incomplete"
+    )
+    schema_length = fingerprint_length(fingerprint_config)
+    return {
+        "metadata": {
+            "source_coverage_json": str(args.json_output or args.report.with_suffix(".json")),
+            "source_log": str(args.source_log),
+            "checkpoint": str(args.load_checkpoint),
+            "normalized_drift_admission_policy": args.normalized_drift_admission,
+            "normalized_drift_admission_source": args.normalized_drift_admission_source,
+            "target_samples_included": target_indices,
+            "fingerprint_schema_or_length": {
+                "fingerprint_length_from_config": schema_length,
+                "observed_lengths": sorted(set(fingerprint_lengths)),
+            },
+            "scorer_readiness_status": readiness_status,
+            "semantic_scoring_run": False,
+        },
+        "samples": samples,
+    }
 
 
 def edit_distance(left: list[str], right: list[str]) -> int:
@@ -940,10 +1186,23 @@ def main() -> None:
     write_report(args.report, analyses, log_metrics, args, normalized_admission_block)
     json_output = args.json_output or args.report.with_suffix(".json")
     write_json_sidecar(json_output, analyses, log_metrics, args, normalized_admission_block)
+    if args.scorer_ready_json is not None:
+        scorer_ready_payload = build_scorer_ready_sidecar(
+            trainer.env,
+            eval_samples,
+            candidate_rows,
+            analyses,
+            args,
+            fingerprint_config,
+            normalized_admission_block,
+        )
+        args.scorer_ready_json.write_text(json.dumps(json_ready(scorer_ready_payload), indent=2, sort_keys=True))
     full_count = sum(item["has_full"] for item in analyses)
     missing_counts = Counter(item["missing_side"] for item in analyses if not item["has_full"])
     print(f"wrote_report={args.report}")
     print(f"wrote_json={json_output}")
+    if args.scorer_ready_json is not None:
+        print(f"wrote_scorer_ready_json={args.scorer_ready_json}")
     print(f"full_oracle_present={full_count}/{len(analyses)}")
     print(
         "oracle_absent_missing_sides="

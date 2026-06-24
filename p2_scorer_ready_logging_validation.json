@@ -1,0 +1,115 @@
+{
+  "metadata": {
+    "scorer_ready_json": "candidate_coverage_pair_expanded_p2_flag.json",
+    "semantic_scoring_intentionally_not_run": true
+  },
+  "summary": {
+    "candidate_source_counts": {
+      "current_expanded": 140,
+      "p2_admitted": 105
+    },
+    "decision": "A",
+    "exact_diffusion_present_count": 7,
+    "exact_diffusion_present_samples": [
+      0,
+      2,
+      6,
+      7,
+      15,
+      25,
+      29
+    ],
+    "formal_eval_recommended": false,
+    "full_sequence_fields_present_samples": [
+      0,
+      2,
+      6,
+      7,
+      15,
+      25,
+      29
+    ],
+    "p2_oracle_present_count": 7,
+    "p2_oracle_present_samples": [
+      0,
+      2,
+      6,
+      7,
+      15,
+      25,
+      29
+    ],
+    "p2_oracle_rank5_samples": [
+      0,
+      2,
+      6,
+      7,
+      15,
+      25,
+      29
+    ],
+    "p2_oracle_row_count": 7,
+    "p2_oracle_source_beam_samples": [
+      0,
+      2,
+      6,
+      7,
+      15,
+      25,
+      29
+    ],
+    "parse_ready_present_samples": [
+      0,
+      2,
+      6,
+      7,
+      15,
+      25,
+      29
+    ],
+    "readiness_previous_decision": "D",
+    "recommendation": "Next step can be offline semantic scoring of P2 admitted candidates.",
+    "sample_count": 7,
+    "semantic_score_keys_present": [],
+    "semantic_scoring_run": false,
+    "sidecar_produced": true,
+    "target_fingerprint_lengths": [
+      186
+    ],
+    "target_fingerprint_shapes": [
+      [
+        186,
+        1
+      ]
+    ],
+    "target_samples_expected": [
+      0,
+      2,
+      6,
+      7,
+      15,
+      25,
+      29
+    ],
+    "target_samples_included": [
+      0,
+      2,
+      6,
+      7,
+      15,
+      25,
+      29
+    ],
+    "target_samples_match": true,
+    "target_vector_present_count": 7,
+    "target_vector_present_samples": [
+      0,
+      2,
+      6,
+      7,
+      15,
+      25,
+      29
+    ]
+  }
+}
