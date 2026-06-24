@@ -982,3 +982,51 @@ PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/
   --min-generated-len 8 \
   --save-checkpoint /private/tmp/gensr_sde_role_token_2000/role_token_2000.pth
 ```
+
+## P2 Admitted Candidate Scoring Readiness
+
+This parses existing JSON only. It checks whether the P2 admitted candidates
+can be scored offline with the current semantic scorer. The current result is a
+clean readiness block because target `y_to_fit` / fingerprint vectors are not
+stored in the coverage JSON.
+
+```bash
+PYTHONPYCACHEPREFIX=/private/tmp/gensr_pycache \
+/opt/miniconda3/envs/gensr/bin/python3 -m py_compile \
+  scripts/analyze_p2_admitted_candidate_scoring.py \
+  scripts/normalized_drift_admission.py \
+  sde_fingerprint.py \
+  simulator_sde.py \
+  sde_dataset_generator.py \
+  sde_validation_probe.py
+```
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/tmp/cache \
+/opt/miniconda3/envs/gensr/bin/python3 scripts/analyze_p2_admitted_candidate_scoring.py \
+  --p2-coverage-json candidate_coverage_pair_expanded_p2_flag.json \
+  --expanded-coverage-json candidate_coverage_pair_expanded.json \
+  --baseline-coverage-json candidate_coverage_diagnostics.json \
+  --drift-only-json drift_only_candidate_diversity_smoke.json \
+  --target-samples 0,2,6,7,15,25,29 \
+  --report p2_admitted_candidate_scoring_diagnostics.md \
+  --json-output p2_admitted_candidate_scoring_diagnostics.json \
+  > /private/tmp/gensr_sde_p2_admitted_candidate_scoring.log 2>&1
+```
+
+Latest result:
+
+```text
+target_samples_analyzed=7
+p2_oracle_present_count=7
+p2_oracle_source=beam for all 7
+p2_oracle_source_rank=5 for all 7
+exact_diffusion_present=7/7
+p2_oracle_selected_count=unavailable
+target_fingerprint_status=missing
+semantic_scores_status=missing
+decision=D
+```
+
+Do not run formal eval from this readiness report. Add minimal target
+fingerprint / `y_to_fit` logging before P2 semantic scoring or eval integration.

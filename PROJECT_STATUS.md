@@ -118,7 +118,15 @@ canonicalized expanded-pool coverage `23/32`, P2 normalized admission coverage
 remaining missing `16,28`, sampling excluded, and `unsafe_collision_flag=False`.
 This confirms the default-off P2 flag is runnable as a coverage-only diagnostic
 path, but it is still not selected-rerank evidence and should not become a
-production default.
+production default. A follow-up JSON-only P2 admitted-candidate scoring
+readiness diagnostic analyzed the 7 newly recovered P2 samples and confirmed
+that all 7 have exact diffusion plus a beam-source P2 canonical oracle drift
+(rank 5 in the admitted family-capped set), but semantic scoring is blocked by
+the existing JSON schema: the coverage artifacts do not contain per-sample
+`y_to_fit` / target fingerprint vectors or equivalent raw normalized eval
+samples with numeric constants. Decision `D`: add minimal target-fingerprint or
+scorer-distance logging before any P2 semantic scoring or eval-integration
+decision.
 
 ## Last Updated
 
@@ -488,6 +496,18 @@ production default.
   /
   [candidate_coverage_pair_expanded_p2_flag_runtime_report.json](/Users/lzhang/Documents/GenSR_SDE/candidate_coverage_pair_expanded_p2_flag_runtime_report.json)
   to decision `A`. No formal eval was run.
+- Added JSON-only P2 admitted-candidate scoring readiness diagnostics in
+  [scripts/analyze_p2_admitted_candidate_scoring.py](/Users/lzhang/Documents/GenSR_SDE/scripts/analyze_p2_admitted_candidate_scoring.py)
+  and wrote
+  [p2_admitted_candidate_scoring_diagnostics.md](/Users/lzhang/Documents/GenSR_SDE/p2_admitted_candidate_scoring_diagnostics.md)
+  /
+  [p2_admitted_candidate_scoring_diagnostics.json](/Users/lzhang/Documents/GenSR_SDE/p2_admitted_candidate_scoring_diagnostics.json).
+  The 7 P2 newly recovered samples (`0,2,6,7,15,25,29`) are all coverage-ready:
+  exact diffusion is present and the P2 canonical oracle drift is beam-source
+  rank 5 for each sample. The artifacts are not scoring-ready because they lack
+  target `y_to_fit` / fingerprint vectors or exact normalized eval samples with
+  numeric constants. Decision `D`: add minimal scorer-readiness logging before
+  semantic scoring or eval integration.
 - Logged validated experiments in
   [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md).
 
@@ -495,11 +515,11 @@ production default.
 
 - Transitioning from "can the model learn the fingerprint?" to "can we decode
   the right symbolic sequence?".
-- Deciding what coverage-only or selected-rerank diagnostic should follow the
+- Deciding what minimal scorer-readiness logging should follow the
   now-runnable explicit `--normalized-drift-admission p2_one_per_family` path.
   Do not treat the P2 flag smoke as selected-rerank evidence or a production
-  default change. Residual-debug safety checks do not support continuing
-  scorer-side normalization.
+  default change. Existing P2 coverage JSON is not sufficient for semantic
+  scoring because target fingerprints / `y_to_fit` are missing.
 - The 2000-step role-token checkpoint has been restored in `/private/tmp` and
   backed up under `checkpoints/`; model weights remain ignored by git.
 
@@ -535,9 +555,12 @@ production default.
    admission, in the actual candidate coverage pipeline.
 10. Do not run formal eval from the drift-only or constant-folding diagnostics;
    they are oracle-coverage diagnostics, not selected-recovery evidence.
-11. Keep drift/diffusion pairing enabled and tune candidate pool size carefully
+11. Before P2 semantic scoring or eval integration, add minimal logging for
+   per-sample target fingerprints / `y_to_fit` or equivalent normalized eval
+   samples, plus scorer-ready P2 paired candidate rows.
+12. Keep drift/diffusion pairing enabled and tune candidate pool size carefully
    because fingerprint recomputation is CPU-expensive.
-12. Reuse the saved 2000-step checkpoint for decoding experiments instead of
+13. Reuse the saved 2000-step checkpoint for decoding experiments instead of
    retraining.
 13. Compare greedy, constrained beam, reranked, and oracle candidate metrics on the same
    held-out evaluation setup.
@@ -615,6 +638,10 @@ production default.
   `P2_one_per_family` keeps `30/32` projected coverage with much lower pair
   pressure, but this still has no semantic fingerprint or selected-rerank
   validation.
+- Existing P2 coverage JSON is not sufficient for offline semantic scoring:
+  target fingerprints / `y_to_fit` and full scorer-ready P2 paired candidate
+  rows are missing. Do not infer selected-rerank readiness from coverage-only
+  P2 oracle presence.
 - Constant-folding collision checks are token-structure-only; they did not flag
   unsafe observed overmerge, but semantic fingerprint validation and
   selected-rerank behavior remain untested.

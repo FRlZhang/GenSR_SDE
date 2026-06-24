@@ -2,6 +2,66 @@
 
 ## Last Codex Workflow
 
+Codex added JSON-only P2 admitted-candidate scoring readiness diagnostics:
+
+```text
+scripts/analyze_p2_admitted_candidate_scoring.py
+p2_admitted_candidate_scoring_diagnostics.md
+p2_admitted_candidate_scoring_diagnostics.json
+/private/tmp/gensr_sde_p2_admitted_candidate_scoring.log
+```
+
+This parsed existing JSON only and did not run model decoding, candidate
+generation/regeneration, fingerprint simulation for candidates, reranking,
+formal eval, 64-sample eval, grids, retraining, scorer changes, rerank-mode
+changes, checkpoint/data changes, target-format changes, fingerprint changes,
+or production candidate-generation default changes.
+
+Result:
+
+```text
+target_samples_analyzed=7
+target_samples=0,2,6,7,15,25,29
+p2_oracle_present_count=7
+p2_oracle_source=beam for all 7
+p2_oracle_source_rank=5 for all 7
+exact_diffusion_present=7/7
+family_breakdown: linear=4, nested-mul linear=3
+p2_oracle_selected_count=unavailable
+p2_oracle_score_miss_count=unavailable
+fingerprint_failures=unavailable
+decision=D
+```
+
+Schema readiness:
+
+```text
+target_fingerprint_status=missing
+current_candidates_status=available_as_template_tokens
+p2_admitted_candidates_status=available
+paired_diffusion_status=available_as_exact_diffusion_presence_and_tokens
+source_labels_status=available
+canonical_tokens_status=available_for_p2_admitted_candidates
+raw_tokens_status=available_for_p2_admitted_drift_candidates
+semantic_scores_status=missing
+```
+
+Interpretation: P2 is coverage-ready for these seven newly recovered samples,
+but the existing coverage artifacts are not semantic-scoring-ready because they
+lack per-sample target `y_to_fit` / fingerprint vectors or equivalent raw
+normalized eval samples with numeric constants. Add minimal scorer-readiness
+logging before any P2 semantic scoring or eval-integration decision. No formal
+eval is recommended.
+
+Verification:
+
+```text
+py_compile scripts/analyze_p2_admitted_candidate_scoring.py and related scorer files: passed
+helper run: passed
+```
+
+## Previous Codex Workflow
+
 Codex ran the explicit P2 normalized drift admission candidate coverage smoke:
 
 ```text

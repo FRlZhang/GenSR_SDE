@@ -1,0 +1,518 @@
+{
+  "inputs_headline": {
+    "baseline_samples": 32,
+    "drift_only_samples": 17,
+    "expanded_samples": 32,
+    "p2_canonicalized_expanded_pool_coverage": 23,
+    "p2_current_expanded_full_oracle": 15,
+    "p2_newly_recovered": [
+      0,
+      2,
+      6,
+      7,
+      15,
+      25,
+      29
+    ],
+    "p2_normalized_admission_coverage": 30,
+    "p2_remaining_missing": [
+      16,
+      28
+    ]
+  },
+  "metadata": {
+    "baseline_coverage_json": "candidate_coverage_diagnostics.json",
+    "component_weights_requested": [
+      1.0,
+      2.0,
+      1.0
+    ],
+    "constant_values_requested": [
+      0.25,
+      0.5,
+      1.0,
+      2.0,
+      4.0
+    ],
+    "drift_only_json": "drift_only_candidate_diversity_smoke.json",
+    "effective_active_weak_weights": [
+      1.0,
+      1.0
+    ],
+    "expanded_coverage_json": "candidate_coverage_pair_expanded.json",
+    "json_only": true,
+    "p2_coverage_json": "candidate_coverage_pair_expanded_p2_flag.json",
+    "score_kind_requested": "constant_grid_rolewise_no_multi_u0",
+    "target_samples": [
+      0,
+      2,
+      6,
+      7,
+      15,
+      25,
+      29
+    ]
+  },
+  "samples": [
+    {
+      "admitted_candidate_count": 3,
+      "canonical_truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "current_candidate_sources": [
+        "beam",
+        "pair",
+        "sampling"
+      ],
+      "current_canonical_full_oracle": false,
+      "current_expanded_full_oracle": false,
+      "current_full_candidate_count": 20,
+      "drift_family": "linear drift",
+      "exact_diffusion_present": true,
+      "failure_reason": "insufficient_schema",
+      "p2_normalized_full_oracle": true,
+      "p2_oracle_present": true,
+      "p2_oracle_source": "beam",
+      "p2_oracle_source_rank": 5,
+      "sample_index": 0,
+      "semantic_scoring": {
+        "best_current_expanded_candidate": null,
+        "best_current_expanded_score": null,
+        "best_p2_admitted_candidate": null,
+        "best_p2_admitted_score": null,
+        "p2_oracle_candidate": {
+          "diffusion_tokens": [
+            "mul",
+            "CONSTANT",
+            "sqrt",
+            "abs",
+            "x_0"
+          ],
+          "drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "source": "beam",
+          "source_rank": 5
+        },
+        "p2_oracle_rank": null,
+        "p2_oracle_score": null,
+        "p2_oracle_selected": null,
+        "score_gap_selected_minus_p2_oracle": null
+      },
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "sqrt",
+        "abs",
+        "x_0"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ]
+    },
+    {
+      "admitted_candidate_count": 3,
+      "canonical_truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "current_candidate_sources": [
+        "beam",
+        "pair",
+        "sampling"
+      ],
+      "current_canonical_full_oracle": false,
+      "current_expanded_full_oracle": false,
+      "current_full_candidate_count": 20,
+      "drift_family": "nested-mul linear drift",
+      "exact_diffusion_present": true,
+      "failure_reason": "insufficient_schema",
+      "p2_normalized_full_oracle": true,
+      "p2_oracle_present": true,
+      "p2_oracle_source": "beam",
+      "p2_oracle_source_rank": 5,
+      "sample_index": 2,
+      "semantic_scoring": {
+        "best_current_expanded_candidate": null,
+        "best_current_expanded_score": null,
+        "best_p2_admitted_candidate": null,
+        "best_p2_admitted_score": null,
+        "p2_oracle_candidate": {
+          "diffusion_tokens": [
+            "mul",
+            "CONSTANT",
+            "abs",
+            "x_0"
+          ],
+          "drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "source": "beam",
+          "source_rank": 5
+        },
+        "p2_oracle_rank": null,
+        "p2_oracle_score": null,
+        "p2_oracle_selected": null,
+        "score_gap_selected_minus_p2_oracle": null
+      },
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "abs",
+        "x_0"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "x_0"
+      ]
+    },
+    {
+      "admitted_candidate_count": 3,
+      "canonical_truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "current_candidate_sources": [
+        "beam",
+        "pair",
+        "sampling"
+      ],
+      "current_canonical_full_oracle": false,
+      "current_expanded_full_oracle": false,
+      "current_full_candidate_count": 20,
+      "drift_family": "linear drift",
+      "exact_diffusion_present": true,
+      "failure_reason": "insufficient_schema",
+      "p2_normalized_full_oracle": true,
+      "p2_oracle_present": true,
+      "p2_oracle_source": "beam",
+      "p2_oracle_source_rank": 5,
+      "sample_index": 6,
+      "semantic_scoring": {
+        "best_current_expanded_candidate": null,
+        "best_current_expanded_score": null,
+        "best_p2_admitted_candidate": null,
+        "best_p2_admitted_score": null,
+        "p2_oracle_candidate": {
+          "diffusion_tokens": [
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "source": "beam",
+          "source_rank": 5
+        },
+        "p2_oracle_rank": null,
+        "p2_oracle_score": null,
+        "p2_oracle_selected": null,
+        "score_gap_selected_minus_p2_oracle": null
+      },
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ]
+    },
+    {
+      "admitted_candidate_count": 3,
+      "canonical_truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "current_candidate_sources": [
+        "beam",
+        "pair",
+        "sampling"
+      ],
+      "current_canonical_full_oracle": false,
+      "current_expanded_full_oracle": false,
+      "current_full_candidate_count": 20,
+      "drift_family": "linear drift",
+      "exact_diffusion_present": true,
+      "failure_reason": "insufficient_schema",
+      "p2_normalized_full_oracle": true,
+      "p2_oracle_present": true,
+      "p2_oracle_source": "beam",
+      "p2_oracle_source_rank": 5,
+      "sample_index": 7,
+      "semantic_scoring": {
+        "best_current_expanded_candidate": null,
+        "best_current_expanded_score": null,
+        "best_p2_admitted_candidate": null,
+        "best_p2_admitted_score": null,
+        "p2_oracle_candidate": {
+          "diffusion_tokens": [
+            "mul",
+            "CONSTANT",
+            "CONSTANT"
+          ],
+          "drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "source": "beam",
+          "source_rank": 5
+        },
+        "p2_oracle_rank": null,
+        "p2_oracle_score": null,
+        "p2_oracle_selected": null,
+        "score_gap_selected_minus_p2_oracle": null
+      },
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "CONSTANT"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ]
+    },
+    {
+      "admitted_candidate_count": 3,
+      "canonical_truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "current_candidate_sources": [
+        "beam",
+        "pair"
+      ],
+      "current_canonical_full_oracle": false,
+      "current_expanded_full_oracle": false,
+      "current_full_candidate_count": 20,
+      "drift_family": "linear drift",
+      "exact_diffusion_present": true,
+      "failure_reason": "insufficient_schema",
+      "p2_normalized_full_oracle": true,
+      "p2_oracle_present": true,
+      "p2_oracle_source": "beam",
+      "p2_oracle_source_rank": 5,
+      "sample_index": 15,
+      "semantic_scoring": {
+        "best_current_expanded_candidate": null,
+        "best_current_expanded_score": null,
+        "best_p2_admitted_candidate": null,
+        "best_p2_admitted_score": null,
+        "p2_oracle_candidate": {
+          "diffusion_tokens": [
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "source": "beam",
+          "source_rank": 5
+        },
+        "p2_oracle_rank": null,
+        "p2_oracle_score": null,
+        "p2_oracle_selected": null,
+        "score_gap_selected_minus_p2_oracle": null
+      },
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ]
+    },
+    {
+      "admitted_candidate_count": 3,
+      "canonical_truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "current_candidate_sources": [
+        "beam",
+        "pair",
+        "sampling"
+      ],
+      "current_canonical_full_oracle": false,
+      "current_expanded_full_oracle": false,
+      "current_full_candidate_count": 20,
+      "drift_family": "nested-mul linear drift",
+      "exact_diffusion_present": true,
+      "failure_reason": "insufficient_schema",
+      "p2_normalized_full_oracle": true,
+      "p2_oracle_present": true,
+      "p2_oracle_source": "beam",
+      "p2_oracle_source_rank": 5,
+      "sample_index": 25,
+      "semantic_scoring": {
+        "best_current_expanded_candidate": null,
+        "best_current_expanded_score": null,
+        "best_p2_admitted_candidate": null,
+        "best_p2_admitted_score": null,
+        "p2_oracle_candidate": {
+          "diffusion_tokens": [
+            "mul",
+            "CONSTANT",
+            "abs",
+            "x_0"
+          ],
+          "drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "source": "beam",
+          "source_rank": 5
+        },
+        "p2_oracle_rank": null,
+        "p2_oracle_score": null,
+        "p2_oracle_selected": null,
+        "score_gap_selected_minus_p2_oracle": null
+      },
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "abs",
+        "x_0"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "x_0"
+      ]
+    },
+    {
+      "admitted_candidate_count": 3,
+      "canonical_truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "current_candidate_sources": [
+        "beam",
+        "pair",
+        "sampling"
+      ],
+      "current_canonical_full_oracle": false,
+      "current_expanded_full_oracle": false,
+      "current_full_candidate_count": 20,
+      "drift_family": "nested-mul linear drift",
+      "exact_diffusion_present": true,
+      "failure_reason": "insufficient_schema",
+      "p2_normalized_full_oracle": true,
+      "p2_oracle_present": true,
+      "p2_oracle_source": "beam",
+      "p2_oracle_source_rank": 5,
+      "sample_index": 29,
+      "semantic_scoring": {
+        "best_current_expanded_candidate": null,
+        "best_current_expanded_score": null,
+        "best_p2_admitted_candidate": null,
+        "best_p2_admitted_score": null,
+        "p2_oracle_candidate": {
+          "diffusion_tokens": [
+            "mul",
+            "CONSTANT",
+            "CONSTANT"
+          ],
+          "drift_tokens": [
+            "mul",
+            "CONSTANT",
+            "x_0"
+          ],
+          "source": "beam",
+          "source_rank": 5
+        },
+        "p2_oracle_rank": null,
+        "p2_oracle_score": null,
+        "p2_oracle_selected": null,
+        "score_gap_selected_minus_p2_oracle": null
+      },
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "CONSTANT"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "x_0"
+      ]
+    }
+  ],
+  "schema_readiness": {
+    "canonical_tokens_status": "available_for_p2_admitted_candidates",
+    "current_candidates_status": "available_as_template_tokens",
+    "enough_for_semantic_scoring": false,
+    "missing_critical_fields": [
+      "per-sample target `y_to_fit` or target fingerprint vector used by `score_candidate_system`",
+      "or raw normalized eval sample plus numeric constants sufficient to reconstruct the exact target fingerprint",
+      "semantic fingerprint distances for current expanded candidates, if scores are to be reused instead of recomputed",
+      "full P2 paired candidate rows with scorer-ready full tokens, source, source_rank, and candidate_rank"
+    ],
+    "missing_sample_indices": [],
+    "p2_admitted_candidates_status": "available",
+    "paired_diffusion_status": "available_as_exact_diffusion_presence_and_tokens",
+    "raw_tokens_status": "available_for_p2_admitted_drift_candidates",
+    "semantic_scores_status": "missing",
+    "source_labels_status": "available",
+    "target_fingerprint_available": false,
+    "target_fingerprint_fields_found": [],
+    "target_fingerprint_status": "missing"
+  },
+  "summary": {
+    "decision": "D",
+    "family_breakdown": {
+      "linear drift": 4,
+      "nested-mul linear drift": 3
+    },
+    "fingerprint_failures": null,
+    "formal_eval_recommended": false,
+    "max_oracle_rank": 5,
+    "median_oracle_rank": 5,
+    "p2_oracle_present_count": 7,
+    "p2_oracle_score_miss_count": null,
+    "p2_oracle_selected_count": null,
+    "parse_failures": null,
+    "recommendation": "Add minimal target-fingerprint / scorer-distance logging before P2 admitted-candidate semantic scoring or eval integration.",
+    "score_gap_summary": null,
+    "source_breakdown": {
+      "beam": 7
+    },
+    "target_samples_analyzed": 7
+  }
+}

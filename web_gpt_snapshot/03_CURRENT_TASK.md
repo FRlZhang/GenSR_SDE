@@ -2,10 +2,9 @@
 
 ## Next Engineering Task
 
-Decide the next diagnostic after the explicit coverage-only
-`--normalized-drift-admission p2_one_per_family` candidate coverage command
-passed. Do not widen drift beam/top-k or change production candidate-generation
-defaults from this coverage-only result alone.
+Decide the next minimal scorer-readiness logging after the JSON-only P2
+admitted-candidate scoring diagnostic. Do not widen drift beam/top-k or change
+production candidate-generation defaults from this coverage-only result alone.
 The drift-only smoke is complete: exact drift appears in only `3/17` targets,
 all beam rank-30 nested-mul linear cases. Candidate-normalization folding is
 complete in helper-only mode: current expanded-pool folding projects `23/32`,
@@ -21,6 +20,11 @@ not produced. That source log has since been regenerated and backed up, so the
 runtime smoke was retried and passed with decision `A`. Residual-debug safety
 checks do not support continuing scorer-side normalization or adding a new
 rerank mode.
+The JSON-only P2 admitted-candidate scoring readiness diagnostic found that the
+7 newly recovered P2 samples (`0,2,6,7,15,25,29`) are coverage-ready but not
+semantic-scoring-ready from existing JSON: exact diffusion is present and the
+P2 canonical oracle drift is beam-source rank 5 for each sample, but target
+`y_to_fit` / fingerprint vectors are missing.
 
 Current strongest no-retraining decoding setting:
 
@@ -399,8 +403,10 @@ full normalized drift-only admission is too high-pressure to adopt wholesale,
 and `P2_one_per_family` preserves the coverage ceiling with much lower pair
 pressure. The hook is now cross-validated and integrated behind a default-off
 coverage-only candidate coverage flag, and the runtime path now matches the
-prior validation. This is not selected-rerank evidence, so the next useful step
-should still be diagnostic rather than naive global beam/top-k expansion or
+prior validation. A follow-up scoring-readiness helper cleanly blocked on
+missing target fingerprint / `y_to_fit` fields, so this is still not
+selected-rerank evidence. The next useful step should add minimal
+scorer-readiness logging rather than naive global beam/top-k expansion or
 formal eval.
 
 Do not launch formal eval from these diagnostics. Exact-tail admission alone is
