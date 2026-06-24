@@ -2,6 +2,66 @@
 
 ## Last Codex Workflow
 
+Codex added an offline fingerprint simulation stability diagnostic for V0/V4
+rescue/harm cases:
+
+```text
+scripts/analyze_p2_fingerprint_stability.py
+p2_fingerprint_stability_diagnostics.md
+p2_fingerprint_stability_diagnostics.json
+/private/tmp/gensr_sde_p2_fingerprint_stability.log
+```
+
+This used existing JSON plus small controlled candidate fingerprint
+resimulation for the 7 V4 rescue/harm cases. It did not run model decoding,
+candidate generation/regeneration, `sde_validation_probe.py`, formal eval,
+64-sample eval, retraining, scorer grids, active/weak grids, checkpoint/data
+changes, target-format changes, fingerprint schema changes, production default
+changes, or a new rerank mode.
+
+Result:
+
+```text
+samples_analyzed=7
+candidate_pairs_analyzed=8
+repeats=5
+M0_stored_target_stored_candidate=available
+M1_stored_target_resim_candidate=available
+M2_resim_target_stored_candidate=unavailable
+M3_paired_resim_target_and_candidate=unavailable
+M1_ordering_stable_count=1
+M1_ordering_unstable_count=7
+M3_ordering_stable_count=NA
+M3_ordering_unstable_count=NA
+noise_dominated_pair_count=8
+stable_clear_pair_count=0
+active_noise_driver_count=2
+weak_noise_driver_count=1
+mixed_noise_driver_count=5
+rescue_cases_noise_dominated_count=6
+harm_cases_noise_dominated_count=2
+rescue_cases_oracle_recovers_majority_count=2
+harm_cases_oracle_recovers_majority_count=1
+removed_dims_noise_dominated_count=7
+removed_dims_stable_explanation_count=0
+decision=B
+```
+
+Interpretation: candidate fingerprint resimulation variance alone is enough to
+make the V4 rescue/harm oracle-pair ordering unstable with the stored target
+fixed. M2/M3 target-resimulation attribution is blocked by missing stored
+candidate fingerprint vectors and missing raw numeric target SDE constants.
+Diagnose candidate fingerprint variance / path budget before scorer changes.
+
+Verification:
+
+```text
+py_compile scripts/analyze_p2_fingerprint_stability.py scripts/analyze_p2_fingerprint_ambiguity.py scripts/analyze_p2_calibration_all32_smoke.py scripts/analyze_p2_admitted_candidate_scoring.py sde_fingerprint.py simulator_sde.py sde_dataset_generator.py: passed
+helper run: passed
+```
+
+## Previous Codex Workflow
+
 Codex added an offline fingerprint ambiguity diagnostic for V0/V4 rescue/harm
 cases:
 

@@ -196,6 +196,18 @@ but ordering was stable for only 2/7 rescue/harm comparisons and the oracle
 beat the nonoracle in majority for only 2/7. Decision `C`: diagnose fingerprint
 simulation stability before any scorer changes; no formal eval, rerank mode, or
 P2 eval integration is recommended from this evidence.
+The follow-up fingerprint simulation stability diagnostic is now complete for
+the 7 V4 rescue/harm cases. M1 (stored target, resimulated candidates) is
+available and shows only 1/8 oracle-pair comparisons have stable ordering; 7/8
+are unstable, 8/8 are noise-dominated, and 0/8 are stable-clear. Noise drivers
+are mixed 5, active 2, and weak 1. M2 is unavailable because candidate
+fingerprint vectors are not stored, and M3 is unavailable because the sidecar
+does not store raw numeric target SDE constants needed to resimulate the target
+truth process exactly. Removed-dimension contributions are also
+noise-dominated in 7/7 cases and provide 0 stable explanations. Decision `B`:
+candidate fingerprint resimulation variance is enough to explain the observed
+ordering instability; diagnose candidate fingerprint variance / path budget
+before any scorer changes.
 
 ## Last Updated
 
@@ -672,6 +684,17 @@ P2 eval integration is recommended from this evidence.
   5 and harms 2, but resimulation ordering is stable for only 2/7 comparisons.
   Decision `C`: diagnose fingerprint simulation stability before scorer
   changes.
+- Added
+  [scripts/analyze_p2_fingerprint_stability.py](/Users/lzhang/Documents/GenSR_SDE/scripts/analyze_p2_fingerprint_stability.py)
+  and wrote
+  [p2_fingerprint_stability_diagnostics.md](/Users/lzhang/Documents/GenSR_SDE/p2_fingerprint_stability_diagnostics.md)
+  /
+  [p2_fingerprint_stability_diagnostics.json](/Users/lzhang/Documents/GenSR_SDE/p2_fingerprint_stability_diagnostics.json).
+  This helper analyzed the 7 V4 rescue/harm cases with 5 repeats under stored
+  target / resimulated candidate mode. Only 1/8 oracle-pair comparisons had
+  stable ordering; all 8 were noise-dominated. M2/M3 target-resimulation modes
+  remain unavailable from current sidecar fields. Decision `B`: diagnose
+  candidate fingerprint variance / path budget before scorer changes.
 - Logged validated experiments in
   [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md).
 
@@ -681,8 +704,9 @@ P2 eval integration is recommended from this evidence.
   the right symbolic sequence?".
 - Fixed residual calibration implementation is closed for now. Gate feasibility
   found no observable positive zero-harm gate, and the V0/V4 fingerprint
-  ambiguity diagnostic found unstable small-resimulation orderings. Diagnose
-  fingerprint simulation stability before any scorer changes.
+  ambiguity/stability diagnostics found candidate fingerprint resimulation
+  noise-dominated orderings. Diagnose candidate fingerprint variance / path
+  budget before any scorer changes.
 - The 2000-step role-token checkpoint has been restored in `/private/tmp` and
   backed up under `checkpoints/`; model weights remain ignored by git.
 
@@ -721,9 +745,9 @@ P2 eval integration is recommended from this evidence.
 11. Do not implement shared-constant or fixed residual calibration. Gate
    feasibility found no observable positive zero-harm gate; `V4 + G3` reaches
    `9/32` but harms 2 V0 hits, while zero-harm upper bounds use oracle labels.
-   The V0/V4 fingerprint ambiguity diagnostic also found small-resimulation
-   ordering instability, so treat this path as closed until fingerprint
-   simulation stability is understood.
+   The V0/V4 fingerprint stability diagnostic also found M1 candidate
+   resimulation noise dominates 8/8 oracle-pair comparisons, so treat this path
+   as closed until candidate fingerprint variance / path budget is understood.
 12. Keep drift/diffusion pairing enabled and tune candidate pool size carefully
    because fingerprint recomputation is CPU-expensive.
 13. Reuse the saved 2000-step checkpoint for decoding experiments instead of
@@ -813,6 +837,11 @@ P2 eval integration is recommended from this evidence.
 - The V0/V4 fingerprint ambiguity diagnostic found that small resimulation
   changes ordering in 5/7 rescue/harm comparisons. Diagnose fingerprint
   simulation stability before any further scorer calibration changes.
+- The fingerprint stability diagnostic isolated enough candidate-side
+  resimulation variance to make 8/8 V4 rescue/harm oracle-pair comparisons
+  noise-dominated under stored targets. Target-resimulation attribution is still
+  blocked by missing stored candidate fingerprints / raw numeric target
+  constants.
 - Constant-folding collision checks are token-structure-only; they did not flag
   unsafe observed overmerge, but semantic fingerprint validation and
   selected-rerank behavior remain untested.

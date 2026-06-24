@@ -1466,3 +1466,73 @@ decision=C
 Use this to prioritize fingerprint simulation stability before any further
 scorer calibration changes. Do not run formal eval, integrate P2 into eval, or
 add a rerank mode from this evidence alone.
+
+## P2 Fingerprint Simulation Stability Diagnostic
+
+This uses existing JSON plus small controlled candidate fingerprint
+resimulation for the 7 V4 rescue/harm cases only. It does not run model
+decoding, candidate generation, `sde_validation_probe.py`, formal eval,
+64-sample eval, grids, retraining, scorer changes, rerank-mode changes,
+checkpoint/data changes, target-format changes, fingerprint schema changes, or
+production default changes.
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/tmp/cache \
+/opt/miniconda3/envs/gensr/bin/python3 scripts/analyze_p2_fingerprint_stability.py \
+  --ambiguity-json p2_fingerprint_ambiguity_diagnostics.json \
+  --all32-smoke-json p2_calibration_all32_smoke.json \
+  --scorer-ready-json p2_scorer_ready_candidates_all32.json \
+  --target-case-types V4_rescue,V4_harm \
+  --repeats 5 \
+  --report p2_fingerprint_stability_diagnostics.md \
+  --json-output p2_fingerprint_stability_diagnostics.json \
+  > /private/tmp/gensr_sde_p2_fingerprint_stability.log 2>&1
+```
+
+Compile check:
+
+```bash
+PYTHONPYCACHEPREFIX=/private/tmp/gensr_pycache \
+/opt/miniconda3/envs/gensr/bin/python3 -m py_compile \
+  scripts/analyze_p2_fingerprint_stability.py \
+  scripts/analyze_p2_fingerprint_ambiguity.py \
+  scripts/analyze_p2_calibration_all32_smoke.py \
+  scripts/analyze_p2_admitted_candidate_scoring.py \
+  sde_fingerprint.py \
+  simulator_sde.py \
+  sde_dataset_generator.py
+```
+
+Latest result:
+
+```text
+samples_analyzed=7
+candidate_pairs_analyzed=8
+repeats=5
+M0_stored_target_stored_candidate=available
+M1_stored_target_resim_candidate=available
+M2_resim_target_stored_candidate=unavailable
+M3_paired_resim_target_and_candidate=unavailable
+M1_ordering_stable_count=1
+M1_ordering_unstable_count=7
+M3_ordering_stable_count=NA
+M3_ordering_unstable_count=NA
+noise_dominated_pair_count=8
+stable_clear_pair_count=0
+active_noise_driver_count=2
+weak_noise_driver_count=1
+mixed_noise_driver_count=5
+rescue_cases_noise_dominated_count=6
+harm_cases_noise_dominated_count=2
+rescue_cases_oracle_recovers_majority_count=2
+harm_cases_oracle_recovers_majority_count=1
+removed_dims_noise_dominated_count=7
+removed_dims_stable_explanation_count=0
+decision=B
+```
+
+Use this to diagnose candidate fingerprint variance / path budget before any
+scorer calibration changes. M2/M3 target-resimulation attribution is blocked by
+missing stored candidate fingerprint vectors and raw numeric target constants.
+Do not run formal eval, integrate P2 into eval, or add a rerank mode from this
+evidence alone.

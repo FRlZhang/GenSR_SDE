@@ -7,10 +7,13 @@ feasibility found no observable positive zero-harm gate; the best observable
 gate (`V4 + G3`) reaches 9/32 but harms 2 V0 hits, while clean upper bounds
 require oracle labels. The follow-up V0/V4 fingerprint ambiguity diagnostic
 found small-resimulation ordering instability, with stable ordering in only
-2/7 rescue/harm comparisons. Diagnose fingerprint simulation stability before
-any scorer changes. Do not widen drift beam/top-k, run formal eval, add a
-rerank mode, integrate P2 into eval, or change production candidate-generation
-defaults from this diagnostic evidence alone.
+2/7 rescue/harm comparisons. The stability diagnostic then isolated candidate
+fingerprint resimulation variance: M1 ordering is stable for only 1/8
+oracle-pair comparisons and 8/8 are noise-dominated with stored target fixed.
+Diagnose candidate fingerprint variance / path budget before any scorer
+changes. Do not widen drift beam/top-k, run formal eval, add a rerank mode,
+integrate P2 into eval, or change production candidate-generation defaults from
+this diagnostic evidence alone.
 The drift-only smoke is complete: exact drift appears in only `3/17` targets,
 all beam rank-30 nested-mul linear cases. Candidate-normalization folding is
 complete in helper-only mode: current expanded-pool folding projects `23/32`,
@@ -58,6 +61,13 @@ preserved hits. Removed active dimensions explain 2/7 rescue/harm flips and
 3-repeat resimulation check was available, but ordering was stable for only
 2/7 rescue/harm comparisons. Decision `C`: check fingerprint simulation
 stability before scorer calibration.
+The fingerprint simulation stability diagnostic then analyzed the 7 V4
+rescue/harm cases with 5 repeats. M1 (stored target, resimulated candidates) is
+available and shows 1/8 stable oracle-pair orderings, 7/8 unstable, 8/8
+noise-dominated, and 0/8 stable-clear. Noise drivers are mixed 5, active 2, and
+weak 1. M2/M3 are unavailable because candidate fingerprint vectors and raw
+numeric target SDE constants are not stored. Decision `B`: candidate
+fingerprint variance / path budget should be diagnosed before scorer changes.
 
 Current strongest no-retraining decoding setting:
 
@@ -518,6 +528,31 @@ resimulation_oracle_recovers=2/7
 decision=C
 ```
 
+Fingerprint simulation stability:
+
+```text
+script=scripts/analyze_p2_fingerprint_stability.py
+report=p2_fingerprint_stability_diagnostics.md
+json=p2_fingerprint_stability_diagnostics.json
+samples_analyzed=7
+candidate_pairs_analyzed=8
+repeats=5
+M1_ordering_stable=1
+M1_ordering_unstable=7
+M3_ordering_stable=NA
+M3_ordering_unstable=NA
+noise_dominated_pairs=8
+stable_clear_pairs=0
+noise_driver: active=2, weak=1, mixed=5
+rescue_noise_dominated=6
+harm_noise_dominated=2
+rescue_oracle_recovers_majority=2
+harm_oracle_recovers_majority=1
+removed_dims_noise_dominated=7
+removed_dims_stable_explanation=0
+decision=B
+```
+
 Interpretation: current expanded-pool canonicalization helps but is not enough,
 full normalized drift-only admission is too high-pressure to adopt wholesale,
 and `P2_one_per_family` preserves the coverage ceiling with much lower pair
@@ -531,8 +566,10 @@ some selected-recovery rescues, but all non-V0 variants harm V0 hits; this
 points to scorer diagnostics only. Gate feasibility confirms no observable
 positive zero-harm fixed calibration gate exists in current logs. The V0/V4
 ambiguity diagnostic adds that small resimulation orderings are unstable in
-5/7 rescue/harm comparisons, so close fixed residual calibration and diagnose
-fingerprint simulation stability before scorer changes.
+5/7 rescue/harm comparisons, and the stability diagnostic shows candidate
+fingerprint resimulation alone is noise-dominated for 8/8 oracle-pair
+comparisons. Close fixed residual calibration and diagnose candidate
+fingerprint variance / path budget before scorer changes.
 
 Do not launch formal eval from these diagnostics. Exact-tail admission alone is
 weak and expensive-looking because all exact hits are rank-30 beam cases.
@@ -684,7 +721,8 @@ Likely next actions:
 
 The fixed residual calibration path is closed for now: V4 improves sidecar
 selected exact/relaxed but harms V0 hits, V11 regresses, gate feasibility found
-no observable positive zero-harm gate, and V0/V4 rescue/harm ordering is not
-stable under small resimulation. The next scorer-side question is fingerprint
-simulation stability, not another fixed residual gate. Do not run formal eval,
-integrate P2 into eval, or add a rerank mode from this evidence.
+no observable positive zero-harm gate, and V0/V4 rescue/harm ordering is
+candidate-resimulation-noise-dominated. The next scorer-side question is
+candidate fingerprint variance / path budget, not another fixed residual gate.
+Do not run formal eval, integrate P2 into eval, or add a rerank mode from this
+evidence.
