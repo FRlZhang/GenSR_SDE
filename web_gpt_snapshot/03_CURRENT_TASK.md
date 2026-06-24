@@ -2,10 +2,13 @@
 
 ## Next Engineering Task
 
-Interpret the all-32 fixed residual calibration smoke. Do not widen drift
-beam/top-k, run formal eval, add a rerank mode, integrate P2 into eval, or
-change production candidate-generation defaults from this diagnostic evidence
-alone.
+Fixed residual calibration implementation path is closed for now. Gate
+feasibility found no observable positive zero-harm gate; the best observable
+gate (`V4 + G3`) reaches 9/32 but harms 2 V0 hits, while clean upper bounds
+require oracle labels. Return to drift span / fingerprint ambiguity diagnostics.
+Do not widen drift beam/top-k, run formal eval, add a rerank mode, integrate P2
+into eval, or change production candidate-generation defaults from this
+diagnostic evidence alone.
 The drift-only smoke is complete: exact drift appears in only `3/17` targets,
 all beam rank-30 nested-mul linear cases. Candidate-normalization folding is
 complete in helper-only mode: current expanded-pool folding projects `23/32`,
@@ -39,6 +42,13 @@ V11 shared-constant regresses to 4 exact/relaxed and harms 3 V0 hits. V4 reaches
 9 exact/relaxed and 2 P2 oracles, but harms 2 V0 hits. Decision `B`: use fixed
 residual calibration as scorer diagnostics only; do not implement a rerank mode,
 run formal eval, or integrate P2 into eval from this evidence.
+The gate-feasibility diagnostic now confirms that no observable fixed gate is
+both positive and zero-harm. Available observable gates are source/score based
+(`G1`, `G2`, `G3`, `G9`); residual-top-dimension gates (`G4`-`G8`) are
+unavailable for all 32 because only the 7 P2 score misses have residual
+diagnostics. The best observable gate is `V4 + G3` with 9/32 exact/relaxed, 5
+rescues, 2 harms, and net +3. The best zero-harm result is an oracle-label upper
+bound (`V4 + U1`) at 11/32, so it is not implementable.
 
 Current strongest no-retraining decoding setting:
 
@@ -458,6 +468,26 @@ P2_oracle_selected_by_variant:
 decision=B
 ```
 
+Gate feasibility:
+
+```text
+script=scripts/analyze_p2_calibration_gate_feasibility.py
+report=p2_calibration_gate_feasibility.md
+json=p2_calibration_gate_feasibility.json
+observable_gates_available=4
+available_observable_gates=G1,G2,G3,G9
+unavailable_gates=G4,G5,G6,G7,G8
+best_observable=V4 + G3
+best_observable_selected_exact_relaxed=9/32
+best_observable_p2_oracle_selected=2
+best_observable_rescues=5
+best_observable_harms=2
+best_observable_net=+3
+best_zero_harm_observable=None
+best_oracle_upper_bound=V4 + U1, 11/32, harms=0, not implementable
+decision=B
+```
+
 Interpretation: current expanded-pool canonicalization helps but is not enough,
 full normalized drift-only admission is too high-pressure to adopt wholesale,
 and `P2_one_per_family` preserves the coverage ceiling with much lower pair
@@ -468,8 +498,9 @@ target fingerprint / `y_to_fit` fields and full candidate rows for the 7 P2
 newly recovered samples. Offline semantic scoring shows all 7 P2 oracle
 candidates lose under the current scorer. The all-32 fixed residual smoke found
 some selected-recovery rescues, but all non-V0 variants harm V0 hits; this
-points to scorer diagnostics only, not naive global beam/top-k expansion,
-formal eval, or implementation.
+points to scorer diagnostics only. Gate feasibility confirms no observable
+positive zero-harm fixed calibration gate exists in current logs, so close the
+fixed residual calibration implementation path for now.
 
 Do not launch formal eval from these diagnostics. Exact-tail admission alone is
 weak and expensive-looking because all exact hits are rank-30 beam cases.
@@ -565,8 +596,10 @@ diagnostic hook is proven necessary.
 
 Likely next actions:
 
-- use the all-32 calibration smoke only as diagnostic evidence for score
-  residual behavior;
+- use the all-32 calibration smoke and gate-feasibility report only as
+  diagnostic evidence for score residual behavior;
+- close the fixed residual calibration implementation path until a genuinely
+  observable zero-harm signal exists;
 - avoid naive global beam top-k expansion to 30/32 as a default from this
   evidence alone;
 - do not add `per_active_dim_norm_plus_weak` or any robust/clipped normalized
@@ -617,6 +650,7 @@ Likely next actions:
 
 ## Success Standard
 
-The fixed residual calibration path is not implementation-ready: V4 improves
-sidecar selected exact/relaxed but harms V0 hits, and V11 regresses. Do not run
-formal eval or add a rerank mode from this smoke.
+The fixed residual calibration path is closed for now: V4 improves sidecar
+selected exact/relaxed but harms V0 hits, V11 regresses, and the gate-feasibility
+diagnostic found no observable positive zero-harm gate. Do not run formal eval,
+integrate P2 into eval, or add a rerank mode from this evidence.

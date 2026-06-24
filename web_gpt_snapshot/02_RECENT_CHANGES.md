@@ -2,6 +2,60 @@
 
 ## Last Codex Workflow
 
+Codex added an offline gate-feasibility diagnostic for fixed P2 residual
+calibration:
+
+```text
+scripts/analyze_p2_calibration_gate_feasibility.py
+p2_calibration_gate_feasibility.md
+p2_calibration_gate_feasibility.json
+/private/tmp/gensr_sde_p2_calibration_gate_feasibility.log
+```
+
+This parsed existing JSON only. It did not run model decoding, candidate
+generation/regeneration, `sde_validation_probe.py`, formal eval, 64-sample
+eval, retraining, scorer grids, active/weak grids, checkpoint/data changes,
+target-format changes, fingerprint schema changes, production default changes,
+or a new rerank mode.
+
+Result:
+
+```text
+target_samples_analyzed=32
+variants_considered=V3,V4,V6
+observable_gates_available=4
+unavailable_gates=5
+unavailable_gates=G4,G5,G6,G7,G8
+best_observable_gate_by_net=V4 + G3
+best_observable_selected_exact_relaxed=9/32
+best_observable_p2_oracle_selected=2
+best_observable_rescues_vs_V0=5
+best_observable_harms_vs_V0=2
+best_observable_net=+3
+best_observable_preserves_all_V0_hits=False
+best_observable_zero_harm=None
+best_oracle_upper_bound=V4 + U1
+best_upper_bound_selected_exact_relaxed=11/32
+best_upper_bound_harms=0
+any_observable_gate_positive_and_zero_harm=False
+decision=B
+```
+
+Interpretation: no simple observable zero-harm gate exists in current logs.
+Observable gates can improve selected recovery, but positive gates harm V0
+hits. Zero-harm upper bounds require oracle labels and are not implementable.
+Close fixed residual calibration implementation path for now and return to
+drift span / fingerprint ambiguity diagnostics.
+
+Verification:
+
+```text
+py_compile scripts/analyze_p2_calibration_gate_feasibility.py scripts/analyze_p2_calibration_all32_smoke.py scripts/analyze_p2_residual_calibration_counterfactuals.py scripts/analyze_p2_admitted_candidate_scoring.py sde_fingerprint.py simulator_sde.py sde_dataset_generator.py: passed
+helper run: passed
+```
+
+## Previous Codex Workflow
+
 Codex ran an all-32 offline shared-constant / fixed residual calibration smoke:
 
 ```text

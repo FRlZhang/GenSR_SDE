@@ -172,6 +172,19 @@ oracles, but it also harms 2 V0 hits. `V3` and `V6` reach 7 exact/relaxed and
 also harm V0 hits. Decision `B`: use this as scorer diagnostics only; do not
 implement a rerank mode, integrate P2 into eval, or run formal eval from this
 evidence.
+The follow-up offline gate-feasibility diagnostic is now complete. Four
+observable gates were computable from existing all-32 JSON (`G1/G2/G3/G9`),
+while residual-top-dimension gates `G4` through `G8` were unavailable because
+all-32 selected residual top-dimension fields are not logged; only 7/32 P2
+score-miss samples have that residual diagnostic. The best observable gate by
+net is `V4 + G3` (variant selected score improves V0 score), which reaches 9
+exact/relaxed and 2 P2 oracles with +5 rescues, but still harms 2 V0 hits. No
+observable gate gives positive zero-harm improvement, and no observable gate
+preserving all V0 hits was found. Oracle-label upper bounds can reach up to 11
+exact/relaxed with zero harm, but they are non-implementable. Decision `B`:
+close the fixed residual calibration implementation path for now; return to
+drift span / fingerprint ambiguity diagnostics rather than scorer
+implementation or formal eval.
 
 ## Last Updated
 
@@ -626,6 +639,17 @@ evidence.
   64-sample eval, retraining, scorer grids, active/weak grids, or production
   scorer/default changes. V0 selected exact/relaxed is `6/32`; V11 regresses to
   `4/32`; V4 reaches `9/32` but harms 2 V0 hits. Decision `B`: diagnostic only.
+- Added
+  [scripts/analyze_p2_calibration_gate_feasibility.py](/Users/lzhang/Documents/GenSR_SDE/scripts/analyze_p2_calibration_gate_feasibility.py)
+  and wrote
+  [p2_calibration_gate_feasibility.md](/Users/lzhang/Documents/GenSR_SDE/p2_calibration_gate_feasibility.md)
+  /
+  [p2_calibration_gate_feasibility.json](/Users/lzhang/Documents/GenSR_SDE/p2_calibration_gate_feasibility.json).
+  This parsed existing JSON only. It found no observable zero-harm gate:
+  `V4 + G3` has the best observable net (`9/32`, +5 rescues, 2 harms), while
+  the clean zero-harm gates are oracle-label upper bounds and not implementable.
+  Decision `B`: close the fixed residual calibration implementation path for
+  now.
 - Logged validated experiments in
   [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md).
 
@@ -633,10 +657,9 @@ evidence.
 
 - Transitioning from "can the model learn the fingerprint?" to "can we decode
   the right symbolic sequence?".
-- Interpreting the all-32 fixed residual calibration smoke. It found useful
-  diagnostic rescues, but every non-V0 fixed variant harms at least one V0 hit;
-  V11 shared-constant regresses. Do not treat this as selected-rerank evidence
-  for implementation, formal eval, or a production default change.
+- Fixed residual calibration implementation is closed for now. Gate feasibility
+  found no observable positive zero-harm gate; clean gates are oracle-label
+  upper bounds only. Return to drift span / fingerprint ambiguity diagnostics.
 - The 2000-step role-token checkpoint has been restored in `/private/tmp` and
   backed up under `checkpoints/`; model weights remain ignored by git.
 
@@ -672,9 +695,10 @@ evidence.
    admission, in the actual candidate coverage pipeline.
 10. Do not run formal eval from the drift-only or constant-folding diagnostics;
    they are oracle-coverage diagnostics, not selected-recovery evidence.
-11. Do not implement shared-constant or fixed residual calibration from the
-   all-32 smoke. V4 improves sidecar selected exact/relaxed to `9/32` but harms
-   2 V0 hits; V11 regresses to `4/32`. Treat these as scorer diagnostics only.
+11. Do not implement shared-constant or fixed residual calibration. Gate
+   feasibility found no observable positive zero-harm gate; `V4 + G3` reaches
+   `9/32` but harms 2 V0 hits, while zero-harm upper bounds use oracle labels.
+   Treat this path as closed for now.
 12. Keep drift/diffusion pairing enabled and tune candidate pool size carefully
    because fingerprint recomputation is CPU-expensive.
 13. Reuse the saved 2000-step checkpoint for decoding experiments instead of

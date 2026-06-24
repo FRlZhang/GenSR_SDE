@@ -1345,3 +1345,61 @@ decision=B
 
 Use this as scorer diagnostics only. Do not implement a rerank mode, integrate
 P2 into eval, or run formal eval from this evidence.
+
+## P2 Calibration Gate Feasibility
+
+This parses existing JSON only and checks observable gates plus oracle upper
+bounds for fixed residual calibration. It does not run model decoding,
+candidate generation, fingerprint simulation, reranking, formal eval,
+64-sample eval, grids, retraining, scorer changes, rerank-mode changes,
+checkpoint/data changes, target-format changes, fingerprint changes, or
+production default changes.
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/tmp/cache \
+/opt/miniconda3/envs/gensr/bin/python3 scripts/analyze_p2_calibration_gate_feasibility.py \
+  --all32-smoke-json p2_calibration_all32_smoke.json \
+  --scorer-ready-json p2_scorer_ready_candidates_all32.json \
+  --counterfactual-json p2_residual_calibration_counterfactuals.json \
+  --target-samples 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31 \
+  --report p2_calibration_gate_feasibility.md \
+  --json-output p2_calibration_gate_feasibility.json \
+  > /private/tmp/gensr_sde_p2_calibration_gate_feasibility.log 2>&1
+```
+
+Compile check:
+
+```bash
+PYTHONPYCACHEPREFIX=/private/tmp/gensr_pycache \
+/opt/miniconda3/envs/gensr/bin/python3 -m py_compile \
+  scripts/analyze_p2_calibration_gate_feasibility.py \
+  scripts/analyze_p2_calibration_all32_smoke.py \
+  scripts/analyze_p2_residual_calibration_counterfactuals.py \
+  scripts/analyze_p2_admitted_candidate_scoring.py \
+  sde_fingerprint.py \
+  simulator_sde.py \
+  sde_dataset_generator.py
+```
+
+Latest result:
+
+```text
+target_samples_analyzed=32
+observable_gate_count=4
+unavailable_gate_count=5
+available_observable_gates=G1,G2,G3,G9
+unavailable_gates=G4,G5,G6,G7,G8
+best_observable=V4 + G3
+best_observable_selected_exact_relaxed=9/32
+best_observable_p2_oracle_selected=2
+best_observable_rescues=5
+best_observable_harms=2
+best_observable_net=+3
+best_zero_harm_observable=None
+best_oracle_upper_bound=V4 + U1, 11/32, harms=0, not implementable
+decision=B
+```
+
+Use this to close fixed residual calibration implementation path for now and
+return to drift span / fingerprint ambiguity diagnostics. Do not run formal
+eval, integrate P2 into eval, or add a rerank mode from this evidence alone.
