@@ -1,0 +1,42 @@
+{
+  "command": "PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/tmp/cache /opt/miniconda3/envs/gensr/bin/python3 scripts/analyze_candidate_coverage.py --source-log /private/tmp/gensr_sde_32_rolewise_no_multi_u0.log --report candidate_coverage_pair_expanded_p2_flag.md --json-output candidate_coverage_pair_expanded_p2_flag.json --pair-drift-topk 5 --pair-diffusion-topk 6 --pair-drift-diffusion-candidates 32 --normalized-drift-admission p2_one_per_family --normalized-drift-admission-source beam --drift-only-json drift_only_candidate_diversity_smoke.json > /private/tmp/gensr_sde_candidate_coverage_pair_expanded_p2_flag.log 2>&1",
+  "decision": {
+    "choice": "D",
+    "label": "Blocked by missing source log or budget",
+    "recommended_next_action": "Restore or recreate /private/tmp/gensr_sde_32_rolewise_no_multi_u0.log, then run the exact local coverage-only command. Do not run formal eval."
+  },
+  "default_behavior_intended_unchanged": true,
+  "expected_reference_metrics": {
+    "canonicalized_expanded_pool_coverage": "23/32",
+    "expanded_pairing_coverage": "15/32",
+    "newly_recovered_samples": [
+      0,
+      2,
+      6,
+      7,
+      15,
+      25,
+      29
+    ],
+    "p2_normalized_admission_coverage": "30/32",
+    "p2_pair_count": 340,
+    "remaining_missing_samples": [
+      16,
+      28
+    ],
+    "sampling_excluded": true,
+    "sampling_recovered_canonical_drift_count": 0,
+    "unsafe_collision_flag": false
+  },
+  "missing_inputs": [
+    "/private/tmp/gensr_sde_32_rolewise_no_multi_u0.log"
+  ],
+  "model_backed_candidate_coverage": "not_run",
+  "no_formal_eval_recommended": true,
+  "runtime_metrics": null,
+  "runtime_output": {
+    "candidate_coverage_pair_expanded_p2_flag_json_produced": false,
+    "candidate_coverage_pair_expanded_p2_flag_md_produced": false
+  },
+  "status": "blocked"
+}

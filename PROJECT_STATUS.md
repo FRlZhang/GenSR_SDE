@@ -98,7 +98,11 @@ matches the P2 hook metrics exactly (`15/32`, `23/32`, `30/32`, pair count
 `340`, newly recovered `0,2,6,7,15,25,29`, remaining `16,28`), with schema and
 canonicalizer safety status `ok`; no model-backed candidate regeneration or
 formal eval was run. A future small local coverage-only run can exercise the
-flag end to end, but this still should not change production defaults.
+flag end to end, but this still should not change production defaults. The
+attempted runtime smoke was blocked before launch because the required source
+log `/private/tmp/gensr_sde_32_rolewise_no_multi_u0.log` is missing. Do not
+regenerate that log inside Codex; restore/recreate it locally and rerun the
+exact coverage-only P2 flag command from the runtime report.
 
 ## Last Updated
 
@@ -436,6 +440,15 @@ flag end to end, but this still should not change production defaults.
   The JSON-only validation confirms metric cross-check status `ok`, schema
   status `ok`, canonicalizer safety status `ok`, zero mismatches, and decision
   `A`. No model-backed candidate generation was run.
+- Added the blocked runtime smoke report
+  [candidate_coverage_pair_expanded_p2_flag_runtime_report.md](/Users/lzhang/Documents/GenSR_SDE/candidate_coverage_pair_expanded_p2_flag_runtime_report.md)
+  /
+  [candidate_coverage_pair_expanded_p2_flag_runtime_report.json](/Users/lzhang/Documents/GenSR_SDE/candidate_coverage_pair_expanded_p2_flag_runtime_report.json).
+  The required source log `/private/tmp/gensr_sde_32_rolewise_no_multi_u0.log`
+  was missing, so the model-backed candidate coverage smoke was not run and
+  `candidate_coverage_pair_expanded_p2_flag.md/json` was not produced. Decision
+  `D`: restore or recreate the source log locally, then run the exact
+  coverage-only command; no formal eval.
 - Logged validated experiments in
   [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md).
 
@@ -443,11 +456,12 @@ flag end to end, but this still should not change production defaults.
 
 - Transitioning from "can the model learn the fingerprint?" to "can we decode
   the right symbolic sequence?".
-- Planning a future small local coverage-only run of the explicit
-  `--normalized-drift-admission p2_one_per_family` candidate-coverage flag. Do
-  not treat this as selected-rerank evidence or a production default change.
-  Residual-debug safety checks do not support continuing scorer-side
-  normalization.
+- Blocked on a missing local source log for the explicit
+  `--normalized-drift-admission p2_one_per_family` candidate-coverage runtime
+  smoke. Restore or recreate `/private/tmp/gensr_sde_32_rolewise_no_multi_u0.log`
+  locally before rerunning the exact coverage-only command. Do not treat this as
+  selected-rerank evidence or a production default change. Residual-debug safety
+  checks do not support continuing scorer-side normalization.
 - The 2000-step role-token checkpoint has been restored in `/private/tmp` and
   backed up under `checkpoints/`; model weights remain ignored by git.
 
@@ -477,10 +491,11 @@ flag end to end, but this still should not change production defaults.
    expanded-pairing 16-sample smoke had 5 oracle samples, 0 selected hits, and
    0/5 offline miss rescues, so do not run a formal 32-sample eval for this
    scorer idea.
-9. Prefer a future small local coverage-only run of the default-off
-   `--normalized-drift-admission p2_one_per_family` flag before widening
-   beam/top-k. It preserves the `30/32` diagnostic ceiling with target pair
-   count `340`, versus `1105` for full normalized admission in JSON validation.
+9. Restore or recreate `/private/tmp/gensr_sde_32_rolewise_no_multi_u0.log`,
+   then run the exact coverage-only `--normalized-drift-admission
+   p2_one_per_family` command before widening beam/top-k. JSON validation still
+   preserves the `30/32` diagnostic ceiling with target pair count `340`, versus
+   `1105` for full normalized admission.
 10. Do not run formal eval from the drift-only or constant-folding diagnostics;
    they are oracle-coverage diagnostics, not selected-recovery evidence.
 11. Keep drift/diffusion pairing enabled and tune candidate pool size carefully

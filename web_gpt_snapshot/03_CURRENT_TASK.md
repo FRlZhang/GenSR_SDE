@@ -2,9 +2,10 @@
 
 ## Next Engineering Task
 
-Plan a future small local coverage-only run of the explicit
-`--normalized-drift-admission p2_one_per_family` candidate coverage flag before
-widening drift beam/top-k or changing production candidate-generation defaults.
+Restore or recreate `/private/tmp/gensr_sde_32_rolewise_no_multi_u0.log`, then
+run the exact coverage-only `--normalized-drift-admission p2_one_per_family`
+candidate coverage command before widening drift beam/top-k or changing
+production candidate-generation defaults.
 The drift-only smoke is complete: exact drift appears in only `3/17` targets,
 all beam rank-30 nested-mul linear cases. Candidate-normalization folding is
 complete in helper-only mode: current expanded-pool folding projects `23/32`,
@@ -14,8 +15,10 @@ projects `30/32` with pair count `1105`, capped `P2_one_per_family` preserves
 with strict self-checks. The candidate coverage pipeline now has a default-off
 P2 flag, validated from existing JSON with metric_cross_check_status `ok`,
 schema_status `ok`, canonicalizer_safety_status `ok`, zero mismatches, decision
-`A`. Residual-debug safety checks do not support continuing scorer-side
-normalization or adding a new rerank mode.
+`A`. The attempted runtime smoke was blocked before launch because the required
+source log is missing; `candidate_coverage_pair_expanded_p2_flag.md/json` was
+not produced. Residual-debug safety checks do not support continuing
+scorer-side normalization or adding a new rerank mode.
 
 Current strongest no-retraining decoding setting:
 
@@ -349,13 +352,25 @@ model_backed_candidate_generation_avoided=True
 decision=A
 ```
 
+P2 flag runtime smoke attempt:
+
+```text
+report=candidate_coverage_pair_expanded_p2_flag_runtime_report.md
+json=candidate_coverage_pair_expanded_p2_flag_runtime_report.json
+status=blocked
+missing_input=/private/tmp/gensr_sde_32_rolewise_no_multi_u0.log
+model_backed_candidate_coverage=not_run
+candidate_coverage_pair_expanded_p2_flag.md/json produced=False
+decision=D
+```
+
 Interpretation: current expanded-pool canonicalization helps but is not enough,
 full normalized drift-only admission is too high-pressure to adopt wholesale,
 and `P2_one_per_family` preserves the coverage ceiling with much lower pair
 pressure. The hook is now cross-validated and integrated behind a default-off
-coverage-only candidate coverage flag; the next useful step is a future small
-local coverage-only run of the explicit flag, not naive global beam/top-k
-expansion and not formal eval.
+coverage-only candidate coverage flag; the next useful step is to restore the
+missing source log and run the exact local coverage-only command, not naive
+global beam/top-k expansion and not formal eval.
 
 Do not launch formal eval from these diagnostics. Exact-tail admission alone is
 weak and expensive-looking because all exact hits are rank-30 beam cases.

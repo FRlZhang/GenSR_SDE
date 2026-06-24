@@ -544,6 +544,16 @@ diagnostic flag. Default behavior is unchanged when the flag is omitted.
 
 Future small local coverage-only command:
 
+Preflight requirement:
+
+```text
+/private/tmp/gensr_sde_32_rolewise_no_multi_u0.log
+```
+
+Latest Codex runtime-smoke attempt was blocked because that source log was
+missing. Do not regenerate it inside Codex; restore/recreate it locally before
+running:
+
 ```bash
 PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/tmp/cache \
 /opt/miniconda3/envs/gensr/bin/python3 scripts/analyze_candidate_coverage.py \
@@ -593,6 +603,16 @@ schema_status=ok
 canonicalizer_safety_status=ok
 mismatch_count=0
 decision=A
+```
+
+Latest runtime-smoke attempt:
+
+```text
+status=blocked
+missing_input=/private/tmp/gensr_sde_32_rolewise_no_multi_u0.log
+model_backed_candidate_coverage=not_run
+candidate_coverage_pair_expanded_p2_flag.md/json produced=False
+decision=D
 ```
 
 No formal eval is recommended from this validation.

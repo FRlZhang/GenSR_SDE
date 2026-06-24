@@ -2,41 +2,35 @@
 
 ## Last Codex Workflow
 
-Codex integrated the validated reusable P2 normalized drift admission hook into
-the candidate coverage pipeline as a default-off coverage-only flag:
+Codex attempted the small local coverage-only runtime smoke for the explicit
+P2 normalized drift admission flag, but blocked before launch because a required
+input log was missing:
 
 ```text
-scripts/analyze_candidate_coverage.py
-scripts/validate_candidate_coverage_p2_flag.py
-candidate_coverage_p2_flag_validation.md
-candidate_coverage_p2_flag_validation.json
+candidate_coverage_pair_expanded_p2_flag_runtime_report.md
+candidate_coverage_pair_expanded_p2_flag_runtime_report.json
 ```
 
-This parsed existing JSON only. No model decoding, candidate generation,
-fingerprint simulation, reranking, formal eval, 64-sample eval, grids,
-retraining, scorer changes, rerank-mode changes, checkpoint/data changes,
-target-format changes, fingerprint changes, or production default changes were
-run.
-
-New flag:
+Preflight:
 
 ```text
---normalized-drift-admission none|p2_one_per_family
-default=none
---normalized-drift-admission-source beam
-default=beam
+missing=/private/tmp/gensr_sde_32_rolewise_no_multi_u0.log
+present=candidate_coverage_pair_expanded.json
+present=drift_only_candidate_diversity_smoke.json
+present=scripts/analyze_candidate_coverage.py
+present=scripts/normalized_drift_admission.py
 ```
 
-Integration notes:
+Result:
 
 ```text
-default behavior intended unchanged=True
-uses reusable scripts/normalized_drift_admission.py=True
-independent canonicalizer duplication avoided=True
-model_backed_candidate_generation_avoided=True
+model_backed_candidate_coverage=not_run
+candidate_coverage_pair_expanded_p2_flag.md produced=False
+candidate_coverage_pair_expanded_p2_flag.json produced=False
+decision=D
 ```
 
-JSON-only validation:
+Expected reference metrics remain from JSON-only validation:
 
 ```text
 current_expanded_full_oracle=15/32
@@ -50,26 +44,16 @@ sampling_recovered_canonical_drift_count=0
 unsafe_collision_flag=False
 ```
 
-Status:
-
-```text
-metric_cross_check_status=ok
-schema_status=ok
-canonicalizer_safety_status=ok
-mismatch_count=0
-decision=A
-```
-
-Interpretation: the default-off flag is code-integrated and JSON-validated, but
-the full model-backed no-flag/runtime equivalence smoke was intentionally not
-run. Recommend a future small local coverage-only candidate coverage command
-with the explicit P2 flag. No formal eval is recommended.
+Interpretation: do not regenerate the missing source log inside Codex. Restore
+or recreate `/private/tmp/gensr_sde_32_rolewise_no_multi_u0.log`, then run the
+exact coverage-only command recorded in the runtime report. No formal eval is
+recommended.
 
 Validation:
 
 ```text
-py_compile scripts/analyze_candidate_coverage.py scripts/normalized_drift_admission.py scripts/run_p2_normalized_admission_coverage.py scripts/validate_p2_normalized_admission_hook.py scripts/validate_candidate_coverage_p2_flag.py: passed
-JSON-only flag validation helper: passed
+py_compile scripts/analyze_candidate_coverage.py scripts/normalized_drift_admission.py scripts/validate_candidate_coverage_p2_flag.py: passed
+git diff --check: passed
 ```
 
 ## Previous Codex Workflow
