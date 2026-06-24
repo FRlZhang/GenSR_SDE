@@ -5,10 +5,12 @@
 Fixed residual calibration implementation path is closed for now. Gate
 feasibility found no observable positive zero-harm gate; the best observable
 gate (`V4 + G3`) reaches 9/32 but harms 2 V0 hits, while clean upper bounds
-require oracle labels. Return to drift span / fingerprint ambiguity diagnostics.
-Do not widen drift beam/top-k, run formal eval, add a rerank mode, integrate P2
-into eval, or change production candidate-generation defaults from this
-diagnostic evidence alone.
+require oracle labels. The follow-up V0/V4 fingerprint ambiguity diagnostic
+found small-resimulation ordering instability, with stable ordering in only
+2/7 rescue/harm comparisons. Diagnose fingerprint simulation stability before
+any scorer changes. Do not widen drift beam/top-k, run formal eval, add a
+rerank mode, integrate P2 into eval, or change production candidate-generation
+defaults from this diagnostic evidence alone.
 The drift-only smoke is complete: exact drift appears in only `3/17` targets,
 all beam rank-30 nested-mul linear cases. Candidate-normalization folding is
 complete in helper-only mode: current expanded-pool folding projects `23/32`,
@@ -49,6 +51,13 @@ unavailable for all 32 because only the 7 P2 score misses have residual
 diagnostics. The best observable gate is `V4 + G3` with 9/32 exact/relaxed, 5
 rescues, 2 harms, and net +3. The best zero-harm result is an oracle-label upper
 bound (`V4 + U1`) at 11/32, so it is not implementable.
+The V0/V4 fingerprint ambiguity diagnostic then analyzed 19 changed/preserved
+cases: 5 V4 rescues, 2 V4 harms, 8 nonoracle-to-nonoracle changes, and 4 V0
+preserved hits. Removed active dimensions explain 2/7 rescue/harm flips and
+0/2 harms; semantic errors are mostly same-drift/wrong-diffusion. The small
+3-repeat resimulation check was available, but ordering was stable for only
+2/7 rescue/harm comparisons. Decision `C`: check fingerprint simulation
+stability before scorer calibration.
 
 Current strongest no-retraining decoding setting:
 
@@ -488,6 +497,27 @@ best_oracle_upper_bound=V4 + U1, 11/32, harms=0, not implementable
 decision=B
 ```
 
+V0/V4 fingerprint ambiguity:
+
+```text
+script=scripts/analyze_p2_fingerprint_ambiguity.py
+report=p2_fingerprint_ambiguity_diagnostics.md
+json=p2_fingerprint_ambiguity_diagnostics.json
+samples_analyzed=19
+V4_rescues=5
+V4_harms=2
+changed_nonoracle_to_nonoracle=8
+V0_preserved_hits=4
+removed_dims_explain_flip=2/7
+removed_dims_explain_harm=0/2
+ambiguity: active=1, weak=2, mixed=4
+semantic_errors: same_drift_wrong_diffusion=5, same_diffusion_wrong_drift=1, both_wrong=1
+resimulation_available=True
+resimulation_ordering_stable=2/7
+resimulation_oracle_recovers=2/7
+decision=C
+```
+
 Interpretation: current expanded-pool canonicalization helps but is not enough,
 full normalized drift-only admission is too high-pressure to adopt wholesale,
 and `P2_one_per_family` preserves the coverage ceiling with much lower pair
@@ -499,8 +529,10 @@ newly recovered samples. Offline semantic scoring shows all 7 P2 oracle
 candidates lose under the current scorer. The all-32 fixed residual smoke found
 some selected-recovery rescues, but all non-V0 variants harm V0 hits; this
 points to scorer diagnostics only. Gate feasibility confirms no observable
-positive zero-harm fixed calibration gate exists in current logs, so close the
-fixed residual calibration implementation path for now.
+positive zero-harm fixed calibration gate exists in current logs. The V0/V4
+ambiguity diagnostic adds that small resimulation orderings are unstable in
+5/7 rescue/harm comparisons, so close fixed residual calibration and diagnose
+fingerprint simulation stability before scorer changes.
 
 Do not launch formal eval from these diagnostics. Exact-tail admission alone is
 weak and expensive-looking because all exact hits are rank-30 beam cases.
@@ -651,6 +683,8 @@ Likely next actions:
 ## Success Standard
 
 The fixed residual calibration path is closed for now: V4 improves sidecar
-selected exact/relaxed but harms V0 hits, V11 regresses, and the gate-feasibility
-diagnostic found no observable positive zero-harm gate. Do not run formal eval,
+selected exact/relaxed but harms V0 hits, V11 regresses, gate feasibility found
+no observable positive zero-harm gate, and V0/V4 rescue/harm ordering is not
+stable under small resimulation. The next scorer-side question is fingerprint
+simulation stability, not another fixed residual gate. Do not run formal eval,
 integrate P2 into eval, or add a rerank mode from this evidence.

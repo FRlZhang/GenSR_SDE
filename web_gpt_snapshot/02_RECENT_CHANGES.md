@@ -2,6 +2,61 @@
 
 ## Last Codex Workflow
 
+Codex added an offline fingerprint ambiguity diagnostic for V0/V4 rescue/harm
+cases:
+
+```text
+scripts/analyze_p2_fingerprint_ambiguity.py
+p2_fingerprint_ambiguity_diagnostics.md
+p2_fingerprint_ambiguity_diagnostics.json
+/private/tmp/gensr_sde_p2_fingerprint_ambiguity.log
+```
+
+This parsed existing JSON only, with a small 3-repeat fingerprint stability
+check for the 5 V4 rescues and 2 V4 harms. It did not run model decoding,
+candidate generation/regeneration, `sde_validation_probe.py`, formal eval,
+64-sample eval, retraining, scorer grids, active/weak grids, checkpoint/data
+changes, target-format changes, fingerprint schema changes, production default
+changes, or a new rerank mode.
+
+Result:
+
+```text
+samples_analyzed=19
+V4_rescue_count=5
+V4_harm_count=2
+changed_nonoracle_to_nonoracle_count=8
+V0_preserved_hit_count=4
+removed_dims_explain_flip_count=2
+removed_dims_explain_harm_count=0
+active_dominated_ambiguity_count=1
+weak_dominated_ambiguity_count=2
+mixed_ambiguity_count=4
+same_diffusion_wrong_drift_count=1
+same_drift_wrong_diffusion_count=5
+both_sides_wrong_count=1
+constant_only_or_near_constant_count=0
+resimulation_available_bool=True
+resimulation_ordering_stable_count=2
+resimulation_oracle_recovers_count=2
+decision=C
+```
+
+Interpretation: rescues and harms do not collapse to a single simple observable
+pattern, but small-resimulation ordering was unstable in most rescue/harm
+comparisons. Diagnose fingerprint simulation stability before any scorer
+changes and do not move to formal eval or a rerank-mode change from this
+diagnostic alone.
+
+Verification:
+
+```text
+py_compile scripts/analyze_p2_fingerprint_ambiguity.py scripts/analyze_p2_calibration_gate_feasibility.py scripts/analyze_p2_calibration_all32_smoke.py scripts/analyze_p2_admitted_candidate_scoring.py sde_fingerprint.py simulator_sde.py sde_dataset_generator.py: passed
+helper run: passed
+```
+
+## Previous Codex Workflow
+
 Codex added an offline gate-feasibility diagnostic for fixed P2 residual
 calibration:
 

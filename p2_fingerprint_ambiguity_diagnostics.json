@@ -1,0 +1,6264 @@
+{
+  "metadata": {
+    "all32_smoke_json": "p2_calibration_all32_smoke.json",
+    "baseline_coverage_json": "candidate_coverage_diagnostics.json",
+    "fingerprint_config": {
+      "active_dt": 0.01,
+      "active_paths": 800,
+      "active_probe_times": [
+        0.0,
+        0.5,
+        1.0
+      ],
+      "active_probe_x0s": [
+        0.5,
+        1.0,
+        1.5
+      ],
+      "clip_value": 1000000.0,
+      "fingerprint_length": 186,
+      "kernel_bandwidth": 0.35,
+      "kernel_max": 2.0,
+      "kernel_min": -2.0,
+      "kind": "multi_active_weak_v1",
+      "moment_time_samples": 12,
+      "multi_u0s": [
+        0.5,
+        1.0,
+        1.5
+      ],
+      "n_kernels": 24,
+      "n_paths": 800,
+      "n_steps": 60,
+      "natural_u0": 1.0,
+      "standardize": true,
+      "t_final": 1.0
+    },
+    "gate_json": "p2_calibration_gate_feasibility.json",
+    "p2_coverage_json": "candidate_coverage_pair_expanded_p2_flag.json",
+    "removed_active_dims": [
+      76,
+      72,
+      82,
+      88
+    ],
+    "resimulation_repeats": 3,
+    "scorer_ready_json": "p2_scorer_ready_candidates_all32.json"
+  },
+  "preserved_hit_samples": [
+    {
+      "V0_selected_candidate": {
+        "candidate_id": "sample10_current_0003",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 3,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 3,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": null,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ]
+      },
+      "V4_preserves_or_harms": "preserves",
+      "V4_selected_candidate": {
+        "candidate_id": "sample10_current_0003",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 3,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 3,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": null,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ]
+      },
+      "V4_would_change_it": false,
+      "case_type": "V0_preserved_hit",
+      "sample_index": 10,
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "abs",
+        "x_0"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ],
+      "truth_sequence": [
+        "<DRIFT>",
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0",
+        "<DIFFUSION>",
+        "mul",
+        "CONSTANT",
+        "abs",
+        "x_0"
+      ]
+    },
+    {
+      "V0_selected_candidate": {
+        "candidate_id": "sample14_p2_0013",
+        "candidate_source": "p2_admitted",
+        "diffusion_rank": 3,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 15,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": false,
+        "is_p2_canonical_oracle": true,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 13,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ]
+      },
+      "V4_preserves_or_harms": "preserves",
+      "V4_selected_candidate": {
+        "candidate_id": "sample14_p2_0013",
+        "candidate_source": "p2_admitted",
+        "diffusion_rank": 3,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 15,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": false,
+        "is_p2_canonical_oracle": true,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 13,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ]
+      },
+      "V4_would_change_it": false,
+      "case_type": "V0_preserved_hit",
+      "sample_index": 14,
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "abs",
+        "x_0"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ],
+      "truth_sequence": [
+        "<DRIFT>",
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0",
+        "<DIFFUSION>",
+        "mul",
+        "CONSTANT",
+        "abs",
+        "x_0"
+      ]
+    },
+    {
+      "V0_selected_candidate": {
+        "candidate_id": "sample17_current_0007",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 7,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 7,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": null,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ]
+      },
+      "V4_preserves_or_harms": "preserves",
+      "V4_selected_candidate": {
+        "candidate_id": "sample17_current_0007",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 7,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 7,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": null,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ]
+      },
+      "V4_would_change_it": false,
+      "case_type": "V0_preserved_hit",
+      "sample_index": 17,
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "sqrt",
+        "abs",
+        "x_0"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "mul",
+        "x_0",
+        "sub",
+        "CONSTANT",
+        "x_0"
+      ],
+      "truth_sequence": [
+        "<DRIFT>",
+        "mul",
+        "CONSTANT",
+        "mul",
+        "x_0",
+        "sub",
+        "CONSTANT",
+        "x_0",
+        "<DIFFUSION>",
+        "mul",
+        "CONSTANT",
+        "sqrt",
+        "abs",
+        "x_0"
+      ]
+    },
+    {
+      "V0_selected_candidate": {
+        "candidate_id": "sample18_current_0007",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 7,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 7,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": null,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ]
+      },
+      "V4_preserves_or_harms": "preserves",
+      "V4_selected_candidate": {
+        "candidate_id": "sample18_current_0007",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 7,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 7,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": null,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ]
+      },
+      "V4_would_change_it": false,
+      "case_type": "V0_preserved_hit",
+      "sample_index": 18,
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "sqrt",
+        "abs",
+        "x_0"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "mul",
+        "x_0",
+        "sub",
+        "CONSTANT",
+        "x_0"
+      ],
+      "truth_sequence": [
+        "<DRIFT>",
+        "mul",
+        "CONSTANT",
+        "mul",
+        "x_0",
+        "sub",
+        "CONSTANT",
+        "x_0",
+        "<DIFFUSION>",
+        "mul",
+        "CONSTANT",
+        "sqrt",
+        "abs",
+        "x_0"
+      ]
+    }
+  ],
+  "samples": [
+    {
+      "V0_selected_candidate": {
+        "candidate_id": "sample1_p2_0009",
+        "candidate_source": "p2_admitted",
+        "diffusion_rank": 4,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_rank": 5,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": false,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": false,
+        "is_truth_drift_canonical": false,
+        "pair_rank": 9,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      "V0_selected_score_components_under_V0": {
+        "active_score": 0.46971953008694534,
+        "best_diffusion_constant": 1.0,
+        "best_drift_constant": 1.0,
+        "candidate_id": "sample1_p2_0009",
+        "candidate_source": "p2_admitted",
+        "failure_reason": null,
+        "total_score": 0.9262335976546816,
+        "valid_bool": true,
+        "weak_score": 0.4565140675677362
+      },
+      "V4_selected_candidate": {
+        "candidate_id": "sample1_current_0001",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 1,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 1,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": null,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ]
+      },
+      "V4_selected_score_components_under_V4": {
+        "active_score": 0.2318959098643145,
+        "best_diffusion_constant": 1.0,
+        "best_drift_constant": 1.0,
+        "candidate_id": "sample1_current_0001",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 0.7487622345665907,
+        "valid_bool": true,
+        "weak_score": 0.5168663247022762
+      },
+      "best_current_expanded_oracle_candidate": {
+        "candidate_id": "sample1_current_0001",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 1,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 1,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": null,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ]
+      },
+      "case_type": "V4_rescue",
+      "coverage_context": {
+        "baseline_full_oracle": false,
+        "canonicalized_expanded_oracle_present": true,
+        "current_expanded_oracle_present": false,
+        "exact_diffusion_present": true,
+        "p2_oracle_present": true
+      },
+      "exact_oracle_candidate": {
+        "candidate_id": "sample1_p2_0011",
+        "candidate_source": "p2_admitted",
+        "diffusion_rank": 1,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 15,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": false,
+        "is_p2_canonical_oracle": true,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 11,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ]
+      },
+      "gap_summaries": {
+        "V0_oracle_gap": -0.15475718448509057,
+        "V4_oracle_gap": -0.024163083287284448,
+        "gap_delta": 0.13059410119780612,
+        "oracle_vs_nonoracle_gap_under_V0": -0.15475718448509057,
+        "oracle_vs_nonoracle_gap_under_V4": 0.0014096128135426822
+      },
+      "nonoracle_comparison_candidate": {
+        "candidate_id": "sample1_p2_0009",
+        "candidate_source": "p2_admitted",
+        "diffusion_rank": 4,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_rank": 5,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": false,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": false,
+        "is_truth_drift_canonical": false,
+        "pair_rank": 9,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      "nonoracle_score_components_under_V0": {
+        "active_score": 0.46971953008694534,
+        "best_diffusion_constant": 1.0,
+        "best_drift_constant": 1.0,
+        "candidate_id": "sample1_p2_0009",
+        "candidate_source": "p2_admitted",
+        "failure_reason": null,
+        "total_score": 0.9262335976546816,
+        "valid_bool": true,
+        "weak_score": 0.4565140675677362
+      },
+      "nonoracle_score_components_under_V4": {
+        "active_score": 0.26667547089802746,
+        "best_diffusion_constant": 1.0,
+        "best_drift_constant": 1.0,
+        "candidate_id": "sample1_p2_0009",
+        "candidate_source": "p2_admitted",
+        "failure_reason": null,
+        "total_score": 0.7231895384657636,
+        "valid_bool": true,
+        "weak_score": 0.4565140675677362
+      },
+      "oracle_score_components_under_V0": {
+        "active_score": 0.43240518891153185,
+        "best_diffusion_constant": 1.0,
+        "best_drift_constant": 1.0,
+        "candidate_id": "sample1_p2_0011",
+        "candidate_source": "p2_admitted",
+        "failure_reason": null,
+        "total_score": 0.771476413169591,
+        "valid_bool": true,
+        "weak_score": 0.33907122425805925
+      },
+      "oracle_score_components_under_V4": {
+        "active_score": 0.38552792702124705,
+        "best_diffusion_constant": 1.0,
+        "best_drift_constant": 1.0,
+        "candidate_id": "sample1_p2_0011",
+        "candidate_source": "p2_admitted",
+        "failure_reason": null,
+        "total_score": 0.7245991512793063,
+        "valid_bool": true,
+        "weak_score": 0.33907122425805925
+      },
+      "p2_oracle_candidate": {
+        "candidate_id": "sample1_p2_0011",
+        "candidate_source": "p2_admitted",
+        "diffusion_rank": 1,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 15,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": false,
+        "is_p2_canonical_oracle": true,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 11,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ]
+      },
+      "resimulation_stability": {
+        "available_bool": true,
+        "nonoracle_active_score": {
+          "mean": 0.2501162785705232,
+          "std": 0.03206524831408161
+        },
+        "nonoracle_total_score": {
+          "mean": 0.7056450581810583,
+          "std": 0.034709409081913355
+        },
+        "nonoracle_weak_score": {
+          "mean": 0.455528779610535,
+          "std": 0.0028602253777619017
+        },
+        "oracle_active_score": {
+          "mean": 0.33161476276906415,
+          "std": 0.1880255802796445
+        },
+        "oracle_beats_selected_in_any_repeat_bool": true,
+        "oracle_beats_selected_in_majority_bool": false,
+        "oracle_total_score": {
+          "mean": 0.784078690826015,
+          "std": 0.09364087324048456
+        },
+        "oracle_weak_score": {
+          "mean": 0.45246392805695085,
+          "std": 0.10682293511247133
+        },
+        "ordering_stable_bool": false,
+        "repeats": 3
+      },
+      "sample_index": 1,
+      "segment_level_ambiguity": {
+        "active_gap_after_removed_dims": 0.1188524561232196,
+        "active_gap_under_V0": -0.03731434117541349,
+        "ambiguity_classification": "mixed",
+        "removed_active_dims": [
+          76,
+          72,
+          82,
+          88
+        ],
+        "removed_dims_contribution_to_active_gap": 0.1561667972986331,
+        "removed_dims_explain_flip": false,
+        "removed_dims_fraction_of_active_gap": 4.1851682859546715,
+        "weak_gap": -0.11744284330967697
+      },
+      "semantic_relation": {
+        "drift_family_oracle": "sin",
+        "drift_family_selected": "linear",
+        "drift_family_truth": "sin",
+        "same_diffusion_as_selected": false,
+        "same_diffusion_as_truth": false,
+        "same_drift_as_selected": false,
+        "same_drift_as_truth": false,
+        "selected_error_type": "both_sides_wrong"
+      },
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "sqrt",
+        "abs",
+        "x_0"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ],
+      "truth_sequence": [
+        "<DRIFT>",
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0",
+        "<DIFFUSION>",
+        "mul",
+        "CONSTANT",
+        "sqrt",
+        "abs",
+        "x_0"
+      ]
+    },
+    {
+      "V0_selected_candidate": {
+        "candidate_id": "sample7_p2_0015",
+        "candidate_source": "p2_admitted",
+        "diffusion_rank": 5,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "CONSTANT"
+        ],
+        "drift_rank": 15,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": false,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": false,
+        "pair_rank": 15,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "CONSTANT"
+        ]
+      },
+      "V0_selected_score_components_under_V0": {
+        "active_score": 1.4046221881009207,
+        "best_diffusion_constant": 1.0,
+        "best_drift_constant": 1.0,
+        "candidate_id": "sample7_p2_0015",
+        "candidate_source": "p2_admitted",
+        "failure_reason": null,
+        "total_score": 1.6952992376903775,
+        "valid_bool": true,
+        "weak_score": 0.29067704958945695
+      },
+      "V4_selected_candidate": {
+        "candidate_id": "sample7_p2_0010",
+        "candidate_source": "p2_admitted",
+        "diffusion_rank": 5,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "CONSTANT"
+        ],
+        "drift_rank": 5,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": false,
+        "is_p2_canonical_oracle": true,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 10,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "CONSTANT"
+        ]
+      },
+      "V4_selected_score_components_under_V4": {
+        "active_score": 0.9653847566433148,
+        "best_diffusion_constant": 1.0,
+        "best_drift_constant": 2.0,
+        "candidate_id": "sample7_p2_0010",
+        "candidate_source": "p2_admitted",
+        "failure_reason": null,
+        "total_score": 1.372303781882324,
+        "valid_bool": true,
+        "weak_score": 0.4069190252390092
+      },
+      "best_current_expanded_oracle_candidate": null,
+      "case_type": "V4_rescue",
+      "coverage_context": {
+        "baseline_full_oracle": false,
+        "canonicalized_expanded_oracle_present": false,
+        "current_expanded_oracle_present": false,
+        "exact_diffusion_present": true,
+        "p2_oracle_present": true
+      },
+      "exact_oracle_candidate": {
+        "candidate_id": "sample7_p2_0010",
+        "candidate_source": "p2_admitted",
+        "diffusion_rank": 5,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "CONSTANT"
+        ],
+        "drift_rank": 5,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": false,
+        "is_p2_canonical_oracle": true,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 10,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "CONSTANT"
+        ]
+      },
+      "gap_summaries": {
+        "V0_oracle_gap": 0.006152386906163043,
+        "V4_oracle_gap": 0.0,
+        "gap_delta": -0.006152386906163043,
+        "oracle_vs_nonoracle_gap_under_V0": 0.006152386906163043,
+        "oracle_vs_nonoracle_gap_under_V4": -0.04670545565617812
+      },
+      "nonoracle_comparison_candidate": {
+        "candidate_id": "sample7_p2_0015",
+        "candidate_source": "p2_admitted",
+        "diffusion_rank": 5,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "CONSTANT"
+        ],
+        "drift_rank": 15,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": false,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": false,
+        "pair_rank": 15,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "CONSTANT"
+        ]
+      },
+      "nonoracle_score_components_under_V0": {
+        "active_score": 1.4046221881009207,
+        "best_diffusion_constant": 1.0,
+        "best_drift_constant": 1.0,
+        "candidate_id": "sample7_p2_0015",
+        "candidate_source": "p2_admitted",
+        "failure_reason": null,
+        "total_score": 1.6952992376903775,
+        "valid_bool": true,
+        "weak_score": 0.29067704958945695
+      },
+      "nonoracle_score_components_under_V4": {
+        "active_score": 1.1283321879490453,
+        "best_diffusion_constant": 1.0,
+        "best_drift_constant": 1.0,
+        "candidate_id": "sample7_p2_0015",
+        "candidate_source": "p2_admitted",
+        "failure_reason": null,
+        "total_score": 1.4190092375385022,
+        "valid_bool": true,
+        "weak_score": 0.29067704958945695
+      },
+      "oracle_score_components_under_V0": {
+        "active_score": 1.2945325993575314,
+        "best_diffusion_constant": 1.0,
+        "best_drift_constant": 2.0,
+        "candidate_id": "sample7_p2_0010",
+        "candidate_source": "p2_admitted",
+        "failure_reason": null,
+        "total_score": 1.7014516245965405,
+        "valid_bool": true,
+        "weak_score": 0.4069190252390092
+      },
+      "oracle_score_components_under_V4": {
+        "active_score": 0.9653847566433148,
+        "best_diffusion_constant": 1.0,
+        "best_drift_constant": 2.0,
+        "candidate_id": "sample7_p2_0010",
+        "candidate_source": "p2_admitted",
+        "failure_reason": null,
+        "total_score": 1.372303781882324,
+        "valid_bool": true,
+        "weak_score": 0.4069190252390092
+      },
+      "p2_oracle_candidate": {
+        "candidate_id": "sample7_p2_0010",
+        "candidate_source": "p2_admitted",
+        "diffusion_rank": 5,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "CONSTANT"
+        ],
+        "drift_rank": 5,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": false,
+        "is_p2_canonical_oracle": true,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 10,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "CONSTANT"
+        ]
+      },
+      "resimulation_stability": {
+        "available_bool": true,
+        "nonoracle_active_score": {
+          "mean": 1.1346839053978945,
+          "std": 0.22888460312534392
+        },
+        "nonoracle_total_score": {
+          "mean": 1.4253595199240379,
+          "std": 0.2442029621408901
+        },
+        "nonoracle_weak_score": {
+          "mean": 0.2906756145261432,
+          "std": 0.016225055597112435
+        },
+        "oracle_active_score": {
+          "mean": 0.7177875037470186,
+          "std": 0.13931327565129098
+        },
+        "oracle_beats_selected_in_any_repeat_bool": true,
+        "oracle_beats_selected_in_majority_bool": true,
+        "oracle_total_score": {
+          "mean": 0.945670681431534,
+          "std": 0.19759257875033104
+        },
+        "oracle_weak_score": {
+          "mean": 0.22788317768451538,
+          "std": 0.089098868201357
+        },
+        "ordering_stable_bool": false,
+        "repeats": 3
+      },
+      "sample_index": 7,
+      "segment_level_ambiguity": {
+        "active_gap_after_removed_dims": -0.16294743130573053,
+        "active_gap_under_V0": -0.11008958874338926,
+        "ambiguity_classification": "mixed",
+        "removed_active_dims": [
+          76,
+          72,
+          82,
+          88
+        ],
+        "removed_dims_contribution_to_active_gap": -0.05285784256234127,
+        "removed_dims_explain_flip": true,
+        "removed_dims_fraction_of_active_gap": 0.48013479899129263,
+        "weak_gap": 0.11624197564955224
+      },
+      "semantic_relation": {
+        "drift_family_oracle": "linear",
+        "drift_family_selected": "sin",
+        "drift_family_truth": "linear",
+        "same_diffusion_as_selected": true,
+        "same_diffusion_as_truth": true,
+        "same_drift_as_selected": false,
+        "same_drift_as_truth": false,
+        "selected_error_type": "same_diffusion_wrong_drift"
+      },
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "CONSTANT"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "truth_sequence": [
+        "<DRIFT>",
+        "mul",
+        "CONSTANT",
+        "x_0",
+        "<DIFFUSION>",
+        "mul",
+        "CONSTANT",
+        "CONSTANT"
+      ]
+    },
+    {
+      "V0_selected_candidate": {
+        "candidate_id": "sample22_current_0017",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 8,
+        "diffusion_source": "pair",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 8,
+        "drift_source": "pair",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": false,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 17,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ]
+      },
+      "V0_selected_score_components_under_V0": {
+        "active_score": 0.38382213549545563,
+        "best_diffusion_constant": 1.0,
+        "best_drift_constant": 2.0,
+        "candidate_id": "sample22_current_0017",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 0.5900426501715612,
+        "valid_bool": true,
+        "weak_score": 0.20622051467610553
+      },
+      "V4_selected_candidate": {
+        "candidate_id": "sample22_current_0020",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 11,
+        "diffusion_source": "pair",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_rank": 11,
+        "drift_source": "pair",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 20,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      "V4_selected_score_components_under_V4": {
+        "active_score": 0.25217159993205057,
+        "best_diffusion_constant": 1.0,
+        "best_drift_constant": 2.0,
+        "candidate_id": "sample22_current_0020",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 0.46570004973097734,
+        "valid_bool": true,
+        "weak_score": 0.21352844979892674
+      },
+      "best_current_expanded_oracle_candidate": {
+        "candidate_id": "sample22_current_0020",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 11,
+        "diffusion_source": "pair",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_rank": 11,
+        "drift_source": "pair",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 20,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      "case_type": "V4_rescue",
+      "coverage_context": {
+        "baseline_full_oracle": false,
+        "canonicalized_expanded_oracle_present": true,
+        "current_expanded_oracle_present": false,
+        "exact_diffusion_present": true,
+        "p2_oracle_present": true
+      },
+      "exact_oracle_candidate": {
+        "candidate_id": "sample22_current_0020",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 11,
+        "diffusion_source": "pair",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_rank": 11,
+        "drift_source": "pair",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 20,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      "gap_summaries": {
+        "V0_oracle_gap": 0.0031760666587639097,
+        "V4_oracle_gap": 0.0,
+        "gap_delta": -0.0031760666587639097,
+        "oracle_vs_nonoracle_gap_under_V0": 0.0031760666587639097,
+        "oracle_vs_nonoracle_gap_under_V4": -0.001663808424690938
+      },
+      "nonoracle_comparison_candidate": {
+        "candidate_id": "sample22_current_0017",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 8,
+        "diffusion_source": "pair",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 8,
+        "drift_source": "pair",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": false,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 17,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ]
+      },
+      "nonoracle_score_components_under_V0": {
+        "active_score": 0.38382213549545563,
+        "best_diffusion_constant": 1.0,
+        "best_drift_constant": 2.0,
+        "candidate_id": "sample22_current_0017",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 0.5900426501715612,
+        "valid_bool": true,
+        "weak_score": 0.20622051467610553
+      },
+      "nonoracle_score_components_under_V4": {
+        "active_score": 0.26114334347956275,
+        "best_diffusion_constant": 1.0,
+        "best_drift_constant": 2.0,
+        "candidate_id": "sample22_current_0017",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 0.4673638581556683,
+        "valid_bool": true,
+        "weak_score": 0.20622051467610553
+      },
+      "oracle_score_components_under_V0": {
+        "active_score": 0.37969026703139835,
+        "best_diffusion_constant": 1.0,
+        "best_drift_constant": 2.0,
+        "candidate_id": "sample22_current_0020",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 0.5932187168303251,
+        "valid_bool": true,
+        "weak_score": 0.21352844979892674
+      },
+      "oracle_score_components_under_V4": {
+        "active_score": 0.25217159993205057,
+        "best_diffusion_constant": 1.0,
+        "best_drift_constant": 2.0,
+        "candidate_id": "sample22_current_0020",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 0.46570004973097734,
+        "valid_bool": true,
+        "weak_score": 0.21352844979892674
+      },
+      "p2_oracle_candidate": {
+        "candidate_id": "sample22_current_0020",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 11,
+        "diffusion_source": "pair",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_rank": 11,
+        "drift_source": "pair",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 20,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      "resimulation_stability": {
+        "available_bool": true,
+        "nonoracle_active_score": {
+          "mean": 0.28934073097869967,
+          "std": 0.026073827850720915
+        },
+        "nonoracle_total_score": {
+          "mean": 0.5051388855716425,
+          "std": 0.03094852936777762
+        },
+        "nonoracle_weak_score": {
+          "mean": 0.21579815459294285,
+          "std": 0.006255801408124022
+        },
+        "oracle_active_score": {
+          "mean": 0.2940601336056762,
+          "std": 0.028606881740963794
+        },
+        "oracle_beats_selected_in_any_repeat_bool": true,
+        "oracle_beats_selected_in_majority_bool": false,
+        "oracle_total_score": {
+          "mean": 0.5162485635819453,
+          "std": 0.035625247937260025
+        },
+        "oracle_weak_score": {
+          "mean": 0.22218842997626911,
+          "std": 0.011228711586897379
+        },
+        "ordering_stable_bool": false,
+        "repeats": 3
+      },
+      "sample_index": 22,
+      "segment_level_ambiguity": {
+        "active_gap_after_removed_dims": -0.008971743547512179,
+        "active_gap_under_V0": -0.004131868464057276,
+        "ambiguity_classification": "mixed",
+        "removed_active_dims": [
+          76,
+          72,
+          82,
+          88
+        ],
+        "removed_dims_contribution_to_active_gap": -0.004839875083454903,
+        "removed_dims_explain_flip": true,
+        "removed_dims_fraction_of_active_gap": 1.1713526520886395,
+        "weak_gap": 0.007307935122821213
+      },
+      "semantic_relation": {
+        "drift_family_oracle": "linear",
+        "drift_family_selected": "linear",
+        "drift_family_truth": "linear",
+        "same_diffusion_as_selected": false,
+        "same_diffusion_as_truth": false,
+        "same_drift_as_selected": true,
+        "same_drift_as_truth": true,
+        "selected_error_type": "same_drift_wrong_diffusion"
+      },
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "truth_sequence": [
+        "<DRIFT>",
+        "mul",
+        "CONSTANT",
+        "x_0",
+        "<DIFFUSION>",
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ]
+    },
+    {
+      "V0_selected_candidate": {
+        "candidate_id": "sample23_current_0019",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 10,
+        "diffusion_source": "pair",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 10,
+        "drift_source": "pair",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": false,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 19,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ]
+      },
+      "V0_selected_score_components_under_V0": {
+        "active_score": 0.4330902497788187,
+        "best_diffusion_constant": 1.0,
+        "best_drift_constant": 0.25,
+        "candidate_id": "sample23_current_0019",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 0.8852609242962544,
+        "valid_bool": true,
+        "weak_score": 0.4521706745174357
+      },
+      "V4_selected_candidate": {
+        "candidate_id": "sample23_current_0024",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 15,
+        "diffusion_source": "pair",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_rank": 15,
+        "drift_source": "pair",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 24,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      "V4_selected_score_components_under_V4": {
+        "active_score": 0.4112939022463454,
+        "best_diffusion_constant": 1.0,
+        "best_drift_constant": 1.0,
+        "candidate_id": "sample23_current_0024",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 0.6705383320698376,
+        "valid_bool": true,
+        "weak_score": 0.2592444298234922
+      },
+      "best_current_expanded_oracle_candidate": {
+        "candidate_id": "sample23_current_0024",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 15,
+        "diffusion_source": "pair",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_rank": 15,
+        "drift_source": "pair",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 24,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      "case_type": "V4_rescue",
+      "coverage_context": {
+        "baseline_full_oracle": true,
+        "canonicalized_expanded_oracle_present": false,
+        "current_expanded_oracle_present": true,
+        "exact_diffusion_present": false,
+        "p2_oracle_present": false
+      },
+      "exact_oracle_candidate": {
+        "candidate_id": "sample23_current_0024",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 15,
+        "diffusion_source": "pair",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_rank": 15,
+        "drift_source": "pair",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 24,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      "gap_summaries": {
+        "V0_oracle_gap": -0.05368740085039092,
+        "V4_oracle_gap": 0.0,
+        "gap_delta": 0.05368740085039092,
+        "oracle_vs_nonoracle_gap_under_V0": -0.05368740085039092,
+        "oracle_vs_nonoracle_gap_under_V4": -0.058237543722686635
+      },
+      "nonoracle_comparison_candidate": {
+        "candidate_id": "sample23_current_0019",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 10,
+        "diffusion_source": "pair",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 10,
+        "drift_source": "pair",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": false,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 19,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ]
+      },
+      "nonoracle_score_components_under_V0": {
+        "active_score": 0.4330902497788187,
+        "best_diffusion_constant": 1.0,
+        "best_drift_constant": 0.25,
+        "candidate_id": "sample23_current_0019",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 0.8852609242962544,
+        "valid_bool": true,
+        "weak_score": 0.4521706745174357
+      },
+      "nonoracle_score_components_under_V4": {
+        "active_score": 0.27660520127508853,
+        "best_diffusion_constant": 1.0,
+        "best_drift_constant": 0.25,
+        "candidate_id": "sample23_current_0019",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 0.7287758757925242,
+        "valid_bool": true,
+        "weak_score": 0.4521706745174357
+      },
+      "oracle_score_components_under_V0": {
+        "active_score": 0.5723290936223713,
+        "best_diffusion_constant": 1.0,
+        "best_drift_constant": 1.0,
+        "candidate_id": "sample23_current_0024",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 0.8315735234458634,
+        "valid_bool": true,
+        "weak_score": 0.2592444298234922
+      },
+      "oracle_score_components_under_V4": {
+        "active_score": 0.4112939022463454,
+        "best_diffusion_constant": 1.0,
+        "best_drift_constant": 1.0,
+        "candidate_id": "sample23_current_0024",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 0.6705383320698376,
+        "valid_bool": true,
+        "weak_score": 0.2592444298234922
+      },
+      "p2_oracle_candidate": {
+        "candidate_id": "sample23_current_0024",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 15,
+        "diffusion_source": "pair",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_rank": 15,
+        "drift_source": "pair",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 24,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      "resimulation_stability": {
+        "available_bool": true,
+        "nonoracle_active_score": {
+          "mean": 0.31448205472723034,
+          "std": 0.03274999662981353
+        },
+        "nonoracle_total_score": {
+          "mean": 0.6517601993575026,
+          "std": 0.07640855344416297
+        },
+        "nonoracle_weak_score": {
+          "mean": 0.3372781446302723,
+          "std": 0.048201811811411324
+        },
+        "oracle_active_score": {
+          "mean": 0.38318349515824146,
+          "std": 0.046751967455172114
+        },
+        "oracle_beats_selected_in_any_repeat_bool": true,
+        "oracle_beats_selected_in_majority_bool": false,
+        "oracle_total_score": {
+          "mean": 0.6748971050604313,
+          "std": 0.09149160190502975
+        },
+        "oracle_weak_score": {
+          "mean": 0.2917136099021899,
+          "std": 0.04894155885878566
+        },
+        "ordering_stable_bool": false,
+        "repeats": 3
+      },
+      "sample_index": 23,
+      "segment_level_ambiguity": {
+        "active_gap_after_removed_dims": 0.13468870097125685,
+        "active_gap_under_V0": 0.13923884384355256,
+        "ambiguity_classification": "mixed",
+        "removed_active_dims": [
+          76,
+          72,
+          82,
+          88
+        ],
+        "removed_dims_contribution_to_active_gap": -0.004550142872295715,
+        "removed_dims_explain_flip": false,
+        "removed_dims_fraction_of_active_gap": 0.032678688982854615,
+        "weak_gap": -0.19292624469394348
+      },
+      "semantic_relation": {
+        "drift_family_oracle": "polynomial-like",
+        "drift_family_selected": "polynomial-like",
+        "drift_family_truth": "polynomial-like",
+        "same_diffusion_as_selected": false,
+        "same_diffusion_as_truth": false,
+        "same_drift_as_selected": true,
+        "same_drift_as_truth": true,
+        "selected_error_type": "same_drift_wrong_diffusion"
+      },
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "mul",
+        "x_0",
+        "sub",
+        "CONSTANT",
+        "x_0"
+      ],
+      "truth_sequence": [
+        "<DRIFT>",
+        "mul",
+        "CONSTANT",
+        "mul",
+        "x_0",
+        "sub",
+        "CONSTANT",
+        "x_0",
+        "<DIFFUSION>",
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ]
+    },
+    {
+      "V0_selected_candidate": {
+        "candidate_id": "sample31_current_0008",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 8,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 8,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": false,
+        "is_truth_drift_canonical": true,
+        "pair_rank": null,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ]
+      },
+      "V0_selected_score_components_under_V0": {
+        "active_score": 0.3749404003657519,
+        "best_diffusion_constant": 0.5,
+        "best_drift_constant": 1.0,
+        "candidate_id": "sample31_current_0008",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 0.60182872685834,
+        "valid_bool": true,
+        "weak_score": 0.22688832649258808
+      },
+      "V4_selected_candidate": {
+        "candidate_id": "sample31_current_0019",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 9,
+        "diffusion_source": "pair",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_rank": 9,
+        "drift_source": "pair",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 19,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      "V4_selected_score_components_under_V4": {
+        "active_score": 0.25802358993267327,
+        "best_diffusion_constant": 0.5,
+        "best_drift_constant": 1.0,
+        "candidate_id": "sample31_current_0019",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 0.5322333042493137,
+        "valid_bool": true,
+        "weak_score": 0.2742097143166404
+      },
+      "best_current_expanded_oracle_candidate": {
+        "candidate_id": "sample31_current_0019",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 9,
+        "diffusion_source": "pair",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_rank": 9,
+        "drift_source": "pair",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 19,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      "case_type": "V4_rescue",
+      "coverage_context": {
+        "baseline_full_oracle": true,
+        "canonicalized_expanded_oracle_present": false,
+        "current_expanded_oracle_present": true,
+        "exact_diffusion_present": false,
+        "p2_oracle_present": false
+      },
+      "exact_oracle_candidate": {
+        "candidate_id": "sample31_current_0019",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 9,
+        "diffusion_source": "pair",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_rank": 9,
+        "drift_source": "pair",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 19,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      "gap_summaries": {
+        "V0_oracle_gap": 0.13880253139362586,
+        "V4_oracle_gap": 0.0,
+        "gap_delta": -0.13880253139362586,
+        "oracle_vs_nonoracle_gap_under_V0": 0.13880253139362586,
+        "oracle_vs_nonoracle_gap_under_V4": 0.03722666432252819
+      },
+      "nonoracle_comparison_candidate": {
+        "candidate_id": "sample31_current_0008",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 8,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 8,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": false,
+        "is_truth_drift_canonical": true,
+        "pair_rank": null,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ]
+      },
+      "nonoracle_score_components_under_V0": {
+        "active_score": 0.3749404003657519,
+        "best_diffusion_constant": 0.5,
+        "best_drift_constant": 1.0,
+        "candidate_id": "sample31_current_0008",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 0.60182872685834,
+        "valid_bool": true,
+        "weak_score": 0.22688832649258808
+      },
+      "nonoracle_score_components_under_V4": {
+        "active_score": 0.26811831343419745,
+        "best_diffusion_constant": 0.5,
+        "best_drift_constant": 1.0,
+        "candidate_id": "sample31_current_0008",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 0.4950066399267855,
+        "valid_bool": true,
+        "weak_score": 0.22688832649258808
+      },
+      "oracle_score_components_under_V0": {
+        "active_score": 0.46642154393532553,
+        "best_diffusion_constant": 0.5,
+        "best_drift_constant": 1.0,
+        "candidate_id": "sample31_current_0019",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 0.7406312582519659,
+        "valid_bool": true,
+        "weak_score": 0.2742097143166404
+      },
+      "oracle_score_components_under_V4": {
+        "active_score": 0.25802358993267327,
+        "best_diffusion_constant": 0.5,
+        "best_drift_constant": 1.0,
+        "candidate_id": "sample31_current_0019",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 0.5322333042493137,
+        "valid_bool": true,
+        "weak_score": 0.2742097143166404
+      },
+      "p2_oracle_candidate": {
+        "candidate_id": "sample31_current_0019",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 9,
+        "diffusion_source": "pair",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_rank": 9,
+        "drift_source": "pair",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 19,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      "resimulation_stability": {
+        "available_bool": true,
+        "nonoracle_active_score": {
+          "mean": 0.2679149284677669,
+          "std": 0.06503318227918435
+        },
+        "nonoracle_total_score": {
+          "mean": 0.5454303404115929,
+          "std": 0.06141510531593354
+        },
+        "nonoracle_weak_score": {
+          "mean": 0.277515411943826,
+          "std": 0.008012234068551992
+        },
+        "oracle_active_score": {
+          "mean": 0.2549982706174855,
+          "std": 0.035325352600277166
+        },
+        "oracle_beats_selected_in_any_repeat_bool": true,
+        "oracle_beats_selected_in_majority_bool": true,
+        "oracle_total_score": {
+          "mean": 0.5145430680061479,
+          "std": 0.03755158667115394
+        },
+        "oracle_weak_score": {
+          "mean": 0.25954479738866243,
+          "std": 0.015708234037400206
+        },
+        "ordering_stable_bool": false,
+        "repeats": 3
+      },
+      "sample_index": 31,
+      "segment_level_ambiguity": {
+        "active_gap_after_removed_dims": -0.010094723501524183,
+        "active_gap_under_V0": 0.09148114356957365,
+        "ambiguity_classification": "weak",
+        "removed_active_dims": [
+          76,
+          72,
+          82,
+          88
+        ],
+        "removed_dims_contribution_to_active_gap": -0.10157586707109784,
+        "removed_dims_explain_flip": false,
+        "removed_dims_fraction_of_active_gap": 1.1103475875752131,
+        "weak_gap": 0.04732138782405229
+      },
+      "semantic_relation": {
+        "drift_family_oracle": "polynomial-like",
+        "drift_family_selected": "polynomial-like",
+        "drift_family_truth": "polynomial-like",
+        "same_diffusion_as_selected": false,
+        "same_diffusion_as_truth": false,
+        "same_drift_as_selected": true,
+        "same_drift_as_truth": true,
+        "selected_error_type": "same_drift_wrong_diffusion"
+      },
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "mul",
+        "x_0",
+        "sub",
+        "CONSTANT",
+        "x_0"
+      ],
+      "truth_sequence": [
+        "<DRIFT>",
+        "mul",
+        "CONSTANT",
+        "mul",
+        "x_0",
+        "sub",
+        "CONSTANT",
+        "x_0",
+        "<DIFFUSION>",
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ]
+    },
+    {
+      "V0_selected_candidate": {
+        "candidate_id": "sample9_current_0002",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 2,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 2,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": null,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ]
+      },
+      "V0_selected_score_components_under_V0": {
+        "active_score": 0.6158249422746074,
+        "best_diffusion_constant": 0.5,
+        "best_drift_constant": 0.5,
+        "candidate_id": "sample9_current_0002",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 0.943701163147263,
+        "valid_bool": true,
+        "weak_score": 0.32787622087265567
+      },
+      "V4_selected_candidate": {
+        "candidate_id": "sample9_p2_0014",
+        "candidate_source": "p2_admitted",
+        "diffusion_rank": 4,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_rank": 15,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": false,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": false,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 14,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      "V4_selected_score_components_under_V4": {
+        "active_score": 0.7677664624198848,
+        "best_diffusion_constant": 0.5,
+        "best_drift_constant": 0.5,
+        "candidate_id": "sample9_p2_0014",
+        "candidate_source": "p2_admitted",
+        "failure_reason": null,
+        "total_score": 1.1490795388308,
+        "valid_bool": true,
+        "weak_score": 0.3813130764109153
+      },
+      "best_current_expanded_oracle_candidate": {
+        "candidate_id": "sample9_current_0002",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 2,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 2,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": null,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ]
+      },
+      "case_type": "V4_harm",
+      "coverage_context": {
+        "baseline_full_oracle": false,
+        "canonicalized_expanded_oracle_present": true,
+        "current_expanded_oracle_present": false,
+        "exact_diffusion_present": true,
+        "p2_oracle_present": true
+      },
+      "exact_oracle_candidate": {
+        "candidate_id": "sample9_current_0002",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 2,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 2,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": null,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ]
+      },
+      "gap_summaries": {
+        "V0_oracle_gap": 0.0,
+        "V4_oracle_gap": -0.26706766627463496,
+        "gap_delta": -0.26706766627463496,
+        "oracle_vs_nonoracle_gap_under_V0": -0.34808761844963987,
+        "oracle_vs_nonoracle_gap_under_V4": -0.26706766627463496
+      },
+      "nonoracle_comparison_candidate": {
+        "candidate_id": "sample9_p2_0014",
+        "candidate_source": "p2_admitted",
+        "diffusion_rank": 4,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_rank": 15,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": false,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": false,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 14,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      "nonoracle_score_components_under_V0": {
+        "active_score": 0.9104757051859876,
+        "best_diffusion_constant": 0.5,
+        "best_drift_constant": 0.5,
+        "candidate_id": "sample9_p2_0014",
+        "candidate_source": "p2_admitted",
+        "failure_reason": null,
+        "total_score": 1.291788781596903,
+        "valid_bool": true,
+        "weak_score": 0.3813130764109153
+      },
+      "nonoracle_score_components_under_V4": {
+        "active_score": 0.7677664624198848,
+        "best_diffusion_constant": 0.5,
+        "best_drift_constant": 0.5,
+        "candidate_id": "sample9_p2_0014",
+        "candidate_source": "p2_admitted",
+        "failure_reason": null,
+        "total_score": 1.1490795388308,
+        "valid_bool": true,
+        "weak_score": 0.3813130764109153
+      },
+      "oracle_score_components_under_V0": {
+        "active_score": 0.6158249422746074,
+        "best_diffusion_constant": 0.5,
+        "best_drift_constant": 0.5,
+        "candidate_id": "sample9_current_0002",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 0.943701163147263,
+        "valid_bool": true,
+        "weak_score": 0.32787622087265567
+      },
+      "oracle_score_components_under_V4": {
+        "active_score": 0.5541356516835093,
+        "best_diffusion_constant": 0.5,
+        "best_drift_constant": 0.5,
+        "candidate_id": "sample9_current_0002",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 0.882011872556165,
+        "valid_bool": true,
+        "weak_score": 0.32787622087265567
+      },
+      "p2_oracle_candidate": {
+        "candidate_id": "sample9_current_0002",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 2,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 2,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": null,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ]
+      },
+      "resimulation_stability": {
+        "available_bool": true,
+        "nonoracle_active_score": {
+          "mean": 0.5684389741604543,
+          "std": 0.09832270136951446
+        },
+        "nonoracle_total_score": {
+          "mean": 0.9290253273943012,
+          "std": 0.08968919326595985
+        },
+        "nonoracle_weak_score": {
+          "mean": 0.36058635323384697,
+          "std": 0.014796590647813412
+        },
+        "oracle_active_score": {
+          "mean": 0.5618041515504855,
+          "std": 0.1054638959831824
+        },
+        "oracle_beats_selected_in_any_repeat_bool": false,
+        "oracle_beats_selected_in_majority_bool": false,
+        "oracle_total_score": {
+          "mean": 1.033031010923348,
+          "std": 0.07776030568743866
+        },
+        "oracle_weak_score": {
+          "mean": 0.4712268593728626,
+          "std": 0.05990590901004866
+        },
+        "ordering_stable_bool": true,
+        "repeats": 3
+      },
+      "sample_index": 9,
+      "segment_level_ambiguity": {
+        "active_gap_after_removed_dims": -0.21363081073637546,
+        "active_gap_under_V0": -0.29465076291138026,
+        "ambiguity_classification": "active",
+        "removed_active_dims": [
+          76,
+          72,
+          82,
+          88
+        ],
+        "removed_dims_contribution_to_active_gap": 0.0810199521750048,
+        "removed_dims_explain_flip": false,
+        "removed_dims_fraction_of_active_gap": 0.2749694294848051,
+        "weak_gap": -0.05343685553825961
+      },
+      "semantic_relation": {
+        "drift_family_oracle": "sin",
+        "drift_family_selected": "sin",
+        "drift_family_truth": "sin",
+        "same_diffusion_as_selected": false,
+        "same_diffusion_as_truth": false,
+        "same_drift_as_selected": true,
+        "same_drift_as_truth": true,
+        "selected_error_type": "same_drift_wrong_diffusion"
+      },
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "sqrt",
+        "abs",
+        "x_0"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ],
+      "truth_sequence": [
+        "<DRIFT>",
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0",
+        "<DIFFUSION>",
+        "mul",
+        "CONSTANT",
+        "sqrt",
+        "abs",
+        "x_0"
+      ]
+    },
+    {
+      "V0_selected_candidate": {
+        "candidate_id": "sample21_current_0008",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 8,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 8,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": null,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ]
+      },
+      "V0_selected_score_components_under_V0": {
+        "active_score": 0.3003263585917611,
+        "best_diffusion_constant": 0.25,
+        "best_drift_constant": 1.0,
+        "candidate_id": "sample21_current_0008",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 0.5006335044572707,
+        "valid_bool": true,
+        "weak_score": 0.20030714586550963
+      },
+      "V4_selected_candidate": {
+        "candidate_id": "sample21_current_0025",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 15,
+        "diffusion_source": "pair",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "CONSTANT"
+        ],
+        "drift_rank": 15,
+        "drift_source": "pair",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": false,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 25,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "CONSTANT"
+        ]
+      },
+      "V4_selected_score_components_under_V4": {
+        "active_score": 0.26591891559736,
+        "best_diffusion_constant": 0.5,
+        "best_drift_constant": 1.0,
+        "candidate_id": "sample21_current_0025",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 0.7339517372488666,
+        "valid_bool": true,
+        "weak_score": 0.4680328216515066
+      },
+      "best_current_expanded_oracle_candidate": {
+        "candidate_id": "sample21_current_0008",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 8,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 8,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": null,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ]
+      },
+      "case_type": "V4_harm",
+      "coverage_context": {
+        "baseline_full_oracle": true,
+        "canonicalized_expanded_oracle_present": false,
+        "current_expanded_oracle_present": true,
+        "exact_diffusion_present": false,
+        "p2_oracle_present": false
+      },
+      "exact_oracle_candidate": {
+        "candidate_id": "sample21_current_0008",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 8,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 8,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": null,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ]
+      },
+      "gap_summaries": {
+        "V0_oracle_gap": 0.0,
+        "V4_oracle_gap": -0.3628801329820066,
+        "gap_delta": -0.3628801329820066,
+        "oracle_vs_nonoracle_gap_under_V0": -0.26288367738619467,
+        "oracle_vs_nonoracle_gap_under_V4": -0.3628801329820066
+      },
+      "nonoracle_comparison_candidate": {
+        "candidate_id": "sample21_current_0025",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 15,
+        "diffusion_source": "pair",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "CONSTANT"
+        ],
+        "drift_rank": 15,
+        "drift_source": "pair",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": false,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 25,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "CONSTANT"
+        ]
+      },
+      "nonoracle_score_components_under_V0": {
+        "active_score": 0.29548436019195873,
+        "best_diffusion_constant": 0.5,
+        "best_drift_constant": 1.0,
+        "candidate_id": "sample21_current_0025",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 0.7635171818434654,
+        "valid_bool": true,
+        "weak_score": 0.4680328216515066
+      },
+      "nonoracle_score_components_under_V4": {
+        "active_score": 0.26591891559736,
+        "best_diffusion_constant": 0.5,
+        "best_drift_constant": 1.0,
+        "candidate_id": "sample21_current_0025",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 0.7339517372488666,
+        "valid_bool": true,
+        "weak_score": 0.4680328216515066
+      },
+      "oracle_score_components_under_V0": {
+        "active_score": 0.3003263585917611,
+        "best_diffusion_constant": 0.25,
+        "best_drift_constant": 1.0,
+        "candidate_id": "sample21_current_0008",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 0.5006335044572707,
+        "valid_bool": true,
+        "weak_score": 0.20030714586550963
+      },
+      "oracle_score_components_under_V4": {
+        "active_score": 0.1707644584013504,
+        "best_diffusion_constant": 0.25,
+        "best_drift_constant": 1.0,
+        "candidate_id": "sample21_current_0008",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 0.37107160426686003,
+        "valid_bool": true,
+        "weak_score": 0.20030714586550963
+      },
+      "p2_oracle_candidate": {
+        "candidate_id": "sample21_current_0008",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 8,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 8,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": null,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ]
+      },
+      "resimulation_stability": {
+        "available_bool": true,
+        "nonoracle_active_score": {
+          "mean": 0.1396233290159003,
+          "std": 0.03213863358051552
+        },
+        "nonoracle_total_score": {
+          "mean": 0.27982631409193287,
+          "std": 0.08165551363741734
+        },
+        "nonoracle_weak_score": {
+          "mean": 0.1402029850760326,
+          "std": 0.05756195459748397
+        },
+        "oracle_active_score": {
+          "mean": 0.1893578910177371,
+          "std": 0.013379468111073187
+        },
+        "oracle_beats_selected_in_any_repeat_bool": false,
+        "oracle_beats_selected_in_majority_bool": false,
+        "oracle_total_score": {
+          "mean": 0.4678270614420567,
+          "std": 0.1195727514039543
+        },
+        "oracle_weak_score": {
+          "mean": 0.2784691704243197,
+          "std": 0.11110529723698269
+        },
+        "ordering_stable_bool": true,
+        "repeats": 3
+      },
+      "sample_index": 21,
+      "segment_level_ambiguity": {
+        "active_gap_after_removed_dims": -0.09515445719600957,
+        "active_gap_under_V0": 0.004841998399802372,
+        "ambiguity_classification": "weak",
+        "removed_active_dims": [
+          76,
+          72,
+          82,
+          88
+        ],
+        "removed_dims_contribution_to_active_gap": -0.09999645559581194,
+        "removed_dims_explain_flip": false,
+        "removed_dims_fraction_of_active_gap": 20.651897695772334,
+        "weak_gap": -0.267725675785997
+      },
+      "semantic_relation": {
+        "drift_family_oracle": "polynomial-like",
+        "drift_family_selected": "polynomial-like",
+        "drift_family_truth": "polynomial-like",
+        "same_diffusion_as_selected": false,
+        "same_diffusion_as_truth": false,
+        "same_drift_as_selected": true,
+        "same_drift_as_truth": true,
+        "selected_error_type": "same_drift_wrong_diffusion"
+      },
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "sqrt",
+        "abs",
+        "x_0"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "mul",
+        "x_0",
+        "sub",
+        "CONSTANT",
+        "x_0"
+      ],
+      "truth_sequence": [
+        "<DRIFT>",
+        "mul",
+        "CONSTANT",
+        "mul",
+        "x_0",
+        "sub",
+        "CONSTANT",
+        "x_0",
+        "<DIFFUSION>",
+        "mul",
+        "CONSTANT",
+        "sqrt",
+        "abs",
+        "x_0"
+      ]
+    },
+    {
+      "V0_selected_candidate": {
+        "candidate_id": "sample0_p2_0008",
+        "candidate_source": "p2_admitted",
+        "diffusion_rank": 3,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 5,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": false,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": false,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 8,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ]
+      },
+      "V0_selected_score_components_under_V0": {
+        "active_score": 0.19203412695740193,
+        "best_diffusion_constant": 0.5,
+        "best_drift_constant": 2.0,
+        "candidate_id": "sample0_p2_0008",
+        "candidate_source": "p2_admitted",
+        "failure_reason": null,
+        "total_score": 0.3839409945669321,
+        "valid_bool": true,
+        "weak_score": 0.19190686760953019
+      },
+      "V4_selected_candidate": {
+        "candidate_id": "sample0_p2_0009",
+        "candidate_source": "p2_admitted",
+        "diffusion_rank": 4,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_rank": 5,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": false,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": false,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 9,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      "V4_selected_score_components_under_V4": {
+        "active_score": 0.06193349044653924,
+        "best_diffusion_constant": 0.5,
+        "best_drift_constant": 2.0,
+        "candidate_id": "sample0_p2_0009",
+        "candidate_source": "p2_admitted",
+        "failure_reason": null,
+        "total_score": 0.2644075301836679,
+        "valid_bool": true,
+        "weak_score": 0.20247403973712866
+      },
+      "best_current_expanded_oracle_candidate": null,
+      "case_type": "changed_nonoracle_to_nonoracle",
+      "coverage_context": {
+        "baseline_full_oracle": false,
+        "canonicalized_expanded_oracle_present": false,
+        "current_expanded_oracle_present": false,
+        "exact_diffusion_present": true,
+        "p2_oracle_present": true
+      },
+      "exact_oracle_candidate": {
+        "candidate_id": "sample0_p2_0006",
+        "candidate_source": "p2_admitted",
+        "diffusion_rank": 1,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 5,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": false,
+        "is_p2_canonical_oracle": true,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 6,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ]
+      },
+      "gap_summaries": {
+        "V0_oracle_gap": 0.07824105245017421,
+        "V4_oracle_gap": 0.12552763056228006,
+        "gap_delta": 0.04728657811210585,
+        "oracle_vs_nonoracle_gap_under_V0": 0.1285465347223344,
+        "oracle_vs_nonoracle_gap_under_V4": 0.12552763056228006
+      },
+      "nonoracle_comparison_candidate": {
+        "candidate_id": "sample0_p2_0009",
+        "candidate_source": "p2_admitted",
+        "diffusion_rank": 4,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_rank": 5,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": false,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": false,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 9,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      "nonoracle_score_components_under_V0": {
+        "active_score": 0.13116147255764324,
+        "best_diffusion_constant": 0.5,
+        "best_drift_constant": 2.0,
+        "candidate_id": "sample0_p2_0009",
+        "candidate_source": "p2_admitted",
+        "failure_reason": null,
+        "total_score": 0.3336355122947719,
+        "valid_bool": true,
+        "weak_score": 0.20247403973712866
+      },
+      "nonoracle_score_components_under_V4": {
+        "active_score": 0.06193349044653924,
+        "best_diffusion_constant": 0.5,
+        "best_drift_constant": 2.0,
+        "candidate_id": "sample0_p2_0009",
+        "candidate_source": "p2_admitted",
+        "failure_reason": null,
+        "total_score": 0.2644075301836679,
+        "valid_bool": true,
+        "weak_score": 0.20247403973712866
+      },
+      "oracle_score_components_under_V0": {
+        "active_score": 0.24645578102538268,
+        "best_diffusion_constant": 0.5,
+        "best_drift_constant": 1.0,
+        "candidate_id": "sample0_p2_0006",
+        "candidate_source": "p2_admitted",
+        "failure_reason": null,
+        "total_score": 0.4621820470171063,
+        "valid_bool": true,
+        "weak_score": 0.21572626599172362
+      },
+      "oracle_score_components_under_V4": {
+        "active_score": 0.17420889475422435,
+        "best_diffusion_constant": 0.5,
+        "best_drift_constant": 1.0,
+        "candidate_id": "sample0_p2_0006",
+        "candidate_source": "p2_admitted",
+        "failure_reason": null,
+        "total_score": 0.389935160745948,
+        "valid_bool": true,
+        "weak_score": 0.21572626599172362
+      },
+      "p2_oracle_candidate": {
+        "candidate_id": "sample0_p2_0006",
+        "candidate_source": "p2_admitted",
+        "diffusion_rank": 1,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 5,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": false,
+        "is_p2_canonical_oracle": true,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 6,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ]
+      },
+      "resimulation_stability": {
+        "available_bool": false,
+        "reason": "not run for compact preserved/nonoracle cases"
+      },
+      "sample_index": 0,
+      "segment_level_ambiguity": {
+        "active_gap_after_removed_dims": 0.11227540430768512,
+        "active_gap_under_V0": 0.11529430846773944,
+        "ambiguity_classification": "active",
+        "removed_active_dims": [
+          76,
+          72,
+          82,
+          88
+        ],
+        "removed_dims_contribution_to_active_gap": -0.00301890416005432,
+        "removed_dims_explain_flip": false,
+        "removed_dims_fraction_of_active_gap": 0.0261843294797075,
+        "weak_gap": 0.013252226254594962
+      },
+      "semantic_relation": {
+        "drift_family_oracle": "linear",
+        "drift_family_selected": "linear",
+        "drift_family_truth": "linear",
+        "same_diffusion_as_selected": false,
+        "same_diffusion_as_truth": false,
+        "same_drift_as_selected": true,
+        "same_drift_as_truth": true,
+        "selected_error_type": "same_drift_wrong_diffusion"
+      },
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "sqrt",
+        "abs",
+        "x_0"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "truth_sequence": [
+        "<DRIFT>",
+        "mul",
+        "CONSTANT",
+        "x_0",
+        "<DIFFUSION>",
+        "mul",
+        "CONSTANT",
+        "sqrt",
+        "abs",
+        "x_0"
+      ]
+    },
+    {
+      "V0_selected_candidate": {
+        "candidate_id": "sample3_p2_0010",
+        "candidate_source": "p2_admitted",
+        "diffusion_rank": 6,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "CONSTANT"
+        ],
+        "drift_rank": 5,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": false,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": false,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 10,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "CONSTANT"
+        ]
+      },
+      "V0_selected_score_components_under_V0": {
+        "active_score": 0.3641367416461431,
+        "best_diffusion_constant": 1.0,
+        "best_drift_constant": 0.25,
+        "candidate_id": "sample3_p2_0010",
+        "candidate_source": "p2_admitted",
+        "failure_reason": null,
+        "total_score": 0.9313010325955369,
+        "valid_bool": true,
+        "weak_score": 0.5671642909493937
+      },
+      "V4_selected_candidate": {
+        "candidate_id": "sample3_p2_0005",
+        "candidate_source": "p2_admitted",
+        "diffusion_rank": 6,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "CONSTANT"
+        ],
+        "drift_rank": 1,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": false,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": false,
+        "is_truth_drift_canonical": false,
+        "pair_rank": 5,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "CONSTANT"
+        ]
+      },
+      "V4_selected_score_components_under_V4": {
+        "active_score": 0.34336230857132655,
+        "best_diffusion_constant": 1.0,
+        "best_drift_constant": 0.25,
+        "candidate_id": "sample3_p2_0005",
+        "candidate_source": "p2_admitted",
+        "failure_reason": null,
+        "total_score": 0.9297883564169682,
+        "valid_bool": true,
+        "weak_score": 0.5864260478456417
+      },
+      "best_current_expanded_oracle_candidate": {
+        "candidate_id": "sample3_current_0012",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 3,
+        "diffusion_source": "pair",
+        "diffusion_tokens": [
+          "add",
+          "CONSTANT",
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 3,
+        "drift_source": "pair",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 12,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "add",
+          "CONSTANT",
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ]
+      },
+      "case_type": "changed_nonoracle_to_nonoracle",
+      "coverage_context": {
+        "baseline_full_oracle": false,
+        "canonicalized_expanded_oracle_present": true,
+        "current_expanded_oracle_present": false,
+        "exact_diffusion_present": true,
+        "p2_oracle_present": true
+      },
+      "exact_oracle_candidate": {
+        "candidate_id": "sample3_current_0012",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 3,
+        "diffusion_source": "pair",
+        "diffusion_tokens": [
+          "add",
+          "CONSTANT",
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 3,
+        "drift_source": "pair",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 12,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "add",
+          "CONSTANT",
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ]
+      },
+      "gap_summaries": {
+        "V0_oracle_gap": 0.1717100132427647,
+        "V4_oracle_gap": 0.06835447499879099,
+        "gap_delta": -0.1033555382439737,
+        "oracle_vs_nonoracle_gap_under_V0": 0.012360245459045238,
+        "oracle_vs_nonoracle_gap_under_V4": 0.06835447499879099
+      },
+      "nonoracle_comparison_candidate": {
+        "candidate_id": "sample3_p2_0005",
+        "candidate_source": "p2_admitted",
+        "diffusion_rank": 6,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "CONSTANT"
+        ],
+        "drift_rank": 1,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": false,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": false,
+        "is_truth_drift_canonical": false,
+        "pair_rank": 5,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "CONSTANT"
+        ]
+      },
+      "nonoracle_score_components_under_V0": {
+        "active_score": 0.5042247525336145,
+        "best_diffusion_constant": 1.0,
+        "best_drift_constant": 0.25,
+        "candidate_id": "sample3_p2_0005",
+        "candidate_source": "p2_admitted",
+        "failure_reason": null,
+        "total_score": 1.0906508003792563,
+        "valid_bool": true,
+        "weak_score": 0.5864260478456417
+      },
+      "nonoracle_score_components_under_V4": {
+        "active_score": 0.34336230857132655,
+        "best_diffusion_constant": 1.0,
+        "best_drift_constant": 0.25,
+        "candidate_id": "sample3_p2_0005",
+        "candidate_source": "p2_admitted",
+        "failure_reason": null,
+        "total_score": 0.9297883564169682,
+        "valid_bool": true,
+        "weak_score": 0.5864260478456417
+      },
+      "oracle_score_components_under_V0": {
+        "active_score": 0.6271236712737516,
+        "best_diffusion_constant": 2.0,
+        "best_drift_constant": 4.0,
+        "candidate_id": "sample3_current_0012",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 1.1030110458383016,
+        "valid_bool": true,
+        "weak_score": 0.4758873745645501
+      },
+      "oracle_score_components_under_V4": {
+        "active_score": 0.5222554568512091,
+        "best_diffusion_constant": 2.0,
+        "best_drift_constant": 4.0,
+        "candidate_id": "sample3_current_0012",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 0.9981428314157592,
+        "valid_bool": true,
+        "weak_score": 0.4758873745645501
+      },
+      "p2_oracle_candidate": {
+        "candidate_id": "sample3_current_0012",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 3,
+        "diffusion_source": "pair",
+        "diffusion_tokens": [
+          "add",
+          "CONSTANT",
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 3,
+        "drift_source": "pair",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 12,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "add",
+          "CONSTANT",
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ]
+      },
+      "resimulation_stability": {
+        "available_bool": false,
+        "reason": "not run for compact preserved/nonoracle cases"
+      },
+      "sample_index": 3,
+      "segment_level_ambiguity": {
+        "active_gap_after_removed_dims": 0.17889314827988256,
+        "active_gap_under_V0": 0.12289891874013703,
+        "ambiguity_classification": "mixed",
+        "removed_active_dims": [
+          76,
+          72,
+          82,
+          88
+        ],
+        "removed_dims_contribution_to_active_gap": 0.05599422953974553,
+        "removed_dims_explain_flip": false,
+        "removed_dims_fraction_of_active_gap": 0.4556120600063393,
+        "weak_gap": -0.11053867328109157
+      },
+      "semantic_relation": {
+        "drift_family_oracle": "linear",
+        "drift_family_selected": "polynomial-like",
+        "drift_family_truth": "linear",
+        "same_diffusion_as_selected": false,
+        "same_diffusion_as_truth": false,
+        "same_drift_as_selected": false,
+        "same_drift_as_truth": false,
+        "selected_error_type": "both_sides_wrong"
+      },
+      "truth_diffusion_tokens": [
+        "add",
+        "CONSTANT",
+        "mul",
+        "CONSTANT",
+        "abs",
+        "x_0"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "truth_sequence": [
+        "<DRIFT>",
+        "mul",
+        "CONSTANT",
+        "x_0",
+        "<DIFFUSION>",
+        "add",
+        "CONSTANT",
+        "mul",
+        "CONSTANT",
+        "abs",
+        "x_0"
+      ]
+    },
+    {
+      "V0_selected_candidate": {
+        "candidate_id": "sample6_current_0004",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 4,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_rank": 4,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "CONSTANT"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": false,
+        "pair_rank": null,
+        "sequence": [
+          "<DRIFT>",
+          "CONSTANT",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      "V0_selected_score_components_under_V0": {
+        "active_score": 0.4080379771150589,
+        "best_diffusion_constant": 1.0,
+        "best_drift_constant": 0.25,
+        "candidate_id": "sample6_current_0004",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 0.7143593207982875,
+        "valid_bool": true,
+        "weak_score": 0.30632134368322855
+      },
+      "V4_selected_candidate": {
+        "candidate_id": "sample6_current_0013",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 3,
+        "diffusion_source": "pair",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_rank": 3,
+        "drift_source": "pair",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": false,
+        "pair_rank": 13,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      "V4_selected_score_components_under_V4": {
+        "active_score": 0.2614394135629511,
+        "best_diffusion_constant": 1.0,
+        "best_drift_constant": 0.25,
+        "candidate_id": "sample6_current_0013",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 0.46721703382517255,
+        "valid_bool": true,
+        "weak_score": 0.20577762026222143
+      },
+      "best_current_expanded_oracle_candidate": null,
+      "case_type": "changed_nonoracle_to_nonoracle",
+      "coverage_context": {
+        "baseline_full_oracle": false,
+        "canonicalized_expanded_oracle_present": false,
+        "current_expanded_oracle_present": false,
+        "exact_diffusion_present": true,
+        "p2_oracle_present": true
+      },
+      "exact_oracle_candidate": {
+        "candidate_id": "sample6_p2_0009",
+        "candidate_source": "p2_admitted",
+        "diffusion_rank": 4,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_rank": 5,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": false,
+        "is_p2_canonical_oracle": true,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 9,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      "gap_summaries": {
+        "V0_oracle_gap": -0.08658877922893082,
+        "V4_oracle_gap": -0.13140398321927776,
+        "gap_delta": -0.04481520399034694,
+        "oracle_vs_nonoracle_gap_under_V0": -0.12605240389331396,
+        "oracle_vs_nonoracle_gap_under_V4": -0.13140398321927776
+      },
+      "nonoracle_comparison_candidate": {
+        "candidate_id": "sample6_current_0013",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 3,
+        "diffusion_source": "pair",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_rank": 3,
+        "drift_source": "pair",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": false,
+        "pair_rank": 13,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      "nonoracle_score_components_under_V0": {
+        "active_score": 0.5480453252004491,
+        "best_diffusion_constant": 1.0,
+        "best_drift_constant": 0.25,
+        "candidate_id": "sample6_current_0013",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 0.7538229454626706,
+        "valid_bool": true,
+        "weak_score": 0.20577762026222143
+      },
+      "nonoracle_score_components_under_V4": {
+        "active_score": 0.2614394135629511,
+        "best_diffusion_constant": 1.0,
+        "best_drift_constant": 0.25,
+        "candidate_id": "sample6_current_0013",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 0.46721703382517255,
+        "valid_bool": true,
+        "weak_score": 0.20577762026222143
+      },
+      "oracle_score_components_under_V0": {
+        "active_score": 0.5288539122825304,
+        "best_diffusion_constant": 1.0,
+        "best_drift_constant": 0.25,
+        "candidate_id": "sample6_p2_0009",
+        "candidate_source": "p2_admitted",
+        "failure_reason": null,
+        "total_score": 0.6277705415693566,
+        "valid_bool": true,
+        "weak_score": 0.09891662928682617
+      },
+      "oracle_score_components_under_V4": {
+        "active_score": 0.2368964213190686,
+        "best_diffusion_constant": 1.0,
+        "best_drift_constant": 0.25,
+        "candidate_id": "sample6_p2_0009",
+        "candidate_source": "p2_admitted",
+        "failure_reason": null,
+        "total_score": 0.3358130506058948,
+        "valid_bool": true,
+        "weak_score": 0.09891662928682617
+      },
+      "p2_oracle_candidate": {
+        "candidate_id": "sample6_p2_0009",
+        "candidate_source": "p2_admitted",
+        "diffusion_rank": 4,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_rank": 5,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": false,
+        "is_p2_canonical_oracle": true,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 9,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      "resimulation_stability": {
+        "available_bool": false,
+        "reason": "not run for compact preserved/nonoracle cases"
+      },
+      "sample_index": 6,
+      "segment_level_ambiguity": {
+        "active_gap_after_removed_dims": -0.024542992243882483,
+        "active_gap_under_V0": -0.019191412917918704,
+        "ambiguity_classification": "weak",
+        "removed_active_dims": [
+          76,
+          72,
+          82,
+          88
+        ],
+        "removed_dims_contribution_to_active_gap": -0.005351579325963779,
+        "removed_dims_explain_flip": false,
+        "removed_dims_fraction_of_active_gap": 0.2788528050984249,
+        "weak_gap": -0.10686099097539527
+      },
+      "semantic_relation": {
+        "drift_family_oracle": "linear",
+        "drift_family_selected": "sin",
+        "drift_family_truth": "linear",
+        "same_diffusion_as_selected": true,
+        "same_diffusion_as_truth": true,
+        "same_drift_as_selected": false,
+        "same_drift_as_truth": false,
+        "selected_error_type": "same_diffusion_wrong_drift"
+      },
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "truth_sequence": [
+        "<DRIFT>",
+        "mul",
+        "CONSTANT",
+        "x_0",
+        "<DIFFUSION>",
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ]
+    },
+    {
+      "V0_selected_candidate": {
+        "candidate_id": "sample11_current_0020",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 10,
+        "diffusion_source": "pair",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_rank": 10,
+        "drift_source": "pair",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 20,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      "V0_selected_score_components_under_V0": {
+        "active_score": 0.3889420485754319,
+        "best_diffusion_constant": 1.0,
+        "best_drift_constant": 0.25,
+        "candidate_id": "sample11_current_0020",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 0.9513314201441417,
+        "valid_bool": true,
+        "weak_score": 0.5623893715687098
+      },
+      "V4_selected_candidate": {
+        "candidate_id": "sample11_current_0018",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 8,
+        "diffusion_source": "pair",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 8,
+        "drift_source": "pair",
+        "drift_tokens": [
+          "CONSTANT"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": false,
+        "is_truth_drift_canonical": false,
+        "pair_rank": 18,
+        "sequence": [
+          "<DRIFT>",
+          "CONSTANT",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ]
+      },
+      "V4_selected_score_components_under_V4": {
+        "active_score": 0.21326629716022544,
+        "best_diffusion_constant": 1.0,
+        "best_drift_constant": 0.25,
+        "candidate_id": "sample11_current_0018",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 0.7500282855757736,
+        "valid_bool": true,
+        "weak_score": 0.5367619884155481
+      },
+      "best_current_expanded_oracle_candidate": {
+        "candidate_id": "sample11_current_0020",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 10,
+        "diffusion_source": "pair",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_rank": 10,
+        "drift_source": "pair",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 20,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      "case_type": "changed_nonoracle_to_nonoracle",
+      "coverage_context": {
+        "baseline_full_oracle": true,
+        "canonicalized_expanded_oracle_present": false,
+        "current_expanded_oracle_present": true,
+        "exact_diffusion_present": false,
+        "p2_oracle_present": false
+      },
+      "exact_oracle_candidate": null,
+      "gap_summaries": {
+        "V0_oracle_gap": 0.0,
+        "V4_oracle_gap": -0.0491481943602432,
+        "gap_delta": -0.0491481943602432,
+        "oracle_vs_nonoracle_gap_under_V0": -0.13428023404516998,
+        "oracle_vs_nonoracle_gap_under_V4": -0.0491481943602432
+      },
+      "nonoracle_comparison_candidate": {
+        "candidate_id": "sample11_current_0018",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 8,
+        "diffusion_source": "pair",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 8,
+        "drift_source": "pair",
+        "drift_tokens": [
+          "CONSTANT"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": false,
+        "is_truth_drift_canonical": false,
+        "pair_rank": 18,
+        "sequence": [
+          "<DRIFT>",
+          "CONSTANT",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ]
+      },
+      "nonoracle_score_components_under_V0": {
+        "active_score": 0.5488496657737637,
+        "best_diffusion_constant": 1.0,
+        "best_drift_constant": 0.25,
+        "candidate_id": "sample11_current_0018",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 1.0856116541893117,
+        "valid_bool": true,
+        "weak_score": 0.5367619884155481
+      },
+      "nonoracle_score_components_under_V4": {
+        "active_score": 0.21326629716022544,
+        "best_diffusion_constant": 1.0,
+        "best_drift_constant": 0.25,
+        "candidate_id": "sample11_current_0018",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 0.7500282855757736,
+        "valid_bool": true,
+        "weak_score": 0.5367619884155481
+      },
+      "oracle_score_components_under_V0": {
+        "active_score": 0.3889420485754319,
+        "best_diffusion_constant": 1.0,
+        "best_drift_constant": 0.25,
+        "candidate_id": "sample11_current_0020",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 0.9513314201441417,
+        "valid_bool": true,
+        "weak_score": 0.5623893715687098
+      },
+      "oracle_score_components_under_V4": {
+        "active_score": 0.13849071964682053,
+        "best_diffusion_constant": 1.0,
+        "best_drift_constant": 0.25,
+        "candidate_id": "sample11_current_0020",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 0.7008800912155304,
+        "valid_bool": true,
+        "weak_score": 0.5623893715687098
+      },
+      "p2_oracle_candidate": {
+        "candidate_id": "sample11_current_0020",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 10,
+        "diffusion_source": "pair",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_rank": 10,
+        "drift_source": "pair",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 20,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      "resimulation_stability": {
+        "available_bool": false,
+        "reason": "not run for compact preserved/nonoracle cases"
+      },
+      "sample_index": 11,
+      "segment_level_ambiguity": {
+        "active_gap_after_removed_dims": -0.07477557751340491,
+        "active_gap_under_V0": -0.1599076171983318,
+        "ambiguity_classification": "active",
+        "removed_active_dims": [
+          76,
+          72,
+          82,
+          88
+        ],
+        "removed_dims_contribution_to_active_gap": 0.08513203968492689,
+        "removed_dims_explain_flip": false,
+        "removed_dims_fraction_of_active_gap": 0.5323826417808383,
+        "weak_gap": 0.02562738315316171
+      },
+      "semantic_relation": {
+        "drift_family_oracle": "linear",
+        "drift_family_selected": "constant",
+        "drift_family_truth": "nested-mul linear",
+        "same_diffusion_as_selected": false,
+        "same_diffusion_as_truth": false,
+        "same_drift_as_selected": false,
+        "same_drift_as_truth": false,
+        "selected_error_type": "both_sides_wrong"
+      },
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "x_0"
+      ],
+      "truth_sequence": [
+        "<DRIFT>",
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "x_0",
+        "<DIFFUSION>",
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ]
+    },
+    {
+      "V0_selected_candidate": {
+        "candidate_id": "sample16_p2_0004",
+        "candidate_source": "p2_admitted",
+        "diffusion_rank": 5,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_rank": 1,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": false,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": false,
+        "pair_rank": 4,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      "V0_selected_score_components_under_V0": {
+        "active_score": 0.620274669727382,
+        "best_diffusion_constant": 0.5,
+        "best_drift_constant": 0.5,
+        "candidate_id": "sample16_p2_0004",
+        "candidate_source": "p2_admitted",
+        "failure_reason": null,
+        "total_score": 1.1085529029230763,
+        "valid_bool": true,
+        "weak_score": 0.4882782331956942
+      },
+      "V4_selected_candidate": {
+        "candidate_id": "sample16_p2_0003",
+        "candidate_source": "p2_admitted",
+        "diffusion_rank": 3,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 1,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": false,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": false,
+        "is_truth_drift_canonical": false,
+        "pair_rank": 3,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ]
+      },
+      "V4_selected_score_components_under_V4": {
+        "active_score": 0.30489031605833566,
+        "best_diffusion_constant": 0.5,
+        "best_drift_constant": 0.5,
+        "candidate_id": "sample16_p2_0003",
+        "candidate_source": "p2_admitted",
+        "failure_reason": null,
+        "total_score": 0.8213317899848058,
+        "valid_bool": true,
+        "weak_score": 0.5164414739264701
+      },
+      "best_current_expanded_oracle_candidate": null,
+      "case_type": "changed_nonoracle_to_nonoracle",
+      "coverage_context": {
+        "baseline_full_oracle": false,
+        "canonicalized_expanded_oracle_present": false,
+        "current_expanded_oracle_present": false,
+        "exact_diffusion_present": true,
+        "p2_oracle_present": false
+      },
+      "exact_oracle_candidate": null,
+      "gap_summaries": {
+        "V0_oracle_gap": null,
+        "V4_oracle_gap": null,
+        "gap_delta": null,
+        "oracle_vs_nonoracle_gap_under_V0": null,
+        "oracle_vs_nonoracle_gap_under_V4": null
+      },
+      "nonoracle_comparison_candidate": {
+        "candidate_id": "sample16_p2_0003",
+        "candidate_source": "p2_admitted",
+        "diffusion_rank": 3,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 1,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": false,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": false,
+        "is_truth_drift_canonical": false,
+        "pair_rank": 3,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ]
+      },
+      "nonoracle_score_components_under_V0": {
+        "active_score": 0.6319195546655266,
+        "best_diffusion_constant": 0.5,
+        "best_drift_constant": 0.5,
+        "candidate_id": "sample16_p2_0003",
+        "candidate_source": "p2_admitted",
+        "failure_reason": null,
+        "total_score": 1.1483610285919967,
+        "valid_bool": true,
+        "weak_score": 0.5164414739264701
+      },
+      "nonoracle_score_components_under_V4": {
+        "active_score": 0.30489031605833566,
+        "best_diffusion_constant": 0.5,
+        "best_drift_constant": 0.5,
+        "candidate_id": "sample16_p2_0003",
+        "candidate_source": "p2_admitted",
+        "failure_reason": null,
+        "total_score": 0.8213317899848058,
+        "valid_bool": true,
+        "weak_score": 0.5164414739264701
+      },
+      "oracle_score_components_under_V0": null,
+      "oracle_score_components_under_V4": null,
+      "p2_oracle_candidate": null,
+      "resimulation_stability": {
+        "available_bool": false,
+        "reason": "not run for compact preserved/nonoracle cases"
+      },
+      "sample_index": 16,
+      "segment_level_ambiguity": {
+        "active_gap_after_removed_dims": null,
+        "active_gap_under_V0": null,
+        "ambiguity_classification": "unknown",
+        "removed_active_dims": [
+          76,
+          72,
+          82,
+          88
+        ],
+        "removed_dims_contribution_to_active_gap": null,
+        "removed_dims_explain_flip": false,
+        "removed_dims_fraction_of_active_gap": null,
+        "weak_gap": null
+      },
+      "semantic_relation": {
+        "drift_family_oracle": null,
+        "drift_family_selected": "polynomial-like",
+        "drift_family_truth": "polynomial-like",
+        "same_diffusion_as_selected": false,
+        "same_diffusion_as_truth": false,
+        "same_drift_as_selected": false,
+        "same_drift_as_truth": false,
+        "selected_error_type": "both_sides_wrong"
+      },
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "pow2",
+        "x_0"
+      ],
+      "truth_sequence": [
+        "<DRIFT>",
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "pow2",
+        "x_0",
+        "<DIFFUSION>",
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ]
+    },
+    {
+      "V0_selected_candidate": {
+        "candidate_id": "sample19_current_0025",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 17,
+        "diffusion_source": "pair",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "CONSTANT"
+        ],
+        "drift_rank": 17,
+        "drift_source": "pair",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": false,
+        "is_truth_drift_canonical": false,
+        "pair_rank": 25,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "CONSTANT"
+        ]
+      },
+      "V0_selected_score_components_under_V0": {
+        "active_score": 0.7844645519178165,
+        "best_diffusion_constant": 0.25,
+        "best_drift_constant": 0.25,
+        "candidate_id": "sample19_current_0025",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 1.7120725091006803,
+        "valid_bool": true,
+        "weak_score": 0.9276079571828638
+      },
+      "V4_selected_candidate": {
+        "candidate_id": "sample19_current_0024",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 16,
+        "diffusion_source": "pair",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_rank": 16,
+        "drift_source": "pair",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": false,
+        "is_truth_drift_canonical": false,
+        "pair_rank": 24,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      "V4_selected_score_components_under_V4": {
+        "active_score": 0.5846934692236814,
+        "best_diffusion_constant": 0.25,
+        "best_drift_constant": 0.25,
+        "candidate_id": "sample19_current_0024",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 1.5080308694827813,
+        "valid_bool": true,
+        "weak_score": 0.9233374002590999
+      },
+      "best_current_expanded_oracle_candidate": {
+        "candidate_id": "sample19_current_0002",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 2,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "add",
+          "CONSTANT",
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 2,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "CONSTANT"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": null,
+        "sequence": [
+          "<DRIFT>",
+          "CONSTANT",
+          "<DIFFUSION>",
+          "add",
+          "CONSTANT",
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ]
+      },
+      "case_type": "changed_nonoracle_to_nonoracle",
+      "coverage_context": {
+        "baseline_full_oracle": true,
+        "canonicalized_expanded_oracle_present": false,
+        "current_expanded_oracle_present": true,
+        "exact_diffusion_present": false,
+        "p2_oracle_present": false
+      },
+      "exact_oracle_candidate": null,
+      "gap_summaries": {
+        "V0_oracle_gap": 0.41250458623464903,
+        "V4_oracle_gap": 0.4670639913768102,
+        "gap_delta": 0.05455940514216118,
+        "oracle_vs_nonoracle_gap_under_V0": 0.32653472660889316,
+        "oracle_vs_nonoracle_gap_under_V4": 0.4670639913768102
+      },
+      "nonoracle_comparison_candidate": {
+        "candidate_id": "sample19_current_0024",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 16,
+        "diffusion_source": "pair",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_rank": 16,
+        "drift_source": "pair",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": false,
+        "is_truth_drift_canonical": false,
+        "pair_rank": 24,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      "nonoracle_score_components_under_V0": {
+        "active_score": 0.8747049684673361,
+        "best_diffusion_constant": 0.25,
+        "best_drift_constant": 0.25,
+        "candidate_id": "sample19_current_0024",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 1.7980423687264362,
+        "valid_bool": true,
+        "weak_score": 0.9233374002590999
+      },
+      "nonoracle_score_components_under_V4": {
+        "active_score": 0.5846934692236814,
+        "best_diffusion_constant": 0.25,
+        "best_drift_constant": 0.25,
+        "candidate_id": "sample19_current_0024",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 1.5080308694827813,
+        "valid_bool": true,
+        "weak_score": 0.9233374002590999
+      },
+      "oracle_score_components_under_V0": {
+        "active_score": 0.9491701846427217,
+        "best_diffusion_constant": 0.25,
+        "best_drift_constant": 0.25,
+        "candidate_id": "sample19_current_0002",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 2.1245770953353293,
+        "valid_bool": true,
+        "weak_score": 1.1754069106926075
+      },
+      "oracle_score_components_under_V4": {
+        "active_score": 0.7996879501669841,
+        "best_diffusion_constant": 0.25,
+        "best_drift_constant": 0.25,
+        "candidate_id": "sample19_current_0002",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 1.9750948608595915,
+        "valid_bool": true,
+        "weak_score": 1.1754069106926075
+      },
+      "p2_oracle_candidate": {
+        "candidate_id": "sample19_current_0002",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 2,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "add",
+          "CONSTANT",
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 2,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "CONSTANT"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": null,
+        "sequence": [
+          "<DRIFT>",
+          "CONSTANT",
+          "<DIFFUSION>",
+          "add",
+          "CONSTANT",
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ]
+      },
+      "resimulation_stability": {
+        "available_bool": false,
+        "reason": "not run for compact preserved/nonoracle cases"
+      },
+      "sample_index": 19,
+      "segment_level_ambiguity": {
+        "active_gap_after_removed_dims": 0.21499448094330276,
+        "active_gap_under_V0": 0.0744652161753856,
+        "ambiguity_classification": "mixed",
+        "removed_active_dims": [
+          76,
+          72,
+          82,
+          88
+        ],
+        "removed_dims_contribution_to_active_gap": 0.14052926476791716,
+        "removed_dims_explain_flip": false,
+        "removed_dims_fraction_of_active_gap": 1.8871799745660172,
+        "weak_gap": 0.25206951043350756
+      },
+      "semantic_relation": {
+        "drift_family_oracle": "constant",
+        "drift_family_selected": "polynomial-like",
+        "drift_family_truth": "other",
+        "same_diffusion_as_selected": false,
+        "same_diffusion_as_truth": false,
+        "same_drift_as_selected": false,
+        "same_drift_as_truth": false,
+        "selected_error_type": "both_sides_wrong"
+      },
+      "truth_diffusion_tokens": [
+        "add",
+        "CONSTANT",
+        "mul",
+        "CONSTANT",
+        "abs",
+        "x_0"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "CONSTANT"
+      ],
+      "truth_sequence": [
+        "<DRIFT>",
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "CONSTANT",
+        "<DIFFUSION>",
+        "add",
+        "CONSTANT",
+        "mul",
+        "CONSTANT",
+        "abs",
+        "x_0"
+      ]
+    },
+    {
+      "V0_selected_candidate": {
+        "candidate_id": "sample20_current_0001",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 1,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 1,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": false,
+        "is_truth_drift_canonical": true,
+        "pair_rank": null,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ]
+      },
+      "V0_selected_score_components_under_V0": {
+        "active_score": 0.15831246670701896,
+        "best_diffusion_constant": 0.25,
+        "best_drift_constant": 1.0,
+        "candidate_id": "sample20_current_0001",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 0.2270862754167401,
+        "valid_bool": true,
+        "weak_score": 0.06877380870972115
+      },
+      "V4_selected_candidate": {
+        "candidate_id": "sample20_p2_0011",
+        "candidate_source": "p2_admitted",
+        "diffusion_rank": 1,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 15,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": false,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": false,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 11,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ]
+      },
+      "V4_selected_score_components_under_V4": {
+        "active_score": 0.15587353310900787,
+        "best_diffusion_constant": 0.25,
+        "best_drift_constant": 1.0,
+        "candidate_id": "sample20_p2_0011",
+        "candidate_source": "p2_admitted",
+        "failure_reason": null,
+        "total_score": 0.3424034350341999,
+        "valid_bool": true,
+        "weak_score": 0.186529901925192
+      },
+      "best_current_expanded_oracle_candidate": {
+        "candidate_id": "sample20_current_0012",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 3,
+        "diffusion_source": "pair",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_rank": 3,
+        "drift_source": "pair",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 12,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      "case_type": "changed_nonoracle_to_nonoracle",
+      "coverage_context": {
+        "baseline_full_oracle": false,
+        "canonicalized_expanded_oracle_present": true,
+        "current_expanded_oracle_present": false,
+        "exact_diffusion_present": true,
+        "p2_oracle_present": true
+      },
+      "exact_oracle_candidate": {
+        "candidate_id": "sample20_current_0012",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 3,
+        "diffusion_source": "pair",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_rank": 3,
+        "drift_source": "pair",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 12,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      "gap_summaries": {
+        "V0_oracle_gap": 0.047479116168786084,
+        "V4_oracle_gap": -0.1499682105038065,
+        "gap_delta": -0.19744732667259257,
+        "oracle_vs_nonoracle_gap_under_V0": -0.14449050196802848,
+        "oracle_vs_nonoracle_gap_under_V4": -0.1499682105038065
+      },
+      "nonoracle_comparison_candidate": {
+        "candidate_id": "sample20_p2_0011",
+        "candidate_source": "p2_admitted",
+        "diffusion_rank": 1,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 15,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": false,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": false,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 11,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ]
+      },
+      "nonoracle_score_components_under_V0": {
+        "active_score": 0.23252599162836268,
+        "best_diffusion_constant": 0.25,
+        "best_drift_constant": 1.0,
+        "candidate_id": "sample20_p2_0011",
+        "candidate_source": "p2_admitted",
+        "failure_reason": null,
+        "total_score": 0.41905589355355466,
+        "valid_bool": true,
+        "weak_score": 0.186529901925192
+      },
+      "nonoracle_score_components_under_V4": {
+        "active_score": 0.15587353310900787,
+        "best_diffusion_constant": 0.25,
+        "best_drift_constant": 1.0,
+        "candidate_id": "sample20_p2_0011",
+        "candidate_source": "p2_admitted",
+        "failure_reason": null,
+        "total_score": 0.3424034350341999,
+        "valid_bool": true,
+        "weak_score": 0.186529901925192
+      },
+      "oracle_score_components_under_V0": {
+        "active_score": 0.1506816313882166,
+        "best_diffusion_constant": 0.25,
+        "best_drift_constant": 1.0,
+        "candidate_id": "sample20_current_0012",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 0.2745653915855262,
+        "valid_bool": true,
+        "weak_score": 0.12388376019730957
+      },
+      "oracle_score_components_under_V4": {
+        "active_score": 0.06855146433308386,
+        "best_diffusion_constant": 0.25,
+        "best_drift_constant": 1.0,
+        "candidate_id": "sample20_current_0012",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 0.1924352245303934,
+        "valid_bool": true,
+        "weak_score": 0.12388376019730957
+      },
+      "p2_oracle_candidate": {
+        "candidate_id": "sample20_current_0012",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 3,
+        "diffusion_source": "pair",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ],
+        "drift_rank": 3,
+        "drift_source": "pair",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 12,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "x_0"
+        ]
+      },
+      "resimulation_stability": {
+        "available_bool": false,
+        "reason": "not run for compact preserved/nonoracle cases"
+      },
+      "sample_index": 20,
+      "segment_level_ambiguity": {
+        "active_gap_after_removed_dims": -0.08732206877592401,
+        "active_gap_under_V0": -0.08184436024014607,
+        "ambiguity_classification": "mixed",
+        "removed_active_dims": [
+          76,
+          72,
+          82,
+          88
+        ],
+        "removed_dims_contribution_to_active_gap": -0.005477708535777934,
+        "removed_dims_explain_flip": false,
+        "removed_dims_fraction_of_active_gap": 0.06692835669684938,
+        "weak_gap": -0.06264614172788244
+      },
+      "semantic_relation": {
+        "drift_family_oracle": "sin",
+        "drift_family_selected": "sin",
+        "drift_family_truth": "sin",
+        "same_diffusion_as_selected": false,
+        "same_diffusion_as_truth": false,
+        "same_drift_as_selected": true,
+        "same_drift_as_truth": true,
+        "selected_error_type": "same_drift_wrong_diffusion"
+      },
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ],
+      "truth_sequence": [
+        "<DRIFT>",
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0",
+        "<DIFFUSION>",
+        "mul",
+        "CONSTANT",
+        "x_0"
+      ]
+    },
+    {
+      "V0_selected_candidate": {
+        "candidate_id": "sample28_current_0016",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 6,
+        "diffusion_source": "pair",
+        "diffusion_tokens": [
+          "add",
+          "CONSTANT",
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 6,
+        "drift_source": "pair",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": false,
+        "is_truth_drift_canonical": false,
+        "pair_rank": 16,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "add",
+          "CONSTANT",
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ]
+      },
+      "V0_selected_score_components_under_V0": {
+        "active_score": 0.5821979503681728,
+        "best_diffusion_constant": 0.25,
+        "best_drift_constant": 0.5,
+        "candidate_id": "sample28_current_0016",
+        "candidate_source": "current_expanded",
+        "failure_reason": null,
+        "total_score": 1.0921543534178888,
+        "valid_bool": true,
+        "weak_score": 0.509956403049716
+      },
+      "V4_selected_candidate": {
+        "candidate_id": "sample28_p2_0002",
+        "candidate_source": "p2_admitted",
+        "diffusion_rank": 2,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 1,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": false,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": false,
+        "pair_rank": 2,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ]
+      },
+      "V4_selected_score_components_under_V4": {
+        "active_score": 0.2987401338572429,
+        "best_diffusion_constant": 0.5,
+        "best_drift_constant": 0.5,
+        "candidate_id": "sample28_p2_0002",
+        "candidate_source": "p2_admitted",
+        "failure_reason": null,
+        "total_score": 0.795864855793185,
+        "valid_bool": true,
+        "weak_score": 0.4971247219359421
+      },
+      "best_current_expanded_oracle_candidate": null,
+      "case_type": "changed_nonoracle_to_nonoracle",
+      "coverage_context": {
+        "baseline_full_oracle": false,
+        "canonicalized_expanded_oracle_present": false,
+        "current_expanded_oracle_present": false,
+        "exact_diffusion_present": true,
+        "p2_oracle_present": false
+      },
+      "exact_oracle_candidate": null,
+      "gap_summaries": {
+        "V0_oracle_gap": null,
+        "V4_oracle_gap": null,
+        "gap_delta": null,
+        "oracle_vs_nonoracle_gap_under_V0": null,
+        "oracle_vs_nonoracle_gap_under_V4": null
+      },
+      "nonoracle_comparison_candidate": {
+        "candidate_id": "sample28_p2_0002",
+        "candidate_source": "p2_admitted",
+        "diffusion_rank": 2,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 1,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": false,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": false,
+        "pair_rank": 2,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ]
+      },
+      "nonoracle_score_components_under_V0": {
+        "active_score": 0.6424212732944791,
+        "best_diffusion_constant": 0.5,
+        "best_drift_constant": 0.5,
+        "candidate_id": "sample28_p2_0002",
+        "candidate_source": "p2_admitted",
+        "failure_reason": null,
+        "total_score": 1.1395459952304212,
+        "valid_bool": true,
+        "weak_score": 0.4971247219359421
+      },
+      "nonoracle_score_components_under_V4": {
+        "active_score": 0.2987401338572429,
+        "best_diffusion_constant": 0.5,
+        "best_drift_constant": 0.5,
+        "candidate_id": "sample28_p2_0002",
+        "candidate_source": "p2_admitted",
+        "failure_reason": null,
+        "total_score": 0.795864855793185,
+        "valid_bool": true,
+        "weak_score": 0.4971247219359421
+      },
+      "oracle_score_components_under_V0": null,
+      "oracle_score_components_under_V4": null,
+      "p2_oracle_candidate": null,
+      "resimulation_stability": {
+        "available_bool": false,
+        "reason": "not run for compact preserved/nonoracle cases"
+      },
+      "sample_index": 28,
+      "segment_level_ambiguity": {
+        "active_gap_after_removed_dims": null,
+        "active_gap_under_V0": null,
+        "ambiguity_classification": "unknown",
+        "removed_active_dims": [
+          76,
+          72,
+          82,
+          88
+        ],
+        "removed_dims_contribution_to_active_gap": null,
+        "removed_dims_explain_flip": false,
+        "removed_dims_fraction_of_active_gap": null,
+        "weak_gap": null
+      },
+      "semantic_relation": {
+        "drift_family_oracle": null,
+        "drift_family_selected": "polynomial-like",
+        "drift_family_truth": "polynomial-like",
+        "same_diffusion_as_selected": false,
+        "same_diffusion_as_truth": true,
+        "same_drift_as_selected": false,
+        "same_drift_as_truth": false,
+        "selected_error_type": "same_diffusion_wrong_drift"
+      },
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "sqrt",
+        "abs",
+        "x_0"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "pow2",
+        "x_0"
+      ],
+      "truth_sequence": [
+        "<DRIFT>",
+        "mul",
+        "mul",
+        "CONSTANT",
+        "CONSTANT",
+        "pow2",
+        "x_0",
+        "<DIFFUSION>",
+        "mul",
+        "CONSTANT",
+        "sqrt",
+        "abs",
+        "x_0"
+      ]
+    },
+    {
+      "V0_selected_candidate": {
+        "candidate_id": "sample10_current_0003",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 3,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 3,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": null,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ]
+      },
+      "V4_preserves_or_harms": "preserves",
+      "V4_selected_candidate": {
+        "candidate_id": "sample10_current_0003",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 3,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 3,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": null,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ]
+      },
+      "V4_would_change_it": false,
+      "case_type": "V0_preserved_hit",
+      "sample_index": 10,
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "abs",
+        "x_0"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ],
+      "truth_sequence": [
+        "<DRIFT>",
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0",
+        "<DIFFUSION>",
+        "mul",
+        "CONSTANT",
+        "abs",
+        "x_0"
+      ]
+    },
+    {
+      "V0_selected_candidate": {
+        "candidate_id": "sample14_p2_0013",
+        "candidate_source": "p2_admitted",
+        "diffusion_rank": 3,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 15,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": false,
+        "is_p2_canonical_oracle": true,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 13,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ]
+      },
+      "V4_preserves_or_harms": "preserves",
+      "V4_selected_candidate": {
+        "candidate_id": "sample14_p2_0013",
+        "candidate_source": "p2_admitted",
+        "diffusion_rank": 3,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 15,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": false,
+        "is_p2_canonical_oracle": true,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": 13,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "sin",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "abs",
+          "x_0"
+        ]
+      },
+      "V4_would_change_it": false,
+      "case_type": "V0_preserved_hit",
+      "sample_index": 14,
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "abs",
+        "x_0"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0"
+      ],
+      "truth_sequence": [
+        "<DRIFT>",
+        "mul",
+        "CONSTANT",
+        "sin",
+        "x_0",
+        "<DIFFUSION>",
+        "mul",
+        "CONSTANT",
+        "abs",
+        "x_0"
+      ]
+    },
+    {
+      "V0_selected_candidate": {
+        "candidate_id": "sample17_current_0007",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 7,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 7,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": null,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ]
+      },
+      "V4_preserves_or_harms": "preserves",
+      "V4_selected_candidate": {
+        "candidate_id": "sample17_current_0007",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 7,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 7,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": null,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ]
+      },
+      "V4_would_change_it": false,
+      "case_type": "V0_preserved_hit",
+      "sample_index": 17,
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "sqrt",
+        "abs",
+        "x_0"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "mul",
+        "x_0",
+        "sub",
+        "CONSTANT",
+        "x_0"
+      ],
+      "truth_sequence": [
+        "<DRIFT>",
+        "mul",
+        "CONSTANT",
+        "mul",
+        "x_0",
+        "sub",
+        "CONSTANT",
+        "x_0",
+        "<DIFFUSION>",
+        "mul",
+        "CONSTANT",
+        "sqrt",
+        "abs",
+        "x_0"
+      ]
+    },
+    {
+      "V0_selected_candidate": {
+        "candidate_id": "sample18_current_0007",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 7,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 7,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": null,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ]
+      },
+      "V4_preserves_or_harms": "preserves",
+      "V4_selected_candidate": {
+        "candidate_id": "sample18_current_0007",
+        "candidate_source": "current_expanded",
+        "diffusion_rank": 7,
+        "diffusion_source": "beam",
+        "diffusion_tokens": [
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ],
+        "drift_rank": 7,
+        "drift_source": "beam",
+        "drift_tokens": [
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0"
+        ],
+        "is_current_expanded_candidate": true,
+        "is_p2_canonical_oracle": false,
+        "is_truth_diffusion_exact": true,
+        "is_truth_drift_canonical": true,
+        "pair_rank": null,
+        "sequence": [
+          "<DRIFT>",
+          "mul",
+          "CONSTANT",
+          "mul",
+          "x_0",
+          "sub",
+          "CONSTANT",
+          "x_0",
+          "<DIFFUSION>",
+          "mul",
+          "CONSTANT",
+          "sqrt",
+          "abs",
+          "x_0"
+        ]
+      },
+      "V4_would_change_it": false,
+      "case_type": "V0_preserved_hit",
+      "sample_index": 18,
+      "truth_diffusion_tokens": [
+        "mul",
+        "CONSTANT",
+        "sqrt",
+        "abs",
+        "x_0"
+      ],
+      "truth_drift_tokens": [
+        "mul",
+        "CONSTANT",
+        "mul",
+        "x_0",
+        "sub",
+        "CONSTANT",
+        "x_0"
+      ],
+      "truth_sequence": [
+        "<DRIFT>",
+        "mul",
+        "CONSTANT",
+        "mul",
+        "x_0",
+        "sub",
+        "CONSTANT",
+        "x_0",
+        "<DIFFUSION>",
+        "mul",
+        "CONSTANT",
+        "sqrt",
+        "abs",
+        "x_0"
+      ]
+    }
+  ],
+  "summary": {
+    "V0_preserved_hit_count": 4,
+    "V0_preserved_hit_samples": [
+      10,
+      14,
+      17,
+      18
+    ],
+    "V4_harm_count": 2,
+    "V4_harm_samples": [
+      9,
+      21
+    ],
+    "V4_rescue_count": 5,
+    "V4_rescue_samples": [
+      1,
+      7,
+      22,
+      23,
+      31
+    ],
+    "active_dominated_ambiguity_count": 1,
+    "both_sides_wrong_count": 1,
+    "candidate_generation_avoided": true,
+    "changed_nonoracle_to_nonoracle_count": 8,
+    "changed_nonoracle_to_nonoracle_samples": [
+      0,
+      3,
+      6,
+      11,
+      16,
+      19,
+      20,
+      28
+    ],
+    "constant_only_or_near_constant_count": 0,
+    "decision": "C",
+    "formal_eval_recommended": false,
+    "gate_decision": "B",
+    "mixed_ambiguity_count": 4,
+    "model_decoding_avoided": true,
+    "recommendation": "Some small resimulation orderings changed. Diagnose fingerprint simulation stability before scorer changes.",
+    "removed_dims_explain_flip_count": 2,
+    "removed_dims_explain_harm_count": 0,
+    "resimulation_available_bool": true,
+    "resimulation_oracle_recovers_count": 2,
+    "resimulation_ordering_stable_count": 2,
+    "same_diffusion_wrong_drift_count": 1,
+    "same_drift_wrong_diffusion_count": 5,
+    "samples_analyzed": 19,
+    "sde_validation_probe_avoided": true,
+    "unknown_ambiguity_count": 0,
+    "weak_dominated_ambiguity_count": 2
+  }
+}

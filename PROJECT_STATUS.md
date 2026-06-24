@@ -185,6 +185,17 @@ exact/relaxed with zero harm, but they are non-implementable. Decision `B`:
 close the fixed residual calibration implementation path for now; return to
 drift span / fingerprint ambiguity diagnostics rather than scorer
 implementation or formal eval.
+A follow-up offline fingerprint ambiguity diagnostic is now complete for the
+V0/V4 changed cases. V4 has 5 rescues (`1,7,22,23,31`), 2 harms (`9,21`), 8
+nonoracle-to-nonoracle changes, and preserves 4 V0 hits. Removed active
+dimensions explain only 2/7 rescue/harm flips and 0/2 harms; ambiguity is mixed
+4, weak-dominated 2, and active-dominated 1. Semantic errors are mostly
+same-drift/wrong-diffusion (`5/7`), with one same-diffusion/wrong-drift and one
+both-sides-wrong case. The optional 3-repeat resimulation check was available,
+but ordering was stable for only 2/7 rescue/harm comparisons and the oracle
+beat the nonoracle in majority for only 2/7. Decision `C`: diagnose fingerprint
+simulation stability before any scorer changes; no formal eval, rerank mode, or
+P2 eval integration is recommended from this evidence.
 
 ## Last Updated
 
@@ -650,6 +661,17 @@ implementation or formal eval.
   the clean zero-harm gates are oracle-label upper bounds and not implementable.
   Decision `B`: close the fixed residual calibration implementation path for
   now.
+- Added
+  [scripts/analyze_p2_fingerprint_ambiguity.py](/Users/lzhang/Documents/GenSR_SDE/scripts/analyze_p2_fingerprint_ambiguity.py)
+  and wrote
+  [p2_fingerprint_ambiguity_diagnostics.md](/Users/lzhang/Documents/GenSR_SDE/p2_fingerprint_ambiguity_diagnostics.md)
+  /
+  [p2_fingerprint_ambiguity_diagnostics.json](/Users/lzhang/Documents/GenSR_SDE/p2_fingerprint_ambiguity_diagnostics.json).
+  This helper analyzed V0/V4 changed cases offline and ran a small 3-repeat
+  candidate fingerprint stability check for rescue/harm pairs only. V4 rescues
+  5 and harms 2, but resimulation ordering is stable for only 2/7 comparisons.
+  Decision `C`: diagnose fingerprint simulation stability before scorer
+  changes.
 - Logged validated experiments in
   [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md).
 
@@ -658,8 +680,9 @@ implementation or formal eval.
 - Transitioning from "can the model learn the fingerprint?" to "can we decode
   the right symbolic sequence?".
 - Fixed residual calibration implementation is closed for now. Gate feasibility
-  found no observable positive zero-harm gate; clean gates are oracle-label
-  upper bounds only. Return to drift span / fingerprint ambiguity diagnostics.
+  found no observable positive zero-harm gate, and the V0/V4 fingerprint
+  ambiguity diagnostic found unstable small-resimulation orderings. Diagnose
+  fingerprint simulation stability before any scorer changes.
 - The 2000-step role-token checkpoint has been restored in `/private/tmp` and
   backed up under `checkpoints/`; model weights remain ignored by git.
 
@@ -698,7 +721,9 @@ implementation or formal eval.
 11. Do not implement shared-constant or fixed residual calibration. Gate
    feasibility found no observable positive zero-harm gate; `V4 + G3` reaches
    `9/32` but harms 2 V0 hits, while zero-harm upper bounds use oracle labels.
-   Treat this path as closed for now.
+   The V0/V4 fingerprint ambiguity diagnostic also found small-resimulation
+   ordering instability, so treat this path as closed until fingerprint
+   simulation stability is understood.
 12. Keep drift/diffusion pairing enabled and tune candidate pool size carefully
    because fingerprint recomputation is CPU-expensive.
 13. Reuse the saved 2000-step checkpoint for decoding experiments instead of
@@ -785,6 +810,9 @@ implementation or formal eval.
 - P2 oracle score misses are mostly active/weak residual traps, not
   parse/fingerprint/serialization failures. This does not support P2 eval
   integration yet.
+- The V0/V4 fingerprint ambiguity diagnostic found that small resimulation
+  changes ordering in 5/7 rescue/harm comparisons. Diagnose fingerprint
+  simulation stability before any further scorer calibration changes.
 - Constant-folding collision checks are token-structure-only; they did not flag
   unsafe observed overmerge, but semantic fingerprint validation and
   selected-rerank behavior remain untested.

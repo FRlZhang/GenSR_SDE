@@ -1403,3 +1403,66 @@ decision=B
 Use this to close fixed residual calibration implementation path for now and
 return to drift span / fingerprint ambiguity diagnostics. Do not run formal
 eval, integrate P2 into eval, or add a rerank mode from this evidence alone.
+
+## P2 Fingerprint Ambiguity Diagnostic
+
+This parses existing JSON and does a small 3-repeat fingerprint stability check
+for V4 rescue/harm candidate pairs only. It does not run model decoding,
+candidate generation, `sde_validation_probe.py`, formal eval, 64-sample eval,
+grids, retraining, scorer changes, rerank-mode changes, checkpoint/data
+changes, target-format changes, fingerprint schema changes, or production
+default changes.
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/tmp/cache \
+/opt/miniconda3/envs/gensr/bin/python3 scripts/analyze_p2_fingerprint_ambiguity.py \
+  --gate-json p2_calibration_gate_feasibility.json \
+  --all32-smoke-json p2_calibration_all32_smoke.json \
+  --scorer-ready-json p2_scorer_ready_candidates_all32.json \
+  --p2-coverage-json candidate_coverage_pair_expanded_p2_flag.json \
+  --baseline-coverage-json candidate_coverage_diagnostics.json \
+  --report p2_fingerprint_ambiguity_diagnostics.md \
+  --json-output p2_fingerprint_ambiguity_diagnostics.json \
+  > /private/tmp/gensr_sde_p2_fingerprint_ambiguity.log 2>&1
+```
+
+Compile check:
+
+```bash
+PYTHONPYCACHEPREFIX=/private/tmp/gensr_pycache \
+/opt/miniconda3/envs/gensr/bin/python3 -m py_compile \
+  scripts/analyze_p2_fingerprint_ambiguity.py \
+  scripts/analyze_p2_calibration_gate_feasibility.py \
+  scripts/analyze_p2_calibration_all32_smoke.py \
+  scripts/analyze_p2_admitted_candidate_scoring.py \
+  sde_fingerprint.py \
+  simulator_sde.py \
+  sde_dataset_generator.py
+```
+
+Latest result:
+
+```text
+samples_analyzed=19
+V4_rescue_count=5
+V4_harm_count=2
+changed_nonoracle_to_nonoracle_count=8
+V0_preserved_hit_count=4
+removed_dims_explain_flip_count=2
+removed_dims_explain_harm_count=0
+active_dominated_ambiguity_count=1
+weak_dominated_ambiguity_count=2
+mixed_ambiguity_count=4
+same_diffusion_wrong_drift_count=1
+same_drift_wrong_diffusion_count=5
+both_sides_wrong_count=1
+constant_only_or_near_constant_count=0
+resimulation_available_bool=True
+resimulation_ordering_stable_count=2
+resimulation_oracle_recovers_count=2
+decision=C
+```
+
+Use this to prioritize fingerprint simulation stability before any further
+scorer calibration changes. Do not run formal eval, integrate P2 into eval, or
+add a rerank mode from this evidence alone.
