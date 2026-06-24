@@ -102,7 +102,13 @@ flag end to end, but this still should not change production defaults. The
 attempted runtime smoke was blocked before launch because the required source
 log `/private/tmp/gensr_sde_32_rolewise_no_multi_u0.log` is missing. Do not
 regenerate that log inside Codex; restore/recreate it locally and rerun the
-exact coverage-only P2 flag command from the runtime report.
+exact coverage-only P2 flag command from the runtime report. The missing
+rolewise source log has now been regenerated with the original 32-sample
+eval-only checkpoint command, reproducing the known headline metrics
+(`selected=5/32`, `oracle=9/32`, `pair_oracle=2/32`). The regenerated log and
+other surviving `/private/tmp/gensr_sde*.log/json` artifacts were copied to the
+ignored long-term local backup directory
+`experiment_logs/2026-06-24_tmp_gensr_sde_logs/`.
 
 ## Last Updated
 
@@ -449,6 +455,16 @@ exact coverage-only P2 flag command from the runtime report.
   `candidate_coverage_pair_expanded_p2_flag.md/json` was not produced. Decision
   `D`: restore or recreate the source log locally, then run the exact
   coverage-only command; no formal eval.
+- Regenerated `/private/tmp/gensr_sde_32_rolewise_no_multi_u0.log` from the
+  restored 2000-step checkpoint using the original 32-sample role-wise
+  eval-only command. The regenerated log reports
+  `reranked_sequence_exact=0.156250`,
+  `rerank_oracle_sequence_exact=0.281250`, and
+  `rerank_pair_oracle_sequence_exact=0.062500`, matching the recorded
+  `5/32`, `9/32`, and `2/32` metrics. Backed up the regenerated source log plus
+  the surviving `/private/tmp/gensr_sde*.log/json` artifacts to
+  `experiment_logs/2026-06-24_tmp_gensr_sde_logs/`; this directory is ignored
+  by git.
 - Logged validated experiments in
   [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md).
 
@@ -456,12 +472,12 @@ exact coverage-only P2 flag command from the runtime report.
 
 - Transitioning from "can the model learn the fingerprint?" to "can we decode
   the right symbolic sequence?".
-- Blocked on a missing local source log for the explicit
-  `--normalized-drift-admission p2_one_per_family` candidate-coverage runtime
-  smoke. Restore or recreate `/private/tmp/gensr_sde_32_rolewise_no_multi_u0.log`
-  locally before rerunning the exact coverage-only command. Do not treat this as
-  selected-rerank evidence or a production default change. Residual-debug safety
-  checks do not support continuing scorer-side normalization.
+- Ready to rerun the explicit `--normalized-drift-admission p2_one_per_family`
+  candidate-coverage runtime smoke now that
+  `/private/tmp/gensr_sde_32_rolewise_no_multi_u0.log` has been regenerated and
+  backed up. Do not treat this as selected-rerank evidence or a production
+  default change. Residual-debug safety checks do not support continuing
+  scorer-side normalization.
 - The 2000-step role-token checkpoint has been restored in `/private/tmp` and
   backed up under `checkpoints/`; model weights remain ignored by git.
 
@@ -491,11 +507,10 @@ exact coverage-only P2 flag command from the runtime report.
    expanded-pairing 16-sample smoke had 5 oracle samples, 0 selected hits, and
    0/5 offline miss rescues, so do not run a formal 32-sample eval for this
    scorer idea.
-9. Restore or recreate `/private/tmp/gensr_sde_32_rolewise_no_multi_u0.log`,
-   then run the exact coverage-only `--normalized-drift-admission
-   p2_one_per_family` command before widening beam/top-k. JSON validation still
-   preserves the `30/32` diagnostic ceiling with target pair count `340`, versus
-   `1105` for full normalized admission.
+9. Run the exact coverage-only `--normalized-drift-admission
+   p2_one_per_family` command now that the source log has been regenerated.
+   JSON validation still preserves the `30/32` diagnostic ceiling with target
+   pair count `340`, versus `1105` for full normalized admission.
 10. Do not run formal eval from the drift-only or constant-folding diagnostics;
    they are oracle-coverage diagnostics, not selected-recovery evidence.
 11. Keep drift/diffusion pairing enabled and tune candidate pool size carefully

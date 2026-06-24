@@ -2,8 +2,7 @@
 
 ## Next Engineering Task
 
-Restore or recreate `/private/tmp/gensr_sde_32_rolewise_no_multi_u0.log`, then
-run the exact coverage-only `--normalized-drift-admission p2_one_per_family`
+Run the exact coverage-only `--normalized-drift-admission p2_one_per_family`
 candidate coverage command before widening drift beam/top-k or changing
 production candidate-generation defaults.
 The drift-only smoke is complete: exact drift appears in only `3/17` targets,
@@ -17,8 +16,9 @@ P2 flag, validated from existing JSON with metric_cross_check_status `ok`,
 schema_status `ok`, canonicalizer_safety_status `ok`, zero mismatches, decision
 `A`. The attempted runtime smoke was blocked before launch because the required
 source log is missing; `candidate_coverage_pair_expanded_p2_flag.md/json` was
-not produced. Residual-debug safety checks do not support continuing
-scorer-side normalization or adding a new rerank mode.
+not produced. That source log has since been regenerated and backed up, so the
+runtime smoke can now be retried. Residual-debug safety checks do not support
+continuing scorer-side normalization or adding a new rerank mode.
 
 Current strongest no-retraining decoding setting:
 
@@ -364,13 +364,24 @@ candidate_coverage_pair_expanded_p2_flag.md/json produced=False
 decision=D
 ```
 
+Restored source log and backup:
+
+```text
+regenerated=/private/tmp/gensr_sde_32_rolewise_no_multi_u0.log
+selected=5/32
+oracle=9/32
+pair_oracle=2/32
+backup_dir=experiment_logs/2026-06-24_tmp_gensr_sde_logs/
+backup_status=all surviving /private/tmp/gensr_sde*.log/json copied
+```
+
 Interpretation: current expanded-pool canonicalization helps but is not enough,
 full normalized drift-only admission is too high-pressure to adopt wholesale,
 and `P2_one_per_family` preserves the coverage ceiling with much lower pair
 pressure. The hook is now cross-validated and integrated behind a default-off
-coverage-only candidate coverage flag; the next useful step is to restore the
-missing source log and run the exact local coverage-only command, not naive
-global beam/top-k expansion and not formal eval.
+coverage-only candidate coverage flag; the next useful step is to run the exact
+local coverage-only command, not naive global beam/top-k expansion and not
+formal eval.
 
 Do not launch formal eval from these diagnostics. Exact-tail admission alone is
 weak and expensive-looking because all exact hits are rank-30 beam cases.

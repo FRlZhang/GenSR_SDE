@@ -2,35 +2,37 @@
 
 ## Last Codex Workflow
 
-Codex attempted the small local coverage-only runtime smoke for the explicit
-P2 normalized drift admission flag, but blocked before launch because a required
-input log was missing:
+Codex regenerated the missing baseline role-wise source log and backed up
+surviving `/private/tmp` SDE experiment logs:
 
 ```text
-candidate_coverage_pair_expanded_p2_flag_runtime_report.md
-candidate_coverage_pair_expanded_p2_flag_runtime_report.json
+/private/tmp/gensr_sde_32_rolewise_no_multi_u0.log
+experiment_logs/2026-06-24_tmp_gensr_sde_logs/
 ```
 
-Preflight:
+Regenerated log metrics:
 
 ```text
-missing=/private/tmp/gensr_sde_32_rolewise_no_multi_u0.log
-present=candidate_coverage_pair_expanded.json
-present=drift_only_candidate_diversity_smoke.json
-present=scripts/analyze_candidate_coverage.py
-present=scripts/normalized_drift_admission.py
+reranked_sequence_exact=0.156250      # 5/32
+reranked_sequence_relaxed_no_constants=0.156250
+rerank_oracle_sequence_exact=0.281250 # 9/32
+rerank_pair_oracle_sequence_exact=0.062500 # 2/32
+rerank_candidates_valid=405
+rerank_pair_candidates_valid=103
 ```
 
-Result:
+Backup contents:
 
 ```text
-model_backed_candidate_coverage=not_run
-candidate_coverage_pair_expanded_p2_flag.md produced=False
-candidate_coverage_pair_expanded_p2_flag.json produced=False
-decision=D
+MANIFEST.txt
+README.txt
+all surviving /private/tmp/gensr_sde*.log files
+all surviving /private/tmp/gensr_sde*.json files
 ```
 
-Expected reference metrics remain from JSON-only validation:
+The backup directory is ignored by git via the existing `*logs` pattern.
+
+Previous JSON-only P2 flag validation still holds:
 
 ```text
 current_expanded_full_oracle=15/32
@@ -44,16 +46,15 @@ sampling_recovered_canonical_drift_count=0
 unsafe_collision_flag=False
 ```
 
-Interpretation: do not regenerate the missing source log inside Codex. Restore
-or recreate `/private/tmp/gensr_sde_32_rolewise_no_multi_u0.log`, then run the
-exact coverage-only command recorded in the runtime report. No formal eval is
-recommended.
+Interpretation: the source log needed for the explicit P2 coverage-only smoke
+is restored. The next step can rerun the exact coverage-only command; no formal
+eval is recommended.
 
 Validation:
 
 ```text
-py_compile scripts/analyze_candidate_coverage.py scripts/normalized_drift_admission.py scripts/validate_candidate_coverage_p2_flag.py: passed
-git diff --check: passed
+log regenerated from restored checkpoint: passed
+backup copied to experiment_logs/2026-06-24_tmp_gensr_sde_logs/: passed
 ```
 
 ## Previous Codex Workflow

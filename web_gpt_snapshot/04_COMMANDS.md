@@ -550,9 +550,10 @@ Preflight requirement:
 /private/tmp/gensr_sde_32_rolewise_no_multi_u0.log
 ```
 
-Latest Codex runtime-smoke attempt was blocked because that source log was
-missing. Do not regenerate it inside Codex; restore/recreate it locally before
-running:
+Status: regenerated on 2026-06-24 and backed up under
+`experiment_logs/2026-06-24_tmp_gensr_sde_logs/`.
+
+Run:
 
 ```bash
 PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/tmp/cache \
@@ -608,11 +609,9 @@ decision=A
 Latest runtime-smoke attempt:
 
 ```text
-status=blocked
-missing_input=/private/tmp/gensr_sde_32_rolewise_no_multi_u0.log
-model_backed_candidate_coverage=not_run
-candidate_coverage_pair_expanded_p2_flag.md/json produced=False
-decision=D
+previous_status=blocked_before_log_restore
+current_source_log_status=restored
+backup_dir=experiment_logs/2026-06-24_tmp_gensr_sde_logs/
 ```
 
 No formal eval is recommended from this validation.
