@@ -1592,3 +1592,66 @@ Use this as variance evidence only. Active-path budget helps somewhat, but the
 best tested budget still leaves most pair orderings noise-dominated. Do not run
 formal eval, integrate P2 into eval, or add a rerank mode from this evidence
 alone.
+
+## P2 Active/Weak Fingerprint Variance Anatomy Diagnostic
+
+This follows the path-budget diagnostic. It recomputes only B0/B1 with 3
+repeats each when per-repeat residual vectors are absent from the path-budget
+JSON. It targets the same 7 V4 rescue/harm samples and 8 oracle-pair
+comparisons. It does not run model decoding, candidate generation,
+`sde_validation_probe.py`, formal eval, 64-sample eval, retraining, scorer
+grids, active/weak grids, new path-budget grids, checkpoint/data changes,
+target-format changes, fingerprint schema changes, production default changes,
+or a rerank mode.
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/tmp/cache \
+/opt/miniconda3/envs/gensr/bin/python3 scripts/analyze_p2_fingerprint_variance_anatomy.py \
+  --path-budget-json p2_candidate_fingerprint_path_budget.json \
+  --stability-json p2_fingerprint_stability_diagnostics.json \
+  --ambiguity-json p2_fingerprint_ambiguity_diagnostics.json \
+  --all32-smoke-json p2_calibration_all32_smoke.json \
+  --scorer-ready-json p2_scorer_ready_candidates_all32.json \
+  --budget-modes B0_current_budget,B1_active_paths_high \
+  --target-case-types V4_rescue,V4_harm \
+  --report p2_fingerprint_variance_anatomy.md \
+  --json-output p2_fingerprint_variance_anatomy.json \
+  > /private/tmp/gensr_sde_p2_fingerprint_variance_anatomy.log 2>&1
+```
+
+Compile check:
+
+```bash
+PYTHONPYCACHEPREFIX=/private/tmp/gensr_pycache \
+/opt/miniconda3/envs/gensr/bin/python3 -m py_compile \
+  scripts/analyze_p2_fingerprint_variance_anatomy.py \
+  scripts/analyze_p2_candidate_fingerprint_path_budget.py \
+  scripts/analyze_p2_fingerprint_stability.py \
+  scripts/analyze_p2_fingerprint_ambiguity.py \
+  sde_fingerprint.py \
+  simulator_sde.py \
+  sde_dataset_generator.py
+```
+
+Latest result:
+
+```text
+samples_analyzed=7
+candidate_pairs_analyzed=8
+B0_stable=2/8
+B0_noise_dominated=6/8
+B1_stable=4/8
+B1_noise_dominated=6/8
+B1_stable_gain=+2
+active_variance_share_B0_mean=0.4765
+active_variance_share_B1_mean=0.4778
+weak_variance_share_B0_mean=0.5235
+weak_variance_share_B1_mean=0.5222
+top_active_dims_B1=82,88,80,86,76,74,72,77
+top_weak_dims_B1=114,115,116,161,117,160,137,159
+decision=B
+```
+
+Use this to keep scorer calibration closed. The B1 gain is real but mixed and
+spread across active/weak dimensions; return to drift-span/candidate-generation
+unless broader fingerprint logging/cache infrastructure is explicitly desired.

@@ -2,6 +2,64 @@
 
 ## Last Codex Workflow
 
+Codex added an offline active/weak fingerprint variance anatomy diagnostic:
+
+```text
+scripts/analyze_p2_fingerprint_variance_anatomy.py
+p2_fingerprint_variance_anatomy.md
+p2_fingerprint_variance_anatomy.json
+/private/tmp/gensr_sde_p2_fingerprint_variance_anatomy.log
+```
+
+The existing path-budget JSON did not contain per-repeat residual vectors, so
+the helper recomputed only B0/B1 with 3 repeats each for the same 7 V4
+rescue/harm samples and 8 oracle-pair comparisons. It did not run model
+decoding, candidate generation/regeneration, `sde_validation_probe.py`, formal
+eval, 64-sample eval, retraining, scorer grids, active/weak grids, new
+path-budget grids, checkpoint/data changes, target-format changes, fingerprint
+schema changes, production default changes, or a new rerank mode.
+
+Result:
+
+```text
+samples_analyzed=7
+candidate_pairs_analyzed=8
+used_existing_path_budget_data=False
+recomputed=True
+budget_modes=B0_current_budget,B1_active_paths_high
+B0_stable=2/8
+B0_noise_dominated=6/8
+B1_stable=4/8
+B1_noise_dominated=6/8
+B1_stable_gain=+2
+active_variance_share_B0_mean=0.4765
+active_variance_share_B1_mean=0.4778
+weak_variance_share_B0_mean=0.5235
+weak_variance_share_B1_mean=0.5222
+top_active_dims_B1=82,88,80,86,76,74,72,77
+top_weak_dims_B1=114,115,116,161,117,160,137,159
+recurring_active_dims_76_72_82_88_reappear=True
+recurring_weak_dims_136_137_133_reappear=True
+pairs_stabilized_by_B1=22:V0_selected_vs_oracle,23:V0_selected_vs_oracle
+pairs_still_noise_dominated_under_B1=1:V4_selected_vs_oracle,7:V0_selected_vs_oracle,9:V4_selected_vs_oracle,21:V4_selected_vs_oracle,22:V0_selected_vs_oracle,31:V0_selected_vs_oracle
+decision=B
+```
+
+Interpretation: B1 helps some pairs, but the remaining variance is mixed and
+spread across active/weak dimensions rather than concentrated in a small stable
+active-dimension set. Scorer calibration remains closed; return to
+drift-span/candidate-generation unless broader fingerprint logging/cache
+infrastructure is explicitly desired.
+
+Verification:
+
+```text
+py_compile scripts/analyze_p2_fingerprint_variance_anatomy.py scripts/analyze_p2_candidate_fingerprint_path_budget.py scripts/analyze_p2_fingerprint_stability.py scripts/analyze_p2_fingerprint_ambiguity.py sde_fingerprint.py simulator_sde.py sde_dataset_generator.py: passed
+helper run: passed
+```
+
+## Previous Codex Workflow
+
 Codex added an offline candidate fingerprint path-budget diagnostic for the
 same V0/V4 rescue/harm oracle-pair comparisons:
 

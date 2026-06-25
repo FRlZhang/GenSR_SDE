@@ -220,6 +220,20 @@ both (B3) reached only 1/8 stable and 7/8 noise-dominated. Decision remains
 `B`: higher path budget helps somewhat, especially active-path budget, but not
 enough to justify scorer changes, rerank-mode implementation, P2 eval
 integration, or formal eval.
+The offline active/weak fingerprint variance anatomy diagnostic is now
+complete for the same 7 samples and 8 pairs. Existing path-budget JSON lacked
+per-repeat residual vectors, so the helper recomputed only B0/B1 with 3 repeats
+each for directly comparable active/weak residual anatomy. In this anatomy run,
+B0 has 2/8 stable and 6/8 noise-dominated pairs; B1 has 4/8 stable and 6/8
+noise-dominated pairs, so the stable gain is +2 but noise-dominated count does
+not improve. Mean variance share remains almost unchanged from B0 to B1
+(active about 0.477 to 0.478, weak about 0.523 to 0.522), and B1 noise remains
+mixed for 6/8 pairs. Recurring active dimensions 76/72/82/88 and weak
+dimensions 136/137/133 do reappear in top variance/improved sets, but variance
+is spread across broader active and weak dimensions rather than concentrated in
+a small stable set. Decision `B`: keep scorer calibration closed; return to
+drift-span/candidate-generation unless broader fingerprint logging/cache
+infrastructure is explicitly desired.
 
 ## Last Updated
 
@@ -720,6 +734,18 @@ integration, or formal eval.
   stable-clear pairs; B2 weak-paths-high was 3/8 stable and 8/8
   noise-dominated; B3 both-paths-high was 1/8 stable and 7/8 noise-dominated.
   Decision `B`.
+- Added
+  [scripts/analyze_p2_fingerprint_variance_anatomy.py](/Users/lzhang/Documents/GenSR_SDE/scripts/analyze_p2_fingerprint_variance_anatomy.py)
+  and wrote
+  [p2_fingerprint_variance_anatomy.md](/Users/lzhang/Documents/GenSR_SDE/p2_fingerprint_variance_anatomy.md)
+  /
+  [p2_fingerprint_variance_anatomy.json](/Users/lzhang/Documents/GenSR_SDE/p2_fingerprint_variance_anatomy.json).
+  The existing path-budget JSON lacked per-repeat residual vectors, so the
+  helper recomputed only B0/B1 with 3 repeats each. B1 stabilizes 2 additional
+  pairs versus this B0 anatomy baseline, but both B0 and B1 have 6/8
+  noise-dominated pairs. Active/weak variance shares remain near 48/52, and
+  recurring active/weak dimensions reappear but do not form a small sufficient
+  explanation. Decision `B`.
 - Logged validated experiments in
   [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md).
 
@@ -732,7 +758,8 @@ integration, or formal eval.
   ambiguity/stability diagnostics found candidate fingerprint resimulation
   noise-dominated orderings. Path-budget diagnostics show active-path budget
   helps somewhat but leaves 6/8 oracle-pair comparisons noise-dominated, so
-  scorer calibration remains closed.
+  scorer calibration remains closed. Variance anatomy confirms this is mixed
+  active/weak spread, not a clean small-dimension active fix.
 - The 2000-step role-token checkpoint has been restored in `/private/tmp` and
   backed up under `checkpoints/`; model weights remain ignored by git.
 
@@ -774,7 +801,8 @@ integration, or formal eval.
    The V0/V4 fingerprint stability diagnostic also found M1 candidate
    resimulation noise dominates 8/8 oracle-pair comparisons, and the
    path-budget diagnostic still leaves 6/8 pairs noise-dominated under the best
-   tested active-path budget. Treat this path as closed for scorer
+   tested active-path budget. Variance anatomy shows active/weak shares remain
+   near 48/52 and mixed noise persists. Treat this path as closed for scorer
    implementation.
 12. Keep drift/diffusion pairing enabled and tune candidate pool size carefully
    because fingerprint recomputation is CPU-expensive.
@@ -874,6 +902,9 @@ integration, or formal eval.
   weak paths or both budgets together, but the best budget still leaves 6/8
   oracle-pair comparisons noise-dominated. Treat this as variance evidence, not
   scorer implementation evidence.
+- The variance anatomy diagnostic shows B1's improvement is not a clean small
+  active-dimension stabilization: recurring active/weak dimensions reappear,
+  but variance remains mixed and spread across dimensions.
 - Constant-folding collision checks are token-structure-only; they did not flag
   unsafe observed overmerge, but semantic fingerprint validation and
   selected-rerank behavior remain untested.

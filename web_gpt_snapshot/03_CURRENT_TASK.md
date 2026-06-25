@@ -76,6 +76,15 @@ noise-dominated, and 2 stable-clear pairs. B2 weak-paths-high is 3/8 stable and
 noise-dominated. Decision `B`: active-path budget helps somewhat but not enough
 for scorer changes, rerank-mode implementation, P2 eval integration, or formal
 eval.
+The active/weak variance anatomy diagnostic is now complete. Existing
+path-budget JSON lacked per-repeat residual vectors, so B0/B1 were recomputed
+with 3 repeats each. B0 has 2/8 stable and 6/8 noise-dominated pairs; B1 has
+4/8 stable and 6/8 noise-dominated pairs. Active/weak variance shares remain
+near 48/52, recurring active dims 76/72/82/88 and weak dims 136/137/133
+reappear, but the noise remains mixed/spread rather than concentrated in a small
+fixable dimension set. Decision `B`: scorer calibration remains closed; return
+to drift-span/candidate-generation unless broader fingerprint logging/cache
+infrastructure is explicitly desired.
 
 Current strongest no-retraining decoding setting:
 
@@ -731,7 +740,8 @@ The fixed residual calibration path is closed for now: V4 improves sidecar
 selected exact/relaxed but harms V0 hits, V11 regresses, gate feasibility found
 no observable positive zero-harm gate, and V0/V4 rescue/harm ordering is
 candidate-resimulation-noise-dominated. The path-budget diagnostic shows
-active-path budget helps somewhat but still leaves most pairs noise-dominated.
-The next scorer-side work, if any, should be targeted active/weak fingerprint
-variance diagnostics rather than scorer implementation. Do not run formal eval,
-integrate P2 into eval, or add a rerank mode from this evidence.
+active-path budget helps somewhat, and variance anatomy shows the remaining
+noise is mixed/spread rather than a clean small-dimension active fix. The next
+useful work should return to drift-span/candidate-generation unless broader
+fingerprint logging/cache infrastructure is explicitly desired. Do not run
+formal eval, integrate P2 into eval, or add a rerank mode from this evidence.

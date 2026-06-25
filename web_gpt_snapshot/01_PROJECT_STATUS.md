@@ -6,6 +6,8 @@ Improve sequence-level SDE recovery after establishing that the current unified 
 
 Latest path-budget update: `scripts/analyze_p2_candidate_fingerprint_path_budget.py` tested B0/B1/B2/B3 on the same 7 V4 rescue/harm samples and 8 oracle-pair comparisons. B0 had 0/8 stable and 8/8 noise-dominated pairs. B1 active-paths-high was best at 4/8 stable, 6/8 noise-dominated, and 2 stable-clear pairs. B2 was 3/8 stable and 8/8 noise-dominated; B3 was 1/8 stable and 7/8 noise-dominated. Decision `B`: active-path budget helps somewhat but not enough for scorer changes, rerank-mode implementation, P2 eval integration, or formal eval.
 
+Latest variance anatomy update: `scripts/analyze_p2_fingerprint_variance_anatomy.py` found existing path-budget JSON lacked per-repeat residual vectors, so it recomputed only B0/B1 with 3 repeats each. B0 had 2/8 stable and 6/8 noise-dominated pairs; B1 had 4/8 stable and 6/8 noise-dominated pairs. Active/weak variance shares remain almost unchanged at about 48/52, and B1 still has 6/8 mixed-noise pairs. Recurring active dims 76/72/82/88 and weak dims 136/137/133 reappear, but noise remains spread across dimensions. Decision `B`: scorer calibration remains closed; return to drift-span/candidate-generation unless broader fingerprint logging/cache infrastructure is explicitly desired.
+
 ## Completed
 
 - Added unified SDE fingerprint pipeline in `sde_fingerprint.py`.
@@ -68,11 +70,12 @@ greedy_sequence_exact=0.015625
 - Added `scripts/analyze_p2_calibration_all32_smoke.py`, produced `p2_scorer_ready_candidates_all32.json`, and wrote `p2_calibration_all32_smoke.md/json`. This used one allowed coverage-only sidecar reconstruction plus offline candidate scoring only. It scored 970/970 rows with 0 parse/fingerprint failures. V0 selected exact/relaxed is 6/32; V11 regresses to 4/32; V4 reaches 9/32 but harms 2 V0 hits. Decision `B`.
 - Added `scripts/analyze_p2_calibration_gate_feasibility.py` and wrote `p2_calibration_gate_feasibility.md/json`. It parsed existing JSON only. Four observable gates were available, five residual-top-dimension gates were unavailable due missing all-32 residual fields, and no observable gate gave positive zero-harm improvement. Best observable is `V4 + G3` at 9/32 with 2 harms; best zero-harm upper bound uses oracle labels. Decision `B`.
 - Added `scripts/analyze_p2_candidate_fingerprint_path_budget.py` and wrote `p2_candidate_fingerprint_path_budget.md/json`. It analyzed 7 V4 rescue/harm samples and 8 oracle-pair comparisons under stored-target candidate resimulation only. B1 active-paths-high was best at 4/8 stable and 6/8 noise-dominated pairs; B0 was 0/8 stable and 8/8 noise-dominated. Decision `B`.
+- Added `scripts/analyze_p2_fingerprint_variance_anatomy.py` and wrote `p2_fingerprint_variance_anatomy.md/json`. It recomputed only B0/B1 with 3 repeats to obtain per-dimension residual vectors. B1 stabilizes two additional pairs versus this B0 anatomy baseline, but both B0 and B1 still have 6/8 noise-dominated pairs. Active/weak variance shares remain near 48/52; recurring active/weak dimensions reappear but do not explain the noise as a small localized set. Decision `B`.
 
 ## In Progress
 
 - Transitioning from token recognition to full symbolic sequence recovery.
-- Fixed residual calibration implementation is closed for now. Gate feasibility found no observable positive zero-harm gate, and fingerprint stability/path-budget diagnostics show candidate resimulation noise remains a blocker. B1 active-paths-high helps but still leaves 6/8 pairs noise-dominated.
+- Fixed residual calibration implementation is closed for now. Gate feasibility found no observable positive zero-harm gate, and fingerprint stability/path-budget/anatomy diagnostics show candidate resimulation noise remains mixed and spread. B1 active-paths-high helps but still leaves 6/8 pairs noise-dominated.
 - Checkpoint-dependent candidate regeneration is unblocked: the 2000-step checkpoint is present in `/private/tmp` and backed up under `checkpoints/`, which is ignored by git.
 
 ## Next Steps
@@ -86,7 +89,7 @@ greedy_sequence_exact=0.015625
 7. Do not add a robust-scoring rerank mode from the current offline ablation alone: mild variants rescued 0/4 and the only flip required aggressive clipping.
 8. Keep comparing greedy, constrained beam, reranked, oracle, and oracle-miss metrics on the same held-out setup.
 9. Keep `--normalized-drift-admission p2_one_per_family` as an explicit coverage-only diagnostic path; it now reproduces the `30/32` ceiling and pair count `340` in the actual candidate coverage pipeline.
-10. Do not implement shared-constant or fixed residual calibration. Gate feasibility found no observable positive zero-harm gate; `V4 + G3` reaches 9/32 but harms 2 V0 hits, while zero-harm upper bounds use oracle labels. Fingerprint stability/path-budget diagnostics show candidate resimulation noise remains too high for scorer implementation.
+10. Do not implement shared-constant or fixed residual calibration. Gate feasibility found no observable positive zero-harm gate; `V4 + G3` reaches 9/32 but harms 2 V0 hits, while zero-harm upper bounds use oracle labels. Fingerprint stability/path-budget/anatomy diagnostics show candidate resimulation noise remains too high and too mixed for scorer implementation.
 11. Do not run formal eval from drift-only or constant-folding diagnostics; they are oracle-coverage evidence, not selected-recovery evidence.
 12. Only revisit fingerprint design after candidate diversity and scoring have been tested more thoroughly.
 
@@ -121,6 +124,7 @@ greedy_sequence_exact=0.015625
 - P2 oracle score misses are mostly active/weak residual traps, not parse/fingerprint/serialization failures.
 - P2 residual-calibration counterfactuals are diagnostic-only. The all-32 smoke shows V4 can improve sidecar selected exact/relaxed to 9/32, but all non-V0 variants harm V0 hits, V11 regresses, gate feasibility found no observable zero-harm gate, and fingerprint stability shows candidate resimulation noise dominates the V4 rescue/harm ordering. Close this implementation path for now.
 - Path-budget diagnostics show active-path budget helps more than weak-path or both-path increases, but the best tested budget still leaves 6/8 V4 rescue/harm oracle-pair comparisons noise-dominated.
+- Variance anatomy shows B1's improvement is not a clean small active-dimension stabilization: recurring active/weak dimensions reappear, but active/weak variance shares stay near 48/52 and mixed noise persists.
 - Constant-folding collision checks are token-structure-only; they did not flag unsafe observed overmerge, but semantic fingerprint validation and selected-rerank behavior remain untested.
 - Constant-grid + pairing rerank is CPU-expensive; reserve 64-sample expansion for settings that first improve the 32-sample selected metrics.
 - The best checkpoint is available at `/private/tmp/gensr_sde_role_token_2000/role_token_2000.pth` and backed up at `checkpoints/gensr_sde_role_token_2000/role_token_2000.pth`.
