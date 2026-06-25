@@ -1536,3 +1536,59 @@ scorer calibration changes. M2/M3 target-resimulation attribution is blocked by
 missing stored candidate fingerprint vectors and raw numeric target constants.
 Do not run formal eval, integrate P2 into eval, or add a rerank mode from this
 evidence alone.
+
+## P2 Candidate Fingerprint Path-Budget Diagnostic
+
+This follows the stability diagnostic and tests fixed path-budget modes for the
+same 7 V4 rescue/harm samples and 8 oracle-pair comparisons. It keeps the
+stored target fixed and resimulates candidate fingerprints only. It does not
+run model decoding, candidate generation, `sde_validation_probe.py`, formal
+eval, 64-sample eval, retraining, scorer changes, rerank-mode changes,
+checkpoint/data changes, target-format changes, fingerprint schema changes, or
+production default changes.
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/tmp/cache \
+/opt/miniconda3/envs/gensr/bin/python3 scripts/analyze_p2_candidate_fingerprint_path_budget.py \
+  --stability-json p2_fingerprint_stability_diagnostics.json \
+  --ambiguity-json p2_fingerprint_ambiguity_diagnostics.json \
+  --all32-smoke-json p2_calibration_all32_smoke.json \
+  --scorer-ready-json p2_scorer_ready_candidates_all32.json \
+  --target-case-types V4_rescue,V4_harm \
+  --report p2_candidate_fingerprint_path_budget.md \
+  --json-output p2_candidate_fingerprint_path_budget.json \
+  > /private/tmp/gensr_sde_p2_candidate_fingerprint_path_budget.log 2>&1
+```
+
+Compile check:
+
+```bash
+PYTHONPYCACHEPREFIX=/private/tmp/gensr_pycache \
+/opt/miniconda3/envs/gensr/bin/python3 -m py_compile \
+  scripts/analyze_p2_candidate_fingerprint_path_budget.py \
+  scripts/analyze_p2_fingerprint_stability.py \
+  scripts/analyze_p2_fingerprint_ambiguity.py \
+  scripts/analyze_p2_calibration_all32_smoke.py \
+  scripts/analyze_p2_admitted_candidate_scoring.py \
+  sde_fingerprint.py \
+  simulator_sde.py \
+  sde_dataset_generator.py
+```
+
+Latest result:
+
+```text
+samples_analyzed=7
+candidate_pairs_analyzed=8
+B0_current_budget: stable=0/8, noise_dominated=8/8, stable_clear=0
+B1_active_paths_high: stable=4/8, noise_dominated=6/8, stable_clear=2
+B2_weak_paths_high: stable=3/8, noise_dominated=8/8, stable_clear=0
+B3_both_paths_high: stable=1/8, noise_dominated=7/8, stable_clear=1
+best_budget_mode=B1_active_paths_high
+decision=B
+```
+
+Use this as variance evidence only. Active-path budget helps somewhat, but the
+best tested budget still leaves most pair orderings noise-dominated. Do not run
+formal eval, integrate P2 into eval, or add a rerank mode from this evidence
+alone.

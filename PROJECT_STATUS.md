@@ -207,11 +207,23 @@ truth process exactly. Removed-dimension contributions are also
 noise-dominated in 7/7 cases and provide 0 stable explanations. Decision `B`:
 candidate fingerprint resimulation variance is enough to explain the observed
 ordering instability; diagnose candidate fingerprint variance / path budget
-before any scorer changes.
+before any scorer changes. The follow-up path-budget diagnostic is now
+complete for the same 7 V4 rescue/harm samples and 8 oracle-pair comparisons.
+It recomputed stored-target candidate fingerprints under the current
+`constant_grid_rolewise_no_multi_u0` semantics with active:weak `1:1`.
+Baseline B0 (`n_paths=800`, `active_paths=800`, `n_steps=60`, repeats 5) had
+0/8 stable orderings and 8/8 noise-dominated pairs. Raising active paths only
+(B1: `800/1600/60`, repeats 3) was the best tested budget, improving to 4/8
+stable orderings and 6/8 noise-dominated pairs with 2 stable-clear pairs.
+Raising weak paths only (B2) reached 3/8 stable but 8/8 noise-dominated; raising
+both (B3) reached only 1/8 stable and 7/8 noise-dominated. Decision remains
+`B`: higher path budget helps somewhat, especially active-path budget, but not
+enough to justify scorer changes, rerank-mode implementation, P2 eval
+integration, or formal eval.
 
 ## Last Updated
 
-2026-06-24
+2026-06-25
 
 ## Completed
 
@@ -695,6 +707,19 @@ before any scorer changes.
   stable ordering; all 8 were noise-dominated. M2/M3 target-resimulation modes
   remain unavailable from current sidecar fields. Decision `B`: diagnose
   candidate fingerprint variance / path budget before scorer changes.
+- Added
+  [scripts/analyze_p2_candidate_fingerprint_path_budget.py](/Users/lzhang/Documents/GenSR_SDE/scripts/analyze_p2_candidate_fingerprint_path_budget.py)
+  and wrote
+  [p2_candidate_fingerprint_path_budget.md](/Users/lzhang/Documents/GenSR_SDE/p2_candidate_fingerprint_path_budget.md)
+  /
+  [p2_candidate_fingerprint_path_budget.json](/Users/lzhang/Documents/GenSR_SDE/p2_candidate_fingerprint_path_budget.json).
+  This helper analyzed the same 7 V4 rescue/harm samples and 8 oracle-pair
+  comparisons with stored target and resimulated candidate fingerprints only.
+  B0 current budget had 0/8 stable and 8/8 noise-dominated pairs. B1
+  active-paths-high was best at 4/8 stable, 6/8 noise-dominated, and 2
+  stable-clear pairs; B2 weak-paths-high was 3/8 stable and 8/8
+  noise-dominated; B3 both-paths-high was 1/8 stable and 7/8 noise-dominated.
+  Decision `B`.
 - Logged validated experiments in
   [SDE_TRAINING_REPORT.md](/Users/lzhang/Documents/GenSR_SDE/SDE_TRAINING_REPORT.md).
 
@@ -705,8 +730,9 @@ before any scorer changes.
 - Fixed residual calibration implementation is closed for now. Gate feasibility
   found no observable positive zero-harm gate, and the V0/V4 fingerprint
   ambiguity/stability diagnostics found candidate fingerprint resimulation
-  noise-dominated orderings. Diagnose candidate fingerprint variance / path
-  budget before any scorer changes.
+  noise-dominated orderings. Path-budget diagnostics show active-path budget
+  helps somewhat but leaves 6/8 oracle-pair comparisons noise-dominated, so
+  scorer calibration remains closed.
 - The 2000-step role-token checkpoint has been restored in `/private/tmp` and
   backed up under `checkpoints/`; model weights remain ignored by git.
 
@@ -746,8 +772,10 @@ before any scorer changes.
    feasibility found no observable positive zero-harm gate; `V4 + G3` reaches
    `9/32` but harms 2 V0 hits, while zero-harm upper bounds use oracle labels.
    The V0/V4 fingerprint stability diagnostic also found M1 candidate
-   resimulation noise dominates 8/8 oracle-pair comparisons, so treat this path
-   as closed until candidate fingerprint variance / path budget is understood.
+   resimulation noise dominates 8/8 oracle-pair comparisons, and the
+   path-budget diagnostic still leaves 6/8 pairs noise-dominated under the best
+   tested active-path budget. Treat this path as closed for scorer
+   implementation.
 12. Keep drift/diffusion pairing enabled and tune candidate pool size carefully
    because fingerprint recomputation is CPU-expensive.
 13. Reuse the saved 2000-step checkpoint for decoding experiments instead of
@@ -842,6 +870,10 @@ before any scorer changes.
   noise-dominated under stored targets. Target-resimulation attribution is still
   blocked by missing stored candidate fingerprints / raw numeric target
   constants.
+- The path-budget diagnostic shows raising active paths helps more than raising
+  weak paths or both budgets together, but the best budget still leaves 6/8
+  oracle-pair comparisons noise-dominated. Treat this as variance evidence, not
+  scorer implementation evidence.
 - Constant-folding collision checks are token-structure-only; they did not flag
   unsafe observed overmerge, but semantic fingerprint validation and
   selected-rerank behavior remain untested.

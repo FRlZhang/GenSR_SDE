@@ -68,6 +68,14 @@ noise-dominated, and 0/8 stable-clear. Noise drivers are mixed 5, active 2, and
 weak 1. M2/M3 are unavailable because candidate fingerprint vectors and raw
 numeric target SDE constants are not stored. Decision `B`: candidate
 fingerprint variance / path budget should be diagnosed before scorer changes.
+The path-budget diagnostic is now complete for the same 7 samples and 8
+oracle-pair comparisons. B0 current budget has 0/8 stable and 8/8
+noise-dominated pairs. B1 active-paths-high is best at 4/8 stable, 6/8
+noise-dominated, and 2 stable-clear pairs. B2 weak-paths-high is 3/8 stable and
+8/8 noise-dominated; B3 both-paths-high is 1/8 stable and 7/8
+noise-dominated. Decision `B`: active-path budget helps somewhat but not enough
+for scorer changes, rerank-mode implementation, P2 eval integration, or formal
+eval.
 
 Current strongest no-retraining decoding setting:
 
@@ -722,7 +730,8 @@ Likely next actions:
 The fixed residual calibration path is closed for now: V4 improves sidecar
 selected exact/relaxed but harms V0 hits, V11 regresses, gate feasibility found
 no observable positive zero-harm gate, and V0/V4 rescue/harm ordering is
-candidate-resimulation-noise-dominated. The next scorer-side question is
-candidate fingerprint variance / path budget, not another fixed residual gate.
-Do not run formal eval, integrate P2 into eval, or add a rerank mode from this
-evidence.
+candidate-resimulation-noise-dominated. The path-budget diagnostic shows
+active-path budget helps somewhat but still leaves most pairs noise-dominated.
+The next scorer-side work, if any, should be targeted active/weak fingerprint
+variance diagnostics rather than scorer implementation. Do not run formal eval,
+integrate P2 into eval, or add a rerank mode from this evidence.

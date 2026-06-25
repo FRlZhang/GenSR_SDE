@@ -2,6 +2,52 @@
 
 ## Last Codex Workflow
 
+Codex added an offline candidate fingerprint path-budget diagnostic for the
+same V0/V4 rescue/harm oracle-pair comparisons:
+
+```text
+scripts/analyze_p2_candidate_fingerprint_path_budget.py
+p2_candidate_fingerprint_path_budget.md
+p2_candidate_fingerprint_path_budget.json
+/private/tmp/gensr_sde_p2_candidate_fingerprint_path_budget.log
+```
+
+This used existing JSON plus controlled candidate fingerprint resimulation for
+the 7 V4 rescue/harm samples and 8 oracle-pair comparisons. It did not run
+model decoding, candidate generation/regeneration, `sde_validation_probe.py`,
+formal eval, 64-sample eval, retraining, scorer grids, active/weak grids,
+checkpoint/data changes, target-format changes, fingerprint schema changes,
+production default changes, or a new rerank mode.
+
+Result:
+
+```text
+samples_analyzed=7
+candidate_pairs_analyzed=8
+B0_current_budget: stable=0/8, noise_dominated=8/8, stable_clear=0
+B1_active_paths_high: stable=4/8, noise_dominated=6/8, stable_clear=2
+B2_weak_paths_high: stable=3/8, noise_dominated=8/8, stable_clear=0
+B3_both_paths_high: stable=1/8, noise_dominated=7/8, stable_clear=1
+best_budget_mode=B1_active_paths_high
+B1_vs_B0_stable_gain=+4
+B1_vs_B0_noise_dominated_reduction=+2
+decision=B
+```
+
+Interpretation: increasing active-path budget helps more than weak-path or
+both-path increases, but the best tested budget still leaves 6/8 pairs
+noise-dominated. Keep scorer calibration closed; no formal eval, rerank mode,
+or P2 eval integration is recommended from this evidence.
+
+Verification:
+
+```text
+py_compile scripts/analyze_p2_candidate_fingerprint_path_budget.py scripts/analyze_p2_fingerprint_stability.py scripts/analyze_p2_fingerprint_ambiguity.py scripts/analyze_p2_calibration_all32_smoke.py scripts/analyze_p2_admitted_candidate_scoring.py sde_fingerprint.py simulator_sde.py sde_dataset_generator.py: passed
+helper run: passed
+```
+
+## Previous Codex Workflow
+
 Codex added an offline fingerprint simulation stability diagnostic for V0/V4
 rescue/harm cases:
 
